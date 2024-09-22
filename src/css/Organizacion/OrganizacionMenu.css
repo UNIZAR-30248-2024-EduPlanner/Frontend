@@ -1,0 +1,15 @@
+.org-menu-tit {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 5vh;
+}
+
+.tabs-org {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    margin-top: 5vh;
+    color: var(--color-primary);
+}

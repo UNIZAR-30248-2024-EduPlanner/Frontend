@@ -1,0 +1,40 @@
+.busqueda {
+    margin-top: 5vh;
+}
+
+.lista {
+    margin-top: 5vh;
+}
+
+.lista-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    list-style: none;
+
+    background-color: var(--color-primary);
+    color: white;
+    border-radius: 40px;
+    padding: 20px;
+    margin-top: 2vh;
+    width: 60vw;
+    font-weight: bold;
+}
+
+.lista-text {
+    margin-left: 1vw;
+    text-align: start;
+    width: 70%;
+}
+
+.lista-iconos {
+    display: flex;
+    justify-content: space-between;
+    width: 10%;
+    font-size: 1.75rem;
+    margin-right: 1vw;
+
+    .trash {
+        color: var(--color-second);
+    }
+}
