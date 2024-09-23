@@ -1,4 +1,4 @@
-.org-menu-tit {
+.org-crear-tit {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -6,11 +6,18 @@
     margin-top: 5vh;
 }
 
-.tabs-org {
+.org-crear-container {
+    display: flex;
+    justify-content: space-around;
+}
+
+.org-crear-uno {
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 100%;
-    margin-top: 5vh;
-    color: var(--color-primary);
+    justify-content: center;
+    text-align: center;
+}
+
+.uno {
 }

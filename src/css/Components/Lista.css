@@ -1,5 +1,26 @@
 .busqueda {
+    width: 100%;
     margin-top: 5vh;
+    display: flex;
+    align-items: center;
+}
+
+.create-button {
+    position: fixed;
+    @media (min-width: 900px) {
+        bottom: 4vh;
+        right: 4vw;    
+        font-size: 7rem;
+    }
+    @media (max-width: 900px) {
+        bottom: 1vh;
+        right: 1vw;
+        font-size: 12vw;
+    }
+}
+
+.create-button:hover {
+    opacity: 0.75;
 }
 
 .lista {
@@ -17,8 +38,14 @@
     border-radius: 40px;
     padding: 20px;
     margin-top: 2vh;
-    width: 60vw;
     font-weight: bold;
+
+    @media (min-width: 900px) {
+        width: 60vw;
+    }
+    @media (max-width: 900px) {
+        width: 75vw;
+    }
 }
 
 .lista-text {
@@ -30,11 +57,15 @@
 .lista-iconos {
     display: flex;
     justify-content: space-between;
-    width: 10%;
+    width: fit-content;
     font-size: 1.75rem;
     margin-right: 1vw;
 
     .trash {
         color: var(--color-second);
     }
+}
+
+.edit {
+    margin-right: 1vw;
 }

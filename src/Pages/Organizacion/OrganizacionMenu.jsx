@@ -8,12 +8,34 @@ const OrganizacionMenu = () => {
     // const [alumnos, setAlumnos] = useState([])
     // const [cursos, setCursos] = useState([])
     // const [profesores, setProfesores] = useState([])
-
+    
     const alumnos = [
-        { NIP: 839899, name: "José Miguel" },
-        { NIP: 839899, name: "José Miguel" },
-        { NIP: 839899, name: "José Miguel" },
-        { NIP: 839899, name: "José Miguel" },
+        { name: "José Miguel" },
+        { name: "José Miguel" },
+        { name: "José Miguel" },
+        { name: "José Miguel" },
+    ]
+
+    const cursos = [
+        { name: "Grado en Ingeniería Informática" },
+        { name: "Grado en Ingeniería Informática" },
+        { name: "Grado en Ingeniería Informática" },
+        { name: "Grado en Ingeniería Informática" },
+        { name: "Grado en Ingeniería Informática" },
+        { name: "Grado en Ingeniería Informática" },
+        { name: "Grado en Ingeniería Informática" },
+        { name: "Grado en Ingeniería Informática" },
+    ]
+
+    const profesores = [
+        { name: "Rubén Béjar" },
+        { name: "Rubén Béjar" },
+        { name: "Rubén Béjar" },
+        { name: "Rubén Béjar" },
+        { name: "Rubén Béjar" },
+        { name: "Rubén Béjar" },
+        { name: "Rubén Béjar" },
+        { name: "Rubén Béjar" },
     ]
 
     return (
@@ -27,8 +49,12 @@ const OrganizacionMenu = () => {
                     <Tab className="text-center text-xl" key="alumnos" title="Alumnos">
                         <Lista lista={alumnos} nombre={"alumnos"}/>
                     </Tab>
-                    <Tab className="text-center text-xl" key="cursos" title="Cursos"/>
-                    <Tab className="text-center text-xl" key="profesores" title="Profesores"/>
+                    <Tab className="text-center text-xl" key="cursos" title="Cursos">
+                        <Lista lista={cursos} nombre={"cursos"}/>
+                    </Tab>
+                    <Tab className="text-center text-xl" key="profesores" title="Profesores">
+                        <Lista lista={profesores} nombre={"profesores"}/>
+                    </Tab>
                 </Tabs>
               </div>
         </div>
