@@ -4,6 +4,7 @@ import {Input} from "@nextui-org/input";
 import {Button} from "@nextui-org/react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useState } from "react";
+import SubidaFichero from "../../Components/SubidaFichero";
 
 const OrganizacionCrear = () => {
     const {type} = useParams()
@@ -66,7 +67,24 @@ const OrganizacionCrear = () => {
                 </div>
                 <div className="fich">
                     <h2 className="org-crear-tit"> Sube un fichero de {type} </h2>
-                    
+                    {type === "alumnos" ? (
+                      <p className="formato">
+                        El formato del fichero por línea será el siguiente: <br/>
+                        <span>
+                          Nombre Apellidos;NIP;Contraseña;  <br/>
+                          
+                        </span>
+                      </p>
+                    ) : type === "cursos" ? (
+                      <></>
+                    ) : type === "profesores" ? (
+                      <></>
+
+                    ) : (
+                      <></>
+
+                    )}
+                    <SubidaFichero type={type}/>
                 </div>
             </div>
         </>

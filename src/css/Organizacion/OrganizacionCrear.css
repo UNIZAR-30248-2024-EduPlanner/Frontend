@@ -15,9 +15,21 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
     text-align: center;
 }
 
-.uno {
+.formato {
+    color: var(--color-primary);
+    font-size: 1.25rem;
+    margin-bottom: 5vh;
+    text-align: center;
+    line-height: 3rem;
+
+    span {
+        background-color: var(--color-primary);
+        color: white;
+        padding: 5px;
+        border-radius: 5px;
+    }
 }
+
