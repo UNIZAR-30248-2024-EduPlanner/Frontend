@@ -5,7 +5,7 @@ import { FaRegEdit, FaRegTrashAlt } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import constants from "../constants/constants";
 
-const Lista = ({lista, nombre}) => {
+const Lista = ({lista, nombre, url}) => {
     const navigate = useNavigate()
 
     return (
@@ -37,7 +37,7 @@ const Lista = ({lista, nombre}) => {
             <div 
               className="create-button" 
               onClick={
-                () => navigate(constants.root + "OrganizacionCrear/" + nombre + "/1")}>
+                () => navigate(constants.root + url + "/" + nombre + "/1")}>
                 <FaCirclePlus/>
             </div>
     </>

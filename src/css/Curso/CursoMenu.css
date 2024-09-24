@@ -1,0 +1,16 @@
+.cur-menu-tit {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    margin-top: 5vh;
+}
+
+.cur-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    margin-top: 5vh;
+    color: var(--color-primary);
+}
