@@ -84,11 +84,18 @@ const SubidaFichero = ({ type }) => {
               onChange={(e) => readFile(e)}
             />
             <div className="text-information">
-                <h3> 
-                    Arrastre un fichero <br/>
-                    o <br/>
-                    Clique aquí para subir uno
-                </h3>
+                {lista.length > 0 ? (
+                    <h3> 
+                        Clique o arrastre aquí <br/>
+                        para cambiar el fichero
+                    </h3>                
+                ) : (
+                    <h3> 
+                        Arrastre un fichero <br/>
+                        o <br/>
+                        Clique aquí para subir uno
+                    </h3>
+                )}
             </div>
             {lista.length > 0 && errores.length == 0 && (
                 <ScrollShadow className="self-center h-[300px]">

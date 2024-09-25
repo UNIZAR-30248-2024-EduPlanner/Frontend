@@ -3,6 +3,7 @@ import constants from "../constants/constants"
 import Home from "../Pages/Home"
 import OrganizacionMenu from "../Pages/Organizacion/OrganizacionMenu"
 import OrganizacionCrear from "../Pages/Organizacion/OrganizacionCrear"
+import OrganizacionModificar from "../Pages/Organizacion/OrganizacionModificar"
 
 const RouterComponent = () => {
     return (
@@ -10,7 +11,8 @@ const RouterComponent = () => {
             <Routes>
                 <Route path={constants.root} element={<Home/>}/>
                 <Route path={constants.root + "OrganizacionMenu"} element={<OrganizacionMenu/>}/>
-                <Route path={constants.root + "OrganizacionCrear/:type/:id"} element={<OrganizacionCrear/>}/>
+                <Route path={constants.root + "OrganizacionCrear/:type"} element={<OrganizacionCrear/>}/>
+                <Route path={constants.root + "OrganizacionModificar/:type/:id"} element={<OrganizacionModificar/>}/>
             </Routes>
         </BrowserRouter>
     )

@@ -5,17 +5,18 @@ import {Button} from "@nextui-org/react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useState } from "react";
 import SubidaFichero from "../../Components/SubidaFichero";
+import FlechaVolver from "../../Components/FlechaVolver";
 
 const OrganizacionCrear = () => {
     const {type} = useParams()
-    const {id} = useParams()
-
+  
     const [isVisible, setIsVisible] = useState(false);
     const toggleVisibility = () => setIsVisible(!isVisible);
   
   
     return (
         <>
+            <FlechaVolver/>
             <h1 className="org-crear-tit"> Crear {type} </h1>
             <div className="org-crear-container">
                 <div className="org-crear-uno">

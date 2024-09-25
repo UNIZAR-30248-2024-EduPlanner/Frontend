@@ -15,8 +15,8 @@
 }
 
 .text-information {
-    margin-top: 5vh;
-    margin-bottom: 5vh;
+    margin-top: 3vh;
+    margin-bottom: 3vh;
     text-align: center;
     color: var(--color-primary);
     font-weight: bold;

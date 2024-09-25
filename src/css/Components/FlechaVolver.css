@@ -1,0 +1,19 @@
+.flecha {
+    .flecha-volver-container {
+        background-color: transparent;
+        position: fixed;
+        top: 1vh;
+        left: 1vw;
+        font-size: 4rem;
+        color: var(--color-primary);
+    }
+    
+    .flecha-volver {
+        font-size: 100%;
+    }
+    
+    .flecha-volver:hover {
+        opacity: 0.75;
+    }    
+}
+
