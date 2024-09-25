@@ -60,7 +60,7 @@ const OrganizacionModificar = () => {
                     className="max-w-xs"
                 />
                 <Button size="lg" color="primary">
-                    Crear
+                    Modificar
                 </Button>
             </div>
 
