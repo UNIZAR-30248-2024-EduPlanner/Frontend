@@ -1,6 +1,7 @@
 import Lista from "../../Components/Lista";
 import "../../css/Curso/CursoMenu.css"
 import {Tabs, Tab} from "@nextui-org/react";
+import FlechaVolver from "../../Components/FlechaVolver";
 
 const CursoMenu = () => {
 
@@ -8,7 +9,7 @@ const CursoMenu = () => {
 
     const nombre = "Grado en Ingeniería Informática"
 
-    const asignaturas = [
+    var asignaturas = [
         { name: "Gestión de proyecto software" },
         { name: "Sistemas y tecnologías Web" },
         { name: "Bases de datos 2" },
@@ -18,13 +19,14 @@ const CursoMenu = () => {
 
     return (
         <div>
+            <FlechaVolver/>
             <h1 className="cur-menu-tit"> Bienvenido, {nombre}</h1>
             <div class="cur-container">
                 <Tabs 
                  color="primary"
                  variant="underlined">
                     <Tab className="text-center text-xl" key="asignaturas" title="Asignaturas">
-                        <Lista lista={asignaturas} nombre={"asignatura"} url={"CursoCrear"}></Lista>
+                        <Lista lista={asignaturas} type={"asignaturas"} creator={"cursos"}></Lista>
                     </Tab>
                 </Tabs>
                 

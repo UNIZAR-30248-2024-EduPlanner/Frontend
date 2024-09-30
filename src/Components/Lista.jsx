@@ -6,7 +6,7 @@ import { FaRegEdit, FaRegTrashAlt } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import constants from "../constants/constants";
 
-const Lista = ({lista, type}) => {
+const Lista = ({lista, type, creator}) => {
     const navigate = useNavigate()
 
     return (
@@ -20,7 +20,7 @@ const Lista = ({lista, type}) => {
             </div>
             <div className="lista">
                 {lista.map((item, index) => (
-                    <div className="lista-item" key={index}>
+                    <div className="lista-item" key={index} onClick={() => { if(type === "cursos") navigate(constants.root + type + "Menu")}}>
                         <p className="lista-text">
                             {item.name}
                         </p>
@@ -28,11 +28,11 @@ const Lista = ({lista, type}) => {
                             <Button 
                               className="edit" 
                               size="lg"
-                              onClick={() => navigate(constants.root + "OrganizacionModificar/" + type + "/" + index)}  
+                              onClick={() => navigate(constants.root + creator + "Modificar/" + type + "/" + index)}  
                             >
                                 <FaRegEdit />
                             </Button>
-                            <Button className="trash" size="lg">
+                            <Button className="trash" size="lg" >
                                 <FaRegTrashAlt />
                             </Button>
                         </div>
@@ -42,7 +42,7 @@ const Lista = ({lista, type}) => {
             <div 
               className="create-button" 
               onClick={
-                () => navigate(constants.root + "OrganizacionCrear/" + type)}>
+                () => navigate(constants.root + creator + "Crear/" + type)}>
                 <FaCirclePlus/>
             </div>
     </>

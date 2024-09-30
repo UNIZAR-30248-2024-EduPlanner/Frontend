@@ -9,7 +9,7 @@ import FlechaVolver from "../../Components/FlechaVolver";
 
 const OrganizacionModificar = () => {
     const { type } = useParams()
-    const typeSingular = type == "profesores" ? "profesor" : type.split(0, type.length - 1)
+    const typeSingular = type == "profesores" ? "profesor" : type.slice(0, -1)
     const { id } = useParams()
 
     const [isVisible, setIsVisible] = useState(false);

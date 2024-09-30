@@ -9,6 +9,7 @@ import FlechaVolver from "../../Components/FlechaVolver";
 
 const OrganizacionCrear = () => {
     const {type} = useParams()
+    const typeSingular = type == "profesores" ? "profesor" : type.slice(0, -1)
   
     const [isVisible, setIsVisible] = useState(false);
     const toggleVisibility = () => setIsVisible(!isVisible);
@@ -20,7 +21,7 @@ const OrganizacionCrear = () => {
             <h1 className="org-crear-tit"> Crear {type} </h1>
             <div className="org-crear-container">
                 <div className="org-crear-uno">
-                    <h2 className="org-crear-tit"> Crea un {type.slice(0,type.length-1)} </h2>
+                    <h2 className="org-crear-tit"> Crea un {typeSingular} </h2>
                     <div className="uno space-y-20">
                         <Input
                           size="lg" 
@@ -29,7 +30,7 @@ const OrganizacionCrear = () => {
                           color="primary"
                           variant="bordered"
                           label="Nombre" 
-                          placeholder={"Introduzca el nombre del " + type.slice(0,type.length-1)}
+                          placeholder={"Introduzca el nombre del " + typeSingular}
                           className="max-w-xs"
                         />
                         <Input 

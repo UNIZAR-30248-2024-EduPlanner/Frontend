@@ -2,16 +2,20 @@ import { useParams } from "react-router-dom"
 import {Input} from "@nextui-org/input";
 import {Button} from "@nextui-org/react";
 import "../../css/Curso/CursoCrear.css"
+import SubidaFichero from "../../Components/SubidaFichero";
+import FlechaVolver from "../../Components/FlechaVolver";
 
 const CursoCrear = () => {
-    const {id} = useParams()
+    const {type} = useParams()
+    const typeSingular = type.slice(0, -1)
 
     return (
         <>
-            <h1 className="cur-crear-tit"> Crear Asignatura</h1>
+            <FlechaVolver/>
+            <h1 className="cur-crear-tit"> Crear {type} </h1>
             <div className="cur-crear-container">
                 <div className="cur-crear-uno">
-                    <h2 className="cur-crear-tit"> Crea una asignatura</h2>
+                    <h2 className="cur-crear-tit"> Datos de {typeSingular}</h2>
                     <div className="uno space-y-20">
                         <Input
                           size="lg" 
@@ -39,7 +43,8 @@ const CursoCrear = () => {
                     </div>
                 </div>
                 <div className="fich">
-                    <h2 className="cur-crear-tit"> Sube un fichero de asignaturas </h2>
+                    <h2 className="cur-crear-tit"> Sube un fichero de {type} </h2>
+                    <SubidaFichero type={type}/>
                 </div>
             </div>
         </>
