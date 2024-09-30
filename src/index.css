@@ -6,6 +6,7 @@
   --color-background: white;
   --color-primary: #4051B5;
   --color-second: #FF6148;
+  --color-gray: rgb(140, 140, 140);
 
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
 }
@@ -14,7 +15,7 @@ body, html {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  height: fit-content;
+  height: fit-content;  
   width: 100%;
   background-color: var(--color-background); /* Elige el color que desees */
   font-family: 'Macondo', system-ui; /* Opcional, para asegurar la consistencia tipográfica */

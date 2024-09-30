@@ -47,13 +47,13 @@ const OrganizacionMenu = () => {
                   variant="underlined" 
                   defaultSelectedKey="cursos">  
                     <Tab className="text-center text-xl" key="alumnos" title="Alumnos">
-                        <Lista lista={alumnos} nombre={"alumnos"} url={"OrganizacionCrear"}/>
+                        <Lista lista={alumnos} type={"alumnos"}/>
                     </Tab>
                     <Tab className="text-center text-xl" key="cursos" title="Cursos">
-                        <Lista lista={cursos} nombre={"cursos"} url={"OrganizacionCrear"}/>
+                        <Lista lista={cursos} type={"cursos"}/>
                     </Tab>
                     <Tab className="text-center text-xl" key="profesores" title="Profesores">
-                        <Lista lista={profesores} nombre={"profesores"} url={"OrganizacionCrear"}/>
+                        <Lista lista={profesores} type={"profesores"}/>
                     </Tab>
                 </Tabs>
               </div>

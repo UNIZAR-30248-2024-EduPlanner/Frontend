@@ -56,16 +56,21 @@
 
 .lista-iconos {
     display: flex;
-    justify-content: space-between;
+    /* justify-content: space-between; */
     width: fit-content;
     font-size: 1.75rem;
-    margin-right: 1vw;
+    /* margin-right: 1vw; */
 
     .trash {
+        font-size: 1.75rem;
         color: var(--color-second);
+        background-color: transparent;
+    }
+
+    .edit {
+        font-size: 1.75rem;
+        color: white;
+        background-color: transparent;
     }
 }
 
-.edit {
-    margin-right: 1vw;
-}

@@ -1,11 +1,12 @@
 import "../css/Components/Lista.css"
 import {Input} from "@nextui-org/react";
+import {Button} from "@nextui-org/react";
 import { FaMagnifyingGlass, FaCirclePlus } from "react-icons/fa6";
 import { FaRegEdit, FaRegTrashAlt } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import constants from "../constants/constants";
 
-const Lista = ({lista, nombre, url}) => {
+const Lista = ({lista, type}) => {
     const navigate = useNavigate()
 
     return (
@@ -13,7 +14,7 @@ const Lista = ({lista, nombre, url}) => {
             <div className="busqueda">
                 <Input
                   size="lg"
-                  placeholder={"Búsqueda de " + nombre}
+                  placeholder={"Búsqueda de " + type}
                   startContent={<FaMagnifyingGlass />}
                 />
             </div>
@@ -24,12 +25,16 @@ const Lista = ({lista, nombre, url}) => {
                             {item.name}
                         </p>
                         <div className="lista-iconos">
-                            <div className="edit">
+                            <Button 
+                              className="edit" 
+                              size="lg"
+                              onClick={() => navigate(constants.root + "OrganizacionModificar/" + type + "/" + index)}  
+                            >
                                 <FaRegEdit />
-                            </div>
-                            <div className="trash">
+                            </Button>
+                            <Button className="trash" size="lg">
                                 <FaRegTrashAlt />
-                            </div>
+                            </Button>
                         </div>
                     </div>
                 ))}
@@ -37,7 +42,7 @@ const Lista = ({lista, nombre, url}) => {
             <div 
               className="create-button" 
               onClick={
-                () => navigate(constants.root + url + "/" + nombre + "/1")}>
+                () => navigate(constants.root + "OrganizacionCrear/" + type)}>
                 <FaCirclePlus/>
             </div>
     </>

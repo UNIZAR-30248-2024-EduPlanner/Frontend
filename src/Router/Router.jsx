@@ -5,6 +5,7 @@ import OrganizacionMenu from "../Pages/Organizacion/OrganizacionMenu"
 import CursoMenu from "../Pages/Curso/CursoMenu"
 import CursoCrear from "../Pages/Curso/CursoCrear"
 import OrganizacionCrear from "../Pages/Organizacion/OrganizacionCrear"
+import OrganizacionModificar from "../Pages/Organizacion/OrganizacionModificar"
 
 const RouterComponent = () => {
     return (
@@ -14,7 +15,8 @@ const RouterComponent = () => {
                 <Route path={constants.root + "OrganizacionMenu"} element={<OrganizacionMenu/>}/>
                 <Route path={constants.root + "CursoMenu"} element={<CursoMenu/>}/>
                 <Route path={constants.root + "CursoCrear/asignatura/:id"} element={<CursoCrear/>}/>
-                <Route path={constants.root + "OrganizacionCrear/:type/:id"} element={<OrganizacionCrear/>}/>
+                <Route path={constants.root + "OrganizacionCrear/:type"} element={<OrganizacionCrear/>}/>
+                <Route path={constants.root + "OrganizacionModificar/:type/:id"} element={<OrganizacionModificar/>}/>
             </Routes>
         </BrowserRouter>
     )
