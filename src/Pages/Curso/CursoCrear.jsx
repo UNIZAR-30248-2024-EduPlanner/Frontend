@@ -15,7 +15,7 @@ const CursoCrear = () => {
             <h1 className="cur-crear-tit"> Crear {type} </h1>
             <div className="cur-crear-container">
                 <div className="cur-crear-uno">
-                    <h2 className="cur-crear-tit"> Datos de {typeSingular}</h2>
+                    <h2 className="cur-crear-tit"> Crea una {typeSingular}</h2>
                     <div className="uno space-y-20">
                         <Input
                           size="lg" 

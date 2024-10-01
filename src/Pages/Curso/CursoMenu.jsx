@@ -21,12 +21,12 @@ const CursoMenu = () => {
         <div>
             <FlechaVolver/>
             <h1 className="cur-menu-tit"> Bienvenido, {nombre}</h1>
-            <div class="cur-container">
+            <div className="cur-container">
                 <Tabs 
                  color="primary"
                  variant="underlined">
                     <Tab className="text-center text-xl" key="asignaturas" title="Asignaturas">
-                        <Lista lista={asignaturas} type={"asignaturas"} creator={"cursos"}></Lista>
+                        <Lista lista={asignaturas} type={"asignaturas"} creator={"Curso"}></Lista>
                     </Tab>
                 </Tabs>
                 
