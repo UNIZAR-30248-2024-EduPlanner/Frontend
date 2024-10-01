@@ -1,0 +1,23 @@
+.cur-crear-tit {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    margin-top: 5vh;
+}
+
+.cur-crear-container {
+    display: flex;
+    justify-content: space-around;
+}
+
+.cur-crear-uno {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.uno {
+}
