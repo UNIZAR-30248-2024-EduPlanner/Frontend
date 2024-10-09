@@ -10,10 +10,20 @@ import { supabase } from './supabaseClient'; // Asegúrate de tener el cliente S
  */
 export const register = async (name, nip, password) => {
     const { data, error } = await supabase
-        .from('Users')
+        .from('users')
         .insert([{ name, nip, pass: password, role: 'organization' }]);
-    return { data, error };
+
+    // Verificar si hubo un error en la inserción
+    if (error) {
+        console.error('Error al registrar usuario:', error); // Imprimir el error para depuración
+        return { data: null, error: { message: error.message || 'Error desconocido', code: error.code || 'sin código' } };
+    }
+
+
+    return { data, error: null }; // Retornar la data si todo salió bien
 };
+
+
 
 /**
  * Inicia sesión como organización
@@ -23,7 +33,7 @@ export const register = async (name, nip, password) => {
  */
 export const login = async (nip, password) => {
     const { data, error } = await supabase
-        .from('Users')
+        .from('users')
         .select('*')
         .eq('nip', nip)
         .eq('pass', password)
@@ -38,7 +48,7 @@ export const login = async (nip, password) => {
  */
 export const getAllCourses = async (organizationId) => {
     const { data, error } = await supabase
-        .from('Courses')
+        .from('courses')
         .select('*')
         .eq('organization_id', organizationId);
     return { data, error };
@@ -53,7 +63,7 @@ export const getAllCourses = async (organizationId) => {
  */
 export const createCourse = async (courseName, organizationId, courseUserId) => {
     const { data, error } = await supabase
-        .from('Courses')
+        .from('courses')
         .insert([{ course_name: courseName, organization_id: organizationId, course_user_id: courseUserId }]);
     return { data, error };
 };
@@ -65,7 +75,7 @@ export const createCourse = async (courseName, organizationId, courseUserId) => 
  */
 export const eliminateCourse = async (courseId) => {
     const { data, error } = await supabase
-        .from('Courses')
+        .from('courses')
         .delete()
         .eq('id', courseId);
     return { data, error };
@@ -79,7 +89,7 @@ export const eliminateCourse = async (courseId) => {
  */
 export const editCourse = async (courseId, updates) => {
     const { data, error } = await supabase
-        .from('Courses')
+        .from('courses')
         .update(updates)
         .eq('id', courseId);
     return { data, error };
@@ -93,7 +103,7 @@ export const editCourse = async (courseId, updates) => {
 export const getAllStudents = async (organizationId) => {
     // Paso 1: Obtener todos los cursos de la organización
     const { data: courses, error: courseError } = await supabase
-        .from('Courses')
+        .from('courses')
         .select('id')
         .eq('organization_id', organizationId);
 
@@ -104,7 +114,7 @@ export const getAllStudents = async (organizationId) => {
     // Paso 2: Obtener todos los subject_ids de los cursos
     const courseIds = courses.map(course => course.id);
     const { data: subjects, error: subjectError } = await supabase
-        .from('Subjects')
+        .from('subjects')
         .select('id')
         .in('course_id', courseIds);
 
@@ -115,7 +125,7 @@ export const getAllStudents = async (organizationId) => {
     // Paso 3: Obtener todos los student_ids de las asignaturas
     const subjectIds = subjects.map(subject => subject.id);
     const { data: enrollments, error: enrollmentError } = await supabase
-        .from('Enrollments')
+        .from('enrollments')
         .select('student_id')
         .in('subject_id', subjectIds);
 
@@ -126,7 +136,7 @@ export const getAllStudents = async (organizationId) => {
     // Paso 4: Obtener la información de los estudiantes
     const studentIds = enrollments.map(enrollment => enrollment.student_id);
     const { data: students, error: studentError } = await supabase
-        .from('Users')
+        .from('users')
         .select('*')
         .in('id', studentIds);
 
@@ -143,8 +153,8 @@ export const getAllStudents = async (organizationId) => {
  */
 export const createStudent = async (name, nip, password) => {
     const { data, error } = await supabase
-        .from('Users')
-        .insert([{ name, nip, pass: password, role: 'student'}]);
+        .from('users')
+        .insert([{ name, nip, pass: password, role: 'student' }]);
     return { data, error };
 };
 
@@ -155,7 +165,7 @@ export const createStudent = async (name, nip, password) => {
  */
 export const eliminateStudent = async (studentId) => {
     const { data, error } = await supabase
-        .from('Users')
+        .from('Uuers')
         .delete()
         .eq('id', studentId);
     return { data, error };
@@ -169,7 +179,7 @@ export const eliminateStudent = async (studentId) => {
  */
 export const editStudent = async (studentId, updates) => {
     const { data, error } = await supabase
-        .from('Users')
+        .from('users')
         .update(updates)
         .eq('id', studentId);
     return { data, error };
@@ -183,7 +193,7 @@ export const editStudent = async (studentId, updates) => {
 export const getAllTeachers = async (organizationId) => {
     // Paso 1: Obtener todos los cursos de la organización
     const { data: courses, error: courseError } = await supabase
-        .from('Courses')
+        .from('courses')
         .select('id')
         .eq('organization_id', organizationId);
 
@@ -194,7 +204,7 @@ export const getAllTeachers = async (organizationId) => {
     // Paso 2: Obtener todos los subject_ids de los cursos
     const courseIds = courses.map(course => course.id);
     const { data: subjects, error: subjectError } = await supabase
-        .from('Subjects')
+        .from('subjects')
         .select('id')
         .in('course_id', courseIds);
 
@@ -205,7 +215,7 @@ export const getAllTeachers = async (organizationId) => {
     // Paso 3: Obtener todos los teacher_ids de las asignaturas
     const subjectIds = subjects.map(subject => subject.id);
     const { data: teachings, error: teachingError } = await supabase
-        .from('Teachings')
+        .from('teachings')
         .select('teacher_id')
         .in('subject_id', subjectIds);
 
@@ -216,7 +226,7 @@ export const getAllTeachers = async (organizationId) => {
     // Paso 4: Obtener la información de los profesores
     const teacherIds = teachings.map(teaching => teaching.teacher_id);
     const { data: teachers, error: teacherError } = await supabase
-        .from('Users')
+        .from('users')
         .select('*')
         .in('id', teacherIds);
 
@@ -230,10 +240,10 @@ export const getAllTeachers = async (organizationId) => {
  * @param {string} password - Contraseña del profesor
  * @returns {Promise<{ data: any, error: any }>}
  */
-export const createTeacher = async (name, nip, password, ) => {
+export const createTeacher = async (name, nip, password,) => {
     const { data, error } = await supabase
-        .from('Users')
-        .insert([{ name, nip, pass: password, role: 'teacher'}]);
+        .from('users')
+        .insert([{ name, nip, pass: password, role: 'teacher' }]);
     return { data, error };
 };
 
@@ -244,7 +254,7 @@ export const createTeacher = async (name, nip, password, ) => {
  */
 export const eliminateTeacher = async (teacherId) => {
     const { data, error } = await supabase
-        .from('Users')
+        .from('users')
         .delete()
         .eq('id', teacherId);
     return { data, error };
@@ -258,7 +268,7 @@ export const eliminateTeacher = async (teacherId) => {
  */
 export const editTeacher = async (teacherId, updates) => {
     const { data, error } = await supabase
-        .from('Users')
+        .from('users')
         .update(updates)
         .eq('id', teacherId);
     return { data, error };
