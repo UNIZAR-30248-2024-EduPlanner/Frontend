@@ -3,8 +3,11 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 // Verificamos que las variables de entorno estén definidas
-const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
-const supabaseKey = process.env.REACT_APP_SUPABASE_ANON_KEY;
+const supabaseUrl = import.meta.env.VITE_REACT_APP_SUPABASE_URL;
+const supabaseKey = import.meta.env.VITE_REACT_APP_SUPABASE_ANON_KEY;
+
+console.log("URL", supabaseUrl);
+console.log("KEY", supabaseKey);
 
 export const supabase = createClient(supabaseUrl, supabaseKey);
 

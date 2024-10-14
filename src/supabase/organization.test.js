@@ -1,13 +1,12 @@
 // src/supabase/testOrganization.js
 import * as f from './organization';
-
+import { describe, it, beforeAll, expect } from 'vitest'; // Importar de vitest
 
 describe('Funciones de Organización', () => {
-    let organizationId;
     const testOrganization = {
-        name: 'Organización de Prueba',
-        nip: 4000,
-        password: 'testpassword123'
+        name: 'EINA',
+        nip: 4878,
+        password: '123456'
     };
 
     beforeAll(async () => {
@@ -20,33 +19,30 @@ describe('Funciones de Organización', () => {
         }
 
         console.log(data);
-
     });
 
-    test('Iniciar sesión como organización', async () => {
+    it('Iniciar sesión como organización', async () => {
         const { data, error } = await f.login(testOrganization.nip, testOrganization.password);
         expect(error).toBeNull();
         expect(data).toHaveProperty('id');
     });
+
+    /*
+    it('Obtener todos los cursos de la organización', async () => {
+        const { data, error } = await f.getAllCourses(organizationId);
+        expect(error).toBeNull();
+        expect(Array.isArray(data)).toBe(true);
+    });
+
+    it('Crear un nuevo curso', async () => {
+        const courseName = 'Curso de Prueba';
+        const courseUserId = 1;
+
+        const { data, error } = await f.createCourse(courseName, organizationId, courseUserId);
+        expect(error).toBeNull();
+        expect(data).toHaveProperty('id');
+    });
+    */
+
+    // Más pruebas aquí...
 });
-
-
-/*
-test('Obtener todos los cursos de la organización', async () => {
-    const { data, error } = await f.getAllCourses(organizationId);
-    expect(error).toBeNull();
-    expect(Array.isArray(data)).toBe(true);
-});
-
-test('Crear un nuevo curso', async () => {
-    const courseName = 'Curso de Prueba';
-    const courseUserId = 1;
-
-    const { data, error } = await f.createCourse(courseName, organizationId, courseUserId);
-    expect(error).toBeNull();
-    expect(data).toHaveProperty('id');
-});
-*/
-
-// Más pruebas aquí...
-
