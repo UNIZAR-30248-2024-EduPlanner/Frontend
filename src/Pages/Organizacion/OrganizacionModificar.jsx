@@ -15,6 +15,11 @@ const OrganizacionModificar = () => {
     const [isVisible, setIsVisible] = useState(false);
     const toggleVisibility = () => setIsVisible(!isVisible);
 
+    // Variables que contienen el contenido de los input
+    const [nombre, setNombre] = useState("")
+    const [nip, setNip] = useState("")
+    const [password, setPassword] = useState("")
+    
     return (
         <>
             <FlechaVolver/>
@@ -28,6 +33,8 @@ const OrganizacionModificar = () => {
                     variant="bordered"
                     label="Nombre"
                     className="max-w-xs"
+                    value={nombre}
+                    onChange={(e) => setNombre(e.target.value)}
                 />
                 <Input
                     size="lg"
@@ -37,6 +44,8 @@ const OrganizacionModificar = () => {
                     variant="bordered"
                     label="NIP / NIA"
                     className="max-w-xs"
+                    value={nip}
+                    onChange={(e) => setNip(e.target.value)}
                 />
                 <Input
                     label="Contraseña"
@@ -55,6 +64,8 @@ const OrganizacionModificar = () => {
                     }
                     type={isVisible ? "text" : "password"}
                     className="max-w-xs"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
                 />
                 <Button size="lg" color="primary">
                     Modificar
