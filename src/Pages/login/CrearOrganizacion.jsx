@@ -41,7 +41,7 @@ const CrearOrganizacion = () => {
         <>
             <FlechaVolver />
             <h1 className="org-mod-tit">Crear Organización</h1>
-            <div className="mod-org-form space-y-20">
+            <div className="mod-org-form space-y-12">
                 <Input
                     size="lg"
                     type="text"

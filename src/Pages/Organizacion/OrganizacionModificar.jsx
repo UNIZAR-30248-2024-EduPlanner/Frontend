@@ -21,32 +21,29 @@ const OrganizacionModificar = () => {
             <h1 className="org-mod-tit"> Modificar {typeSingular} </h1>
             <div className="mod-org-form space-y-20">
                 <Input
-                    size="lg" 
+                    size="lg"
                     type="name"
                     labelPlacement="outside"
                     color="primary"
                     variant="bordered"
-                    label="Nombre" 
-                    placeholder={"Introduzca el nombre del " + typeSingular}
-                    className="max-w-xs"
-                />
-                <Input 
-                    size="lg" 
-                    type="name"
-                    color="primary"
-                    labelPlacement="outside"
-                    variant="bordered"
-                    label="NIP / NIA" 
-                    placeholder="Introduzca su número identificativo"
+                    label="Nombre"
                     className="max-w-xs"
                 />
                 <Input
-                    label="Password"
+                    size="lg"
+                    type="name"
+                    color="primary"
+                    labelPlacement="outside"
+                    variant="bordered"
+                    label="NIP / NIA"
+                    className="max-w-xs"
+                />
+                <Input
+                    label="Contraseña"
                     size="lg"
                     labelPlacement="outside"
                     color="primary"
                     variant="bordered"
-                    placeholder="Introduzca su contraseña"
                     endContent={
                     <button className="focus:outline-none" type="button" onClick={toggleVisibility} aria-label="toggle password visibility">
                         {isVisible ? (

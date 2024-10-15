@@ -5,8 +5,7 @@ import "../css/Components/SubidaFichero.css"
 
 // Referencia: https://github.com/NelsonCode/drag-and-drop-files-react/blob/master/src/components/DragArea/index.js
 
-const SubidaFichero = ({ type }) => {
-    const [lista, setLista] = useState([])
+const SubidaFichero = ({ type, lista, setLista }) => {
     const [errores, setErrores] = useState([]);
 
     const readFile = ( e ) => {

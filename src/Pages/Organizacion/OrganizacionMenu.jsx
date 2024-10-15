@@ -10,32 +10,32 @@ const OrganizacionMenu = () => {
     // const [profesores, setProfesores] = useState([])
     
     const alumnos = [
-        { name: "José Miguel" },
-        { name: "José Miguel" },
-        { name: "José Miguel" },
-        { name: "José Miguel" },
+        { name: "José Miguel", nip: "839899" },
+        { name: "Leyre", nip: "839995" },
+        { name: "Gonzalo", nip: "839900" },
+        { name: "Flavio", nip: "839898" },
+        { name: "Nacho", nip: "839897" },
+        { name: "Pablo", nip: "840020" },
     ]
 
     const cursos = [
-        { name: "Grado en Ingeniería Informática" },
-        { name: "Grado en Ingeniería Informática" },
-        { name: "Grado en Ingeniería Informática" },
-        { name: "Grado en Ingeniería Informática" },
-        { name: "Grado en Ingeniería Informática" },
-        { name: "Grado en Ingeniería Informática" },
-        { name: "Grado en Ingeniería Informática" },
-        { name: "Grado en Ingeniería Informática" },
+        { name: "Grado en Ingeniería Informática", nip: "1" },
+        { name: "Grado en Ingeniería Electrónica y Automaticci", nip: "2" },
+        { name: "Grado en Ingeniería Eléctrica", nip: "3" },
+        { name: "Grado en Ingeniería Industrial", nip: "4" },
+        { name: "Grado en Ingeniería Mecánica", nip: "5" },
+        { name: "Grado en Ingeniería de Telecomunicaciones", nip: "6" },
     ]
 
     const profesores = [
-        { name: "Rubén Béjar" },
-        { name: "Rubén Béjar" },
-        { name: "Rubén Béjar" },
-        { name: "Rubén Béjar" },
-        { name: "Rubén Béjar" },
-        { name: "Rubén Béjar" },
-        { name: "Rubén Béjar" },
-        { name: "Rubén Béjar" },
+        { name: "Rubén Béjar", nip: "10" },
+        { name: "Rubén Béjar", nip: "11" },
+        { name: "Rubén Béjar", nip: "12" },
+        { name: "Rubén Béjar", nip: "13" },
+        { name: "Rubén Béjar", nip: "14" },
+        { name: "Rubén Béjar", nip: "15" },
+        { name: "Rubén Béjar", nip: "16" },
+        { name: "Rubén Béjar", nip: "17" },
     ]
 
     return (

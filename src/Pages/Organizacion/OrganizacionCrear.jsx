@@ -14,7 +14,18 @@ const OrganizacionCrear = () => {
     const [isVisible, setIsVisible] = useState(false);
     const toggleVisibility = () => setIsVisible(!isVisible);
   
-  
+    // Variables que contienen el contenido de los input
+    const [nombre, setNombre] = useState("")
+    const [nip, setNip] = useState("")
+    const [password, setPassword] = useState("")
+    const [lista, setLista] = useState([])
+
+    // Funciones para crear el item
+    const create = () => {
+      // TODO: dependiendo el tipo a crear, crear uno u otro
+      // llamada a funcion crear
+    }
+
     return (
         <>
             <FlechaVolver/>
@@ -30,8 +41,9 @@ const OrganizacionCrear = () => {
                           color="primary"
                           variant="bordered"
                           label="Nombre" 
-                          placeholder={"Introduzca el nombre del " + typeSingular}
                           className="max-w-xs"
+                          value={nombre}
+                          onChange={(e) => setNombre(e.target.value)}
                         />
                         <Input 
                           size="lg" 
@@ -40,16 +52,16 @@ const OrganizacionCrear = () => {
                           labelPlacement="outside"
                           variant="bordered"
                           label="NIP / NIA" 
-                          placeholder="Introduzca su número identificativo"
                           className="max-w-xs"
+                          value={nip}
+                          onChange={(e) => setNip(e.target.value)}
                         />
                         <Input
-                          label="Password"
+                          label="Contraseña"
                           size="lg"
                           labelPlacement="outside"
                           color="primary"
                           variant="bordered"
-                          placeholder="Introduzca su contraseña"
                           endContent={
                             <button className="focus:outline-none" type="button" onClick={toggleVisibility} aria-label="toggle password visibility">
                               {isVisible ? (
@@ -61,32 +73,23 @@ const OrganizacionCrear = () => {
                           }
                           type={isVisible ? "text" : "password"}
                           className="max-w-xs"
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
                         />
-                        <Button size="lg" color="primary">
+                        <Button size="lg" color="primary" onClick={create}>
                             Crear
                         </Button>
                     </div>
                 </div>
                 <div className="fich">
                     <h2 className="org-crear-tit"> Sube un fichero de {type} </h2>
-                    {type === "alumnos" ? (
-                      <p className="formato">
-                        El formato del fichero por línea será el siguiente: <br/>
-                        <span>
-                          Nombre Apellidos;NIP;Contraseña;  <br/>
-                          
-                        </span>
-                      </p>
-                    ) : type === "cursos" ? (
-                      <></>
-                    ) : type === "profesores" ? (
-                      <></>
-
-                    ) : (
-                      <></>
-
-                    )}
-                    <SubidaFichero type={type}/>
+                    <p className="formato">
+                      El formato del fichero por línea será el siguiente: <br/>
+                      <span>
+                        Nombre Apellidos;NIP;Contraseña; <br/>
+                      </span>
+                    </p>
+                    <SubidaFichero type={type} lista={lista} setLista={setLista}/>
                 </div>
             </div>
         </>
