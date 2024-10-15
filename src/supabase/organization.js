@@ -23,6 +23,8 @@ export const register = async (name, nip, password) => {
     return { data, error: null }; // Retornar la data si todo salió bien
 };
 
+//
+
 
 
 /**
