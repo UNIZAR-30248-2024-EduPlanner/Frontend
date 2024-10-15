@@ -1,6 +1,7 @@
 // src/api/organization.test.js
 import * as f from './organization';
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
+import { supabase } from './supabaseClient';
 
 // Datos de prueba
 const testOrganization = {
@@ -35,6 +36,12 @@ let teacherId;
 describe('Organization API Tests', () => {
     // Configuración inicial
     beforeAll(async () => {
+
+        await supabase
+            .from('organization')
+            .delete()
+            .eq('nip', testOrganization.nip);
+
         const result = await f.registerOrganization(testOrganization.name, testOrganization.nip, testOrganization.pass);
         expect(result.error).toBeNull(); // Asegúrate de que no haya errores al registrar la organización
 
@@ -44,6 +51,10 @@ describe('Organization API Tests', () => {
 
     // Prueba para registrar una organización
     it('should register a new organization', async () => {
+        await supabase
+            .from('organization')
+            .delete()
+            .eq('nip', 987654321);
         const result = await f.registerOrganization('Org2', 987654321, 'password2');
         expect(result.error).toBeNull();
     });
@@ -70,7 +81,7 @@ describe('Organization API Tests', () => {
     it('should create a new student', async () => {
         const result = await f.createStudent(testStudent.name, testStudent.nip, testStudent.pass, organizationId);
         expect(result.error).toBeNull();
-        
+
         const students = await f.getAllStudents(organizationId);
         expect(students.error).toBeNull();
         expect(students.data).toHaveLength(1); // Debe haber un estudiante
