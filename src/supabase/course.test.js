@@ -5,7 +5,7 @@ import { supabase } from './supabaseClient.js';
 
 const testCourse = {
   name: 'Curso Test',
-  nip: Math.floor(Math.random() * 1000000000), // Genera un NIP único
+  nip: 888888,
   pass: 'coursepass'
 };
 
@@ -43,7 +43,7 @@ describe('Course API Tests', () => {
 
 
   it('should register a new course', async () => {
-    const result = await f.registerCourse('Curso Test 2', 111111111, 'password2');
+    const result = await f.registerCourse('Curso Test 2', 111111111, 'password2', organization_id);
     expect(result.error).toBeNull();
   });
 
@@ -64,6 +64,7 @@ describe('Course API Tests', () => {
   });
 
   it('should edit a subject', async () => {
+    console.log('subjectId', subjectId);
     const result = await f.editSubject(subjectId, { subject_name: 'Subject Test 2' });
     expect(result.error).toBeNull();
   });
@@ -74,6 +75,9 @@ describe('Course API Tests', () => {
   });
 
   afterAll(async () => {
+    if (course_id) {
+      await f.eliminateCourse(course_id);
+    }
     if (subjectId) {
       await f.eliminateSubject(subjectId);
     }
