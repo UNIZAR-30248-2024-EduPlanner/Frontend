@@ -1,94 +1,81 @@
 // src/api/course.js
-import { supabase } from './supabaseClient'; // Asegúrate de tener el cliente Supabase configurado
+import { supabase } from './supabaseClient';
 
-/**
- * Registra una nuevo curso
- * @param {string} name - Nombre de la curso
- * @param {number} nip - Código único de la curso
- * @param {string} password - Contraseña de la curso
- * @returns {Promise<{ data: any, error: any }>}
- */
-export const register = async (name, nip, password) => {
-    const { data, error } = await supabase
-        .from('Users')
-        .insert([{ name, nip, pass: password, role: 'course' }]);
-    return { data, error };
-};
-
-/**
- * Inicia sesión como curso
- * @param {number} nip - Código único de la curso
- * @param {string} password - Contraseña de la curso
- * @returns {Promise<{ data: any, error: any }>}
- */
-export const login = async (nip, password) => {
+// Función para iniciar sesión (login) de un curso
+export const loginCourse = async (nip, pass) => {
     const { data, error } = await supabase
         .from('Users')
         .select('*')
         .eq('nip', nip)
-        .eq('pass', password)
+        .eq('pass', pass) // Considera que almacenar contraseñas en texto plano no es seguro
+        .eq('role', 'course') // Asegúrate de que sea un curso
         .single();
-    return { data, error };
+
+    if (error) {
+        console.error("Error al iniciar sesión en el curso:", error);
+        return false; // Error en la consulta
+    }
+
+    return !!data; // Devuelve true si hay datos (curso encontrado), false de lo contrario
 };
 
-/**
- * Obtiene todas las asignaturas de un curso
- * @param {number} courseId - ID del curso
- * @returns {Promise<{ data: any, error: any }>}
- */
+// Función para registrar un nuevo curso
+export const registerCourse = async (name, nip, pass, organization_id) => {
+    const { data, error } = await supabase
+        .from('Users')
+        .insert([
+            {
+                name,
+                nip,
+                pass, // Almacena la contraseña de forma segura en producción
+                role: 'course',
+                organization_id, // Relación con la organización a la que pertenece
+            },
+        ]);
+
+    if (error) {
+        console.error("Error al registrar el curso:", error);
+        return false; // Error en la inserción
+    }
+
+    return !!data; // Devuelve true si se registró con éxito, false en caso contrario
+};
+
+// Función para obtener todas las asignaturas que posee un curso
 export const getAllSubjects = async (courseId) => {
     const { data, error } = await supabase
         .from('Subjects')
         .select('*')
         .eq('course_id', courseId);
-    return { data, error };
-};
-
-/**
- * Crea una nueva asignatura
- * @param {string} subject_name - Nombre de la asignatura
- * @param {number} subject_code - Código de la asignatura
- * @param {number} course_id - ID del curso al que pertenece
- * @returns {Promise<{ data: any, error: any }>}
- */
-export const createSubject = async (subject_name, subject_code, course_id) => {
-    const { data, error } = await supabase
-        .from('Subjects')
-        .insert([{
-            subject_name: subject_name,
-            subject_code: subject_code,
-            course_id: course_id
-        }]);
     
     return { data, error };
 };
 
-/**
- * Elimina una asignatura de la base de datos
- * @param {number} subjectId - ID de la asignatura a eliminar
- * @returns {Promise<{ data: any, error: any }>}
- */
+// Función para crear una asignatura
+export const createSubject = async (subjectName, subjectCode, courseId) => {
+    const { data, error } = await supabase
+        .from('Subjects')
+        .insert([{ subject_name: subjectName, subject_code: subjectCode, course_id: courseId }]);
+    
+    return { data, error };
+};
+
+// Función para eliminar una asignatura
 export const eliminateSubject = async (subjectId) => {
     const { data, error } = await supabase
         .from('Subjects')
         .delete()
         .eq('id', subjectId);
+    
     return { data, error };
 };
 
-/**
- * Edita la información de una asignatura
- * @param {number} subjectId - ID de la asignatura a editar
- * @param {Object} subject - Nuevos datos de la asignatura
- * @param {string} subject.subject_name - Nuevo nombre de la asignatura
- * @param {number} subject.subject_code - Nuevo código de la asignatura
- * @returns {Promise<{ data: any, error: any }>}
- */
-export const editSubject = async (subjectId, subject) => {
+// Función para editar una asignatura
+export const editSubject = async (subjectId, updates) => {
     const { data, error } = await supabase
         .from('Subjects')
-        .update(subject)
+        .update(updates)
         .eq('id', subjectId);
+    
     return { data, error };
 };
-
