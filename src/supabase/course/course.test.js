@@ -13,7 +13,7 @@ const testCourse = {
 const testArrayCourses = [
   {
     name: 'Curso Test 3',
-    nip: 30333333,
+    nip: 3033333,
     pass: 'coursepass1'
   },
   {

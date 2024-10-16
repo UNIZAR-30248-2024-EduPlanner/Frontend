@@ -140,7 +140,7 @@ describe('Organization API Tests', () => {
     it('should get all organizations', async () => {
         const result = await f.getAllOrganizations();
         expect(result.error).toBeNull();
-        expect(result.data).toHaveLength(4); // Debe haber dos organizaciones
+        expect(result.data).toHaveLength(4); // Debe haber cuatro organizaciones
     });
 
     it('should gett organization by NIP', async () => {
@@ -165,6 +165,16 @@ describe('Organization API Tests', () => {
         if (teacherId) {
             await f.eliminateTeacher(teacherId);
         }
+
+        await supabase
+            .from('organization')
+            .delete()
+            .eq('nip', testOrganization.nip);
+
+        await supabase
+            .from('organization')
+            .delete()
+            .eq('nip', 987654321);
 
         // Eliminar organización
         /*
