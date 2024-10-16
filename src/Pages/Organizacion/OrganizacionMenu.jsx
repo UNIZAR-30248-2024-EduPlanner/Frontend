@@ -3,14 +3,14 @@ import { useEffect, useState } from "react";
 import Lista from "../../Components/Lista";
 import "../../css/Organizacion/OrganizacionMenu.css"
 
-import {Tabs, Tab} from "@nextui-org/react";
-import { getAllCourses, getAllStudents, getAllTeachers } from "../../supabase/organization";
+import { Tabs, Tab } from "@nextui-org/react";
+import { getAllCourses, getAllStudents, getAllTeachers } from "../../supabase/organization/organization";
 
 const OrganizacionMenu = () => {
     const [alumnos, setAlumnos] = useState([])
     const [cursos, setCursos] = useState([])
     const [profesores, setProfesores] = useState([])
-    
+
     // const alumnos = [
     //     { name: "José Miguel", nip: "839899" },
     //     { name: "Leyre", nip: "839995" },
@@ -44,11 +44,11 @@ const OrganizacionMenu = () => {
         const courses = await getAllCourses(1)
         if (courses.error) setCursos([])
         else setCursos(courses.data)
-        
+
         const students = await getAllStudents(1)
         if (students.error) setAlumnos(students.data)
         else setAlumnos(students.data)
-        
+
         const teachers = await getAllTeachers(1)
         if (teachers.error) setProfesores(teachers.data)
         else setProfesores(teachers.data)
@@ -62,21 +62,21 @@ const OrganizacionMenu = () => {
         <div>
             <h1 className="org-menu-tit"> Bienvenido, Unizar </h1>
             <div className="tabs-org">
-                <Tabs 
-                  color="primary"
-                  variant="underlined" 
-                  defaultSelectedKey="cursos">  
+                <Tabs
+                    color="primary"
+                    variant="underlined"
+                    defaultSelectedKey="cursos">
                     <Tab className="text-center text-xl" key="alumnos" title="Alumnos">
-                        <Lista lista={alumnos} type={"alumnos"} creator={"Organizacion"}/>
+                        <Lista lista={alumnos} type={"alumnos"} creator={"Organizacion"} />
                     </Tab>
                     <Tab className="text-center text-xl" key="cursos" title="Cursos">
-                        <Lista lista={cursos} type={"cursos"} creator={"Organizacion"}/>
+                        <Lista lista={cursos} type={"cursos"} creator={"Organizacion"} />
                     </Tab>
                     <Tab className="text-center text-xl" key="profesores" title="Profesores">
-                        <Lista lista={profesores} type={"profesores"} creator={"Organizacion"}/>
+                        <Lista lista={profesores} type={"profesores"} creator={"Organizacion"} />
                     </Tab>
                 </Tabs>
-              </div>
+            </div>
         </div>
     )
 }
