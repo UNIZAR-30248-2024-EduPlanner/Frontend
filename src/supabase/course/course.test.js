@@ -10,6 +10,24 @@ const testCourse = {
   pass: 'coursepass'
 };
 
+const testArrayCourses = [
+  {
+    name: 'Curso Test 3',
+    nip: 30333333,
+    pass: 'coursepass1'
+  },
+  {
+    name: 'Curso Test 4',
+    nip: 4044444,
+    pass: 'coursepass2'
+  },
+  {
+    name: 'Curso Test 5',
+    nip: 5055555,
+    pass: 'coursepass3'
+  }
+];
+
 
 const testSubject = {
   subject_name: 'Subject Test',
@@ -53,6 +71,25 @@ describe('Course API Tests', () => {
       .eq('nip', 1111111111);
   });
 
+  it('should register an array of courses', async () => {
+    await supabase
+      .from('users')
+      .delete()
+      .eq('nip', testArrayCourses[0].nip);
+
+    await supabase
+      .from('users')
+      .delete()
+      .eq('nip', testArrayCourses[1].nip);
+
+    await supabase
+      .from('users')
+      .delete()
+      .eq('nip', testArrayCourses[2].nip);
+    const result = await f.registerArrayCourses(testArrayCourses, organization_id);
+    expect(result).toBe(true);
+  });
+
   it('should login course successfully', async () => {
     const result = await f.loginCourse(testCourse.nip, testCourse.pass);
     expect(result).toBe(true);
@@ -80,6 +117,22 @@ describe('Course API Tests', () => {
   });
 
   afterAll(async () => {
+    await supabase
+      .from('users')
+      .delete()
+      .eq('nip', testArrayCourses[0].nip);
+
+    await supabase
+      .from('users')
+      .delete()
+      .eq('nip', testArrayCourses[1].nip);
+
+    await supabase
+      .from('users')
+      .delete()
+      .eq('nip', testArrayCourses[2].nip);
+
+
     if (course_id) {
       await fo.eliminateCourse(course_id);
     }
