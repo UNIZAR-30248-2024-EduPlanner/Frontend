@@ -239,10 +239,22 @@ export const getUserInfoByNIP = async (nip, organizationId) => {
 export const getAllOrganizations = async () => {
     const { data, error } = await supabase
         .from('organization')
-        .select('*');
-    console.log('Lista de organizaciones', data);
-    return { data, error };
+        .select('id, name'); // Selecciona solo los campos id y nombre
+
+    if (error) {
+        console.error('Error al obtener organizaciones', error);
+        return { data: [], error }; // Devuelve un arreglo vacío en caso de error
+    }
+
+    const result = data.map(org => ({
+        id: org.id,
+        name: org.name
+    }));
+
+    console.log('Lista de organizaciones', result);
+    return { data: result, error: null }; // Devuelve el resultado transformado
 }
+
 
 export const getOrganizationByNIP = async (nip) => {
     const { data, error } = await supabase
@@ -250,6 +262,7 @@ export const getOrganizationByNIP = async (nip) => {
         .select('*')
         .eq('nip', nip)
         .single();
+    console.log('Organización por NIP', data);
     return { data, error };
 }
 
