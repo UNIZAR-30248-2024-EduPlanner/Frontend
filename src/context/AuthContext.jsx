@@ -46,8 +46,15 @@ export const AuthProvider = ({ children }) => {
         } else if (userType == constants.curso) {
             const res = await loginCourse(nip, pass);
             if (res.error) return res
-        } 
-        
+        }
+        // else if (userType == constants.alumno) {
+        //     const res = await loginCourse(nip, pass);
+        //     if (res.error) return res
+        // } else if (userType == constants.profesor) {
+        //     const res = await loginCourse(nip, pass);
+        //     if (res.error) return res
+        // }
+
         // Llamada a la API para conseguir la info del usuario logueado
         res = getUserInfoByNIP(nip, organizationId)
         if (res.error) return res
