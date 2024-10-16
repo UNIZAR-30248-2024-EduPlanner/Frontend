@@ -2,6 +2,7 @@ import { createContext, useContext, useState } from "react";
 import constants from "../constants/constants";
 import { getUserInfoByNIP, loginOrganization, registerOrganization } from "../supabase/organization/organization";
 import { loginCourse } from "../supabase/course/course";
+import { loginUser } from "../supabase/user/user";
 
 const AuthContext = createContext();
 
@@ -37,23 +38,17 @@ export const AuthProvider = ({ children }) => {
     //      userType: constants.organizacion OR constants.curso OR constants.alumno OR constants.profesor
     //      organizationId: id de la organización en la que se quiere loguear    
     const login = async (nip, pass, userType, organizationId) => {
-        var res;
+        var res, role;
+
+        if (userType == constants.organizacion) role = 'organization'
+        else if (userType == constants.alumno) role = 'student'
+        else if (userType == constants.profesor) role = 'teacher'
+        else if (userType == constants.curso) role = 'course'
 
         // Llamada a la API para loguear
-        if (userType == constants.organizacion) {
-            res = await loginOrganization(nip, pass);
-            if (res.error) return res
-        } else if (userType == constants.curso) {
-            const res = await loginCourse(nip, pass);
-            if (res.error) return res
-        }
-        // else if (userType == constants.alumno) {
-        //     const res = await loginCourse(nip, pass);
-        //     if (res.error) return res
-        // } else if (userType == constants.profesor) {
-        //     const res = await loginCourse(nip, pass);
-        //     if (res.error) return res
-        // }
+        res = await loginUser(nip, pass, role, organizationId)
+        console.log(res)
+        if (res.error) return res
 
         // Llamada a la API para conseguir la info del usuario logueado
         res = getUserInfoByNIP(nip, organizationId)
