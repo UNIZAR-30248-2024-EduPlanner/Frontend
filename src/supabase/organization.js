@@ -26,6 +26,41 @@ export const loginOrganization = async (nip, pass) => {
     return !!data; // Devuelve true si hay datos (organización encontrada), false de lo contrario
 };
 
+// Función para iniciar sesión (login) de un usuario
+export const loginUser = async (nip, pass, role, organization_id) => {
+    const { data, error } = await supabase
+        .from('users')
+        .select('*')
+        .eq('nip', nip)
+        .eq('pass', pass) 
+        .eq('role', role) 
+        .eq('organization_id', organization_id)
+        .single();
+    if (error) {
+        console.error("Error al iniciar sesión en el curso:", error);
+        return false; // Error en la consulta
+    }
+
+    return !!data; // Devuelve true si hay datos (curso encontrado), false de lo contrario
+};
+
+// Función para registrar un nuevo curso
+export const registerUser = async (name, nip, pass, role, organization_id) => {
+    const { data, error } = await supabase
+        .from('users')
+        .insert([
+            {
+                name,
+                nip,
+                pass, // Almacena la contraseña de forma segura en producción
+                role,
+                organization_id, // Relación con la organización a la que pertenece
+            },
+        ]);
+
+    return { data, error }; // Devuelve tanto 'data' como 'error' para una respuesta consistente
+};
+
 // Función para obtener todos los cursos que posee la organización
 export const getAllCourses = async (organizationId) => {
     const { data, error } = await supabase
