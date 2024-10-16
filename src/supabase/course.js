@@ -7,7 +7,7 @@ export const loginCourse = async (nip, pass) => {
         .from('users')
         .select('*')
         .eq('nip', nip)
-        .eq('pass', pass) // Considera que almacenar contraseñas en texto plano no es seguro
+        .eq('pass', pass) 
         .eq('role', 'course') // Asegúrate de que sea un curso
         .single();
 
