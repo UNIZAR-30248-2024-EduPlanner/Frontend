@@ -21,6 +21,14 @@ const RouterComponent = () => {
                 <Route path={constants.root + "IniciarSesion"} element={<IniciarSesion />} />
                 <Route path={constants.root + "CrearOrganizacion"} element={<CrearOrganizacion />} />
 
+                <Route path={constants.root + "OrganizacionMenu"} element={<OrganizacionMenu />} />
+                <Route path={constants.root + "OrganizacionCrear/:type"} element={<OrganizacionCrear />} />
+                <Route path={constants.root + "OrganizacionModificar/:type/:id"} element={<OrganizacionModificar />} />
+
+                <Route path={constants.root + "CursoMenu"} element={<CursoMenu />} />
+                <Route path={constants.root + "CursoCrear/:type/"} element={<CursoCrear />} />
+                <Route path={constants.root + "CursoModificar/:type/:id"} element={<CursoModificar />} />
+
                 <Route element={<ProtectedRouter/>}>
                     {/* USUARIO ORGANIZACIÓN */}
                     <Route element={<ProtectedUser userType={constants.organizacion}/>}>
@@ -38,13 +46,6 @@ const RouterComponent = () => {
                     <Route element={<ProtectedUser userType={constants.profesor}/>}>
                     </Route>
 
-                    <Route path={constants.root + "OrganizacionMenu"} element={<OrganizacionMenu />} />
-                    <Route path={constants.root + "OrganizacionCrear/:type"} element={<OrganizacionCrear />} />
-                    <Route path={constants.root + "OrganizacionModificar/:type/:id"} element={<OrganizacionModificar />} />
-
-                    <Route path={constants.root + "CursoMenu"} element={<CursoMenu />} />
-                    <Route path={constants.root + "CursoCrear/:type/"} element={<CursoCrear />} />
-                    <Route path={constants.root + "CursoModificar/:type/:id"} element={<CursoModificar />} />
                 </Route>
             </Routes>
         </BrowserRouter>
