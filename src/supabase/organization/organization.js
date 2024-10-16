@@ -244,6 +244,15 @@ export const getAllOrganizations = async () => {
     return { data, error };
 }
 
+export const getOrganizationByNIP = async (nip) => {
+    const { data, error } = await supabase
+        .from('organization')
+        .select('*')
+        .eq('nip', nip)
+        .single();
+    return { data, error };
+}
+
 
 // Función para eliminar una organización y sus registros asociados
 //TODO

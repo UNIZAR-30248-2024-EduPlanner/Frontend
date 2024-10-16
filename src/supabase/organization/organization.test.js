@@ -143,6 +143,12 @@ describe('Organization API Tests', () => {
         expect(result.data).toHaveLength(4); // Debe haber dos organizaciones
     });
 
+    it('should gett organization by NIP', async () => {
+        const result = await f.getOrganizationByNIP(testOrganization.nip);
+        expect(result.error).toBeNull();
+        expect(result.data.name).toBe(testOrganization.name); // Debe ser la misma organización
+    });
+
     // Limpieza de datos al final de las pruebas
     afterAll(async () => {
         // Eliminar curso
