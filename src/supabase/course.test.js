@@ -1,4 +1,5 @@
 import * as f from './course.js';
+import * as fo from './organization.js';
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { supabase } from './supabaseClient.js';
 
@@ -41,10 +42,12 @@ describe('Course API Tests', () => {
     expect(course_id).not.toBeNull();
   });
 
-
   it('should register a new course', async () => {
     const result = await f.registerCourse('Curso Test 2', 111111111, 'password2', organization_id);
     expect(result.error).toBeNull();
+    const localCourseId = await f.getCourseIdByNIP(111111111, organization_id);
+    console.log("Local Course ID: ", localCourseId);
+    fo.eliminateCourse(localCourseId);
   });
 
   it('should login course successfully', async () => {
@@ -64,7 +67,6 @@ describe('Course API Tests', () => {
   });
 
   it('should edit a subject', async () => {
-    console.log('subjectId', subjectId);
     const result = await f.editSubject(subjectId, { subject_name: 'Subject Test 2' });
     expect(result.error).toBeNull();
   });
@@ -76,7 +78,7 @@ describe('Course API Tests', () => {
 
   afterAll(async () => {
     if (course_id) {
-      await f.eliminateCourse(course_id);
+      await fo.eliminateCourse(course_id);
     }
     if (subjectId) {
       await f.eliminateSubject(subjectId);
