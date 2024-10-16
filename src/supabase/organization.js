@@ -184,6 +184,22 @@ export const getUserIdByNIP = async (nip, organizationId) => {
     return data ? data.id : null; // Devuelve el ID o null si no se encuentra
 };
 
+export const getUserInfoByNIP = async (nip, organizationId) => {
+    const { data, error } = await supabase
+        .from('users')
+        .select('*') // Solo seleccionamos el ID
+        .eq('nip', nip)
+        .eq('organization_id', organizationId) // Comprobar también por ID de organización
+        .single(); // Devuelve solo un resultado
+
+    if (error) {
+        console.error("Error al obtener el ID de usuario:", error);
+        return null; // En caso de error, devolver null
+    }
+
+    return data; // Devuelve el ID o null si no se encuentra
+};
+
 // Función para eliminar una organización y sus registros asociados
 //TODO
 /*

@@ -89,6 +89,12 @@ describe('Organization API Tests', () => {
         expect(studentId).not.toBeNull();
     });
 
+    it('should recieve all student info', async () => {
+        const result = await f.getUserInfoByNIP(testStudent.nip, organizationId);
+        //expect(result.error).toBeNull();
+        console.log(result);
+    });
+
     // Prueba para crear un profesor
     it('should create a new teacher', async () => {
         const result = await f.createTeacher(testTeacher.name, testTeacher.nip, testTeacher.pass, organizationId);
