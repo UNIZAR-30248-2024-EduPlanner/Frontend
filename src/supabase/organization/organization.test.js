@@ -1,7 +1,7 @@
 // src/api/organization.test.js
 import * as f from './organization';
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
-import { supabase } from './supabaseClient';
+import { supabase } from '../supabaseClient';
 
 // Datos de prueba
 const testOrganization = {
@@ -137,6 +137,18 @@ describe('Organization API Tests', () => {
         expect(updatedTeacher.data[0].name).toBe(updates.name); // Verificar que el nombre fue actualizado
     });
 
+    it('should get all organizations', async () => {
+        const result = await f.getAllOrganizations();
+        expect(result.error).toBeNull();
+        expect(result.data).toHaveLength(4); // Debe haber cuatro organizaciones
+    });
+
+    it('should gett organization by NIP', async () => {
+        const result = await f.getOrganizationByNIP(testOrganization.nip);
+        expect(result.error).toBeNull();
+        expect(result.data.name).toBe(testOrganization.name); // Debe ser la misma organización
+    });
+
     // Limpieza de datos al final de las pruebas
     afterAll(async () => {
         // Eliminar curso
@@ -153,6 +165,16 @@ describe('Organization API Tests', () => {
         if (teacherId) {
             await f.eliminateTeacher(teacherId);
         }
+
+        await supabase
+            .from('organization')
+            .delete()
+            .eq('nip', testOrganization.nip);
+
+        await supabase
+            .from('organization')
+            .delete()
+            .eq('nip', 987654321);
 
         // Eliminar organización
         /*

@@ -1,7 +1,7 @@
 import * as f from './course.js';
-import * as fo from './organization.js';
+import * as fo from '../organization/organization.js';
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
-import { supabase } from './supabaseClient.js';
+import { supabase } from '../supabaseClient.js';
 
 
 const testCourse = {
@@ -9,6 +9,24 @@ const testCourse = {
   nip: 888888,
   pass: 'coursepass'
 };
+
+const testArrayCourses = [
+  {
+    name: 'Curso Test 3',
+    nip: 3033333,
+    pass: 'coursepass1'
+  },
+  {
+    name: 'Curso Test 4',
+    nip: 4044444,
+    pass: 'coursepass2'
+  },
+  {
+    name: 'Curso Test 5',
+    nip: 5055555,
+    pass: 'coursepass3'
+  }
+];
 
 
 const testSubject = {
@@ -43,11 +61,33 @@ describe('Course API Tests', () => {
   });
 
   it('should register a new course', async () => {
-    const result = await f.registerCourse('Curso Test 2', 111111111, 'password2', organization_id);
+    const result = await f.registerCourse('Curso Test 2', 1111111111, 'password2', organization_id);
     expect(result.error).toBeNull();
-    const localCourseId = await f.getCourseIdByNIP(111111111, organization_id);
+    const localCourseId = await f.getCourseIdByNIP(1111111111, organization_id);
     console.log("Local Course ID: ", localCourseId);
-    fo.eliminateCourse(localCourseId);
+    await supabase
+      .from('users')
+      .delete()
+      .eq('nip', 1111111111);
+  });
+
+  it('should register an array of courses', async () => {
+    await supabase
+      .from('users')
+      .delete()
+      .eq('nip', testArrayCourses[0].nip);
+
+    await supabase
+      .from('users')
+      .delete()
+      .eq('nip', testArrayCourses[1].nip);
+
+    await supabase
+      .from('users')
+      .delete()
+      .eq('nip', testArrayCourses[2].nip);
+    const result = await f.registerArrayCourses(testArrayCourses, organization_id);
+    expect(result).toBe(true);
   });
 
   it('should login course successfully', async () => {
@@ -77,6 +117,22 @@ describe('Course API Tests', () => {
   });
 
   afterAll(async () => {
+    await supabase
+      .from('users')
+      .delete()
+      .eq('nip', testArrayCourses[0].nip);
+
+    await supabase
+      .from('users')
+      .delete()
+      .eq('nip', testArrayCourses[1].nip);
+
+    await supabase
+      .from('users')
+      .delete()
+      .eq('nip', testArrayCourses[2].nip);
+
+
     if (course_id) {
       await fo.eliminateCourse(course_id);
     }

@@ -1,5 +1,5 @@
 // src/api/organization.js
-import { supabase } from './supabaseClient';
+import { supabase } from '../supabaseClient';
 
 // Función para registrar una organización
 export const registerOrganization = async (name, nip, pass) => {
@@ -15,7 +15,7 @@ export const loginOrganization = async (nip, pass) => {
         .from('organization')
         .select('*')
         .eq('nip', nip)
-        .eq('pass', pass) 
+        .eq('pass', pass)
         .single(); // Devuelve solo un resultado
 
     if (error) {
@@ -32,8 +32,8 @@ export const loginUser = async (nip, pass, role, organization_id) => {
         .from('users')
         .select('*')
         .eq('nip', nip)
-        .eq('pass', pass) 
-        .eq('role', role) 
+        .eq('pass', pass)
+        .eq('role', role)
         .eq('organization_id', organization_id)
         .single();
     if (error) {
@@ -68,7 +68,7 @@ export const getAllCourses = async (organizationId) => {
         .select('*')
         .eq('organization_id', organizationId)
         .eq('role', 'course');
-    
+
     return { data, error };
 };
 
@@ -88,7 +88,7 @@ export const eliminateCourse = async (courseId) => {
         .delete()
         .eq('id', courseId)
         .eq('role', 'course');
-    
+
     return { data, error };
 };
 
@@ -99,7 +99,7 @@ export const editCourse = async (courseId, updates) => {
         .update(updates)
         .eq('id', courseId)
         .eq('role', 'course');
-    
+
     return { data, error };
 };
 
@@ -110,7 +110,7 @@ export const getAllStudents = async (organizationId) => {
         .select('*')
         .eq('organization_id', organizationId)
         .eq('role', 'student');
-    
+
     return { data, error };
 };
 
@@ -119,7 +119,7 @@ export const createStudent = async (name, nip, pass, organizationId) => {
     const { data, error } = await supabase
         .from('users')
         .insert([{ name, nip, pass, role: 'student', organization_id: organizationId }]);
-    
+
     return { data, error };
 };
 
@@ -130,7 +130,7 @@ export const eliminateStudent = async (studentId) => {
         .delete()
         .eq('id', studentId)
         .eq('role', 'student');
-    
+
     return { data, error };
 };
 
@@ -141,7 +141,7 @@ export const editStudent = async (studentId, updates) => {
         .update(updates)
         .eq('id', studentId)
         .eq('role', 'student');
-    
+
     return { data, error };
 };
 
@@ -152,7 +152,7 @@ export const getAllTeachers = async (organizationId) => {
         .select('*')
         .eq('organization_id', organizationId)
         .eq('role', 'teacher');
-    
+
     return { data, error };
 };
 
@@ -161,7 +161,7 @@ export const createTeacher = async (name, nip, pass, organizationId) => {
     const { data, error } = await supabase
         .from('users')
         .insert([{ name, nip, pass, role: 'teacher', organization_id: organizationId }]);
-    
+
     return { data, error };
 };
 
@@ -172,7 +172,7 @@ export const eliminateTeacher = async (teacherId) => {
         .delete()
         .eq('id', teacherId)
         .eq('role', 'teacher');
-    
+
     return { data, error };
 };
 
@@ -183,7 +183,7 @@ export const editTeacher = async (teacherId, updates) => {
         .update(updates)
         .eq('id', teacherId)
         .eq('role', 'teacher');
-    
+
     return { data, error };
 };
 
@@ -234,6 +234,38 @@ export const getUserInfoByNIP = async (nip, organizationId) => {
 
     return data; // Devuelve el ID o null si no se encuentra
 };
+
+// Funcion para mostrar todas las organizaciones existentes
+export const getAllOrganizations = async () => {
+    const { data, error } = await supabase
+        .from('organization')
+        .select('id, name'); // Selecciona solo los campos id y nombre
+
+    if (error) {
+        console.error('Error al obtener organizaciones', error);
+        return { data: [], error }; // Devuelve un arreglo vacío en caso de error
+    }
+
+    const result = data.map(org => ({
+        id: org.id,
+        name: org.name
+    }));
+
+    console.log('Lista de organizaciones', result);
+    return { data: result, error: null }; // Devuelve el resultado transformado
+}
+
+
+export const getOrganizationByNIP = async (nip) => {
+    const { data, error } = await supabase
+        .from('organization')
+        .select('*')
+        .eq('nip', nip)
+        .single();
+    console.log('Organización por NIP', data);
+    return { data, error };
+}
+
 
 // Función para eliminar una organización y sus registros asociados
 //TODO

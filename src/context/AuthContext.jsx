@@ -1,7 +1,7 @@
 import { createContext, useContext, useState } from "react";
-import { getUserInfoByNIP, loginOrganization, registerOrganization } from "../supabase/organization";
 import constants from "../constants/constants";
-import { loginCourse } from "../supabase/course";
+import { getUserInfoByNIP, loginOrganization, registerOrganization } from "../supabase/organization/organization";
+import { loginCourse } from "../supabase/course/course";
 
 const AuthContext = createContext();
 
@@ -42,7 +42,7 @@ export const AuthProvider = ({ children }) => {
         // Llamada a la API para loguear
         if (userType == constants.organizacion) {
             res = await loginOrganization(nip, pass);
-            if (res.error) return res          
+            if (res.error) return res
         } else if (userType == constants.curso) {
             const res = await loginCourse(nip, pass);
             if (res.error) return res
