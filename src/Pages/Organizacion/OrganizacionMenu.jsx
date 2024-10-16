@@ -41,22 +41,22 @@ const OrganizacionMenu = () => {
     // ]
 
     const getAllItems = async () => {
-        const courses = await getAllCourses(/* */)
+        const courses = await getAllCourses(1)
         if (courses.error) setCursos([])
         else setCursos(courses.data)
         
-        const students = await getAllStudents(/* */)
+        const students = await getAllStudents(1)
         if (students.error) setAlumnos(students.data)
         else setAlumnos(students.data)
         
-        const teachers = await getAllTeachers(/* */)
+        const teachers = await getAllTeachers(1)
         if (teachers.error) setProfesores(teachers.data)
         else setProfesores(teachers.data)
     }
 
-    // useEffect(() => {
-    //     getAllItems()
-    // })
+    useEffect(() => {
+        getAllItems()
+    }, [])
 
     return (
         <div>

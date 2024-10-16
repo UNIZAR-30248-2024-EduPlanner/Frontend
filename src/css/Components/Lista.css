@@ -1,5 +1,10 @@
 .busqueda {
-    width: 100%;
+    @media (min-width: 900px) {
+        width: 60vw;
+    }
+    @media (max-width: 900px) {
+        width: 75vw;
+    }
     margin-top: 5vh;
     display: flex;
     align-items: center;

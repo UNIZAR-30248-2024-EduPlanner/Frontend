@@ -1,16 +1,17 @@
 import "../css/Components/Lista.css"
-import {Input} from "@nextui-org/react";
-import {Button} from "@nextui-org/react";
+import {Input, Button} from "@nextui-org/react";
 import { FaMagnifyingGlass, FaCirclePlus } from "react-icons/fa6";
 import { FaRegEdit, FaRegTrashAlt } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import constants from "../constants/constants";
 import { useEffect, useState } from "react";
+import Cargando from "./Cargando";
 
 const Lista = ({lista, type, creator}) => {
     const navigate = useNavigate()
     const [search, setSearch] = useState("")
     const [filteredList, setFilteredList] = useState([])
+    const [loading, setLoading] = useState(true)
 
         // // Filtrar la lista en base al término de búsqueda (nombre o NIP)
         // const filteredList = lista.filter(item => {
@@ -33,6 +34,10 @@ const Lista = ({lista, type, creator}) => {
         setFilteredList(newList)
     }, [search])
 
+    useEffect(() => {
+        setLoading(false)
+    }, [lista])
+
     return (
         <>
             <div className="busqueda">
@@ -45,7 +50,9 @@ const Lista = ({lista, type, creator}) => {
                 />
             </div>
             <div className="lista">
-                {filteredList.length > 0 ? (
+                { loading ? (
+                    <Cargando/>
+                ) : filteredList.length > 0 ? (
                     <>
                     {filteredList.map((item, index) => (
                         <div className="lista-item" key={index}>
