@@ -1,7 +1,7 @@
 // src/api/organization.test.js
 import * as f from './organization';
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
-import { supabase } from './supabaseClient';
+import { supabase } from '../supabaseClient';
 
 // Datos de prueba
 const testOrganization = {
@@ -135,6 +135,12 @@ describe('Organization API Tests', () => {
 
         const updatedTeacher = await f.getAllTeachers(organizationId);
         expect(updatedTeacher.data[0].name).toBe(updates.name); // Verificar que el nombre fue actualizado
+    });
+
+    it('should get all organizations', async () => {
+        const result = await f.getAllOrganizations();
+        expect(result.error).toBeNull();
+        expect(result.data).toHaveLength(4); // Debe haber dos organizaciones
     });
 
     // Limpieza de datos al final de las pruebas

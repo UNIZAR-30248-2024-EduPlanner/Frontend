@@ -1,7 +1,7 @@
 import * as f from './course.js';
-import * as fo from './organization.js';
+import * as fo from '../organization/organization.js';
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
-import { supabase } from './supabaseClient.js';
+import { supabase } from '../supabaseClient.js';
 
 
 const testCourse = {
@@ -43,11 +43,14 @@ describe('Course API Tests', () => {
   });
 
   it('should register a new course', async () => {
-    const result = await f.registerCourse('Curso Test 2', 111111111, 'password2', organization_id);
+    const result = await f.registerCourse('Curso Test 2', 1111111111, 'password2', organization_id);
     expect(result.error).toBeNull();
-    const localCourseId = await f.getCourseIdByNIP(111111111, organization_id);
+    const localCourseId = await f.getCourseIdByNIP(1111111111, organization_id);
     console.log("Local Course ID: ", localCourseId);
-    fo.eliminateCourse(localCourseId);
+    await supabase
+      .from('users')
+      .delete()
+      .eq('nip', 1111111111);
   });
 
   it('should login course successfully', async () => {

@@ -1,5 +1,5 @@
 // src/api/course.js
-import { supabase } from './supabaseClient';
+import { supabase } from '../supabaseClient';
 
 // Función para iniciar sesión (login) de un curso
 export const loginCourse = async (nip, pass) => {
@@ -7,7 +7,7 @@ export const loginCourse = async (nip, pass) => {
         .from('users')
         .select('*')
         .eq('nip', nip)
-        .eq('pass', pass) 
+        .eq('pass', pass)
         .eq('role', 'course') // Asegúrate de que sea un curso
         .single();
 
