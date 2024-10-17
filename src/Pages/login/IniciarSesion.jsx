@@ -98,10 +98,10 @@ const IniciarSesion = () => {
                             boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)",
                         }}>
                         <option value="">Seleccionar...</option>
-                        <option value="alumno">Alumno</option>
-                        <option value="profesor">Profesor</option>
-                        <option value="curso">Curso</option>
-                        <option value="organization">Organizacion</option>
+                        <option value={constants.alumno}>Alumno</option>
+                        <option value={constants.profesor}>Profesor</option>
+                        <option value={constants.curso}>Curso</option>
+                        <option value={constants.organizacion}>Organizacion</option>
                     </select>
                 </div>
 

@@ -9,7 +9,10 @@ const Home = () => {
 
     return (
         <>
-            <img src={EduplannerLogo} alt="EduPlanner Logo" className="eduplanner-logo" />
+            <img 
+              src={EduplannerLogo} 
+              alt="EduPlanner Logo" 
+              className="eduplanner-logo" />
 
             <div className="page-form space-y-20">
                 <Button size="lg" color="primary"

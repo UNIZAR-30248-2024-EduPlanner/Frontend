@@ -1,6 +1,6 @@
 import { createContext, useContext, useState } from "react";
 import constants from "../constants/constants";
-import { getUserInfoByNIP, loginOrganization, registerOrganization } from "../supabase/organization/organization";
+import { getOrganizationById, getUserInfoByNIP, loginOrganization, registerOrganization } from "../supabase/organization/organization";
 import { loginCourse } from "../supabase/course/course";
 import { loginUser } from "../supabase/user/user";
 
@@ -49,21 +49,28 @@ export const AuthProvider = ({ children }) => {
         // Llamada a la API para loguear
 
         if (userType == constants.organizacion) {
-            res = await loginOrganization(nip, pass)
+            res = await loginOrganization(nip, pass) // login
+            console.log(res)
+            if (res == false) return res
+
+            // Llamada a la API para conseguir la info del usuario logueado
+            res = await getOrganizationById(organizationId)
+            console.log(res)
+            if (res.error) return res
         } else {
-            res = await loginUser(nip, pass, role, organizationId)
+            res = await loginUser(nip, pass, role, organizationId) // login
+            console.log(res)
+            if (res == false) return res
+    
+            // Llamada a la API para conseguir la info del usuario logueado
+            res = await getUserInfoByNIP(nip, organizationId)
+            console.log(res)
+            if (res.error) return res    
         }
-        console.log(res)
-        if (res == false) return res
 
-        // Llamada a la API para conseguir la info del usuario logueado
-        res = await getUserInfoByNIP(nip, organizationId)
-        console.log(res)
-        if (res.error) return res
-
-        setUser(res.data)
-        setIsAuthenticated(true)
-        setType(userType)
+        setUser(res.data) // guardamos los datos del usuario
+        setIsAuthenticated(true) // el usuario queda autenticado
+        setType(userType) // se guarda el tipo de usuario
 
         return res
     }
