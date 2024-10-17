@@ -47,7 +47,12 @@ export const AuthProvider = ({ children }) => {
 
         console.log(nip, pass, role, organizationId)
         // Llamada a la API para loguear
-        res = await loginUser(nip, pass, role, organizationId)
+
+        if (userType == constants.organizacion) {
+            res = await loginOrganization(nip, pass)
+        } else {
+            res = await loginUser(nip, pass, role, organizationId)
+        }
         console.log(res)
         if (res == false) return res
 
