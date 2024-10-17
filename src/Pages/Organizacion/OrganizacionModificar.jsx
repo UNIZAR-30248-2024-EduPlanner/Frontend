@@ -13,6 +13,8 @@ const OrganizacionModificar = () => {
     const { type } = useParams()
     const typeSingular = type == "profesores" ? "profesor" : type.slice(0, -1)
     const { id } = useParams()
+    const { nombreViejo } = useParams()
+    const { nipViejo } = useParams()
     const [error, setError] = useState("");
     const navigate = useNavigate()
     console.log(id)
@@ -21,8 +23,8 @@ const OrganizacionModificar = () => {
     const toggleVisibility = () => setIsVisible(!isVisible);
 
     // Variables que contienen el contenido de los input
-    const [nombre, setNombre] = useState("")
-    const [nip, setNip] = useState("")
+    const [nombre, setNombre] = useState(nombreViejo)
+    const [nip, setNip] = useState(nipViejo)
     const [password, setPassword] = useState("")
 
     const update = async () => {

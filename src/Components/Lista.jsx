@@ -6,12 +6,17 @@ import { useNavigate } from "react-router-dom";
 import constants from "../constants/constants";
 import { useEffect, useState } from "react";
 import Cargando from "./Cargando";
+import { eliminateCourse, eliminateStudent, eliminateTeacher } from "../supabase/organization/organization";
+import { eliminateSubject } from "../supabase/course/course";
 
-const Lista = ({ lista, type, creator }) => {
+//import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure } from "@nextui-org/react";
+
+const Lista = ({ lista, setLista, type, creator }) => {
     const navigate = useNavigate()
     const [search, setSearch] = useState("")
     const [filteredList, setFilteredList] = useState([])
     const [loading, setLoading] = useState(true)
+    //const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
     // // Filtrar la lista en base al término de búsqueda (nombre o NIP)
     // const filteredList = lista.filter(item => {
@@ -38,6 +43,31 @@ const Lista = ({ lista, type, creator }) => {
         setLoading(false)
     }, [lista])
 
+
+    const borrar = async (id) => {
+        console.log(id)
+        console.log(type)
+        // Si llega aquí, se ejecuta la petición para crear la organización
+        if (type == "profesores") {
+            // Llamada a la API para eliminar un profesor
+            const res = await eliminateTeacher(id)
+            console.log(res)
+        } else if (type == "alumnos") {
+            // Llamada a la API para eliminar un alumno
+            const res = await eliminateStudent(id)
+            console.log(res)
+        } else if (type == "cursos") {
+            // Llamada a la API para eliminar un curso
+            await eliminateCourse(id)
+        } else if (type == "asignaturas") {
+            // Llamada a la API para eliminar un curso
+            await eliminateSubject(id)
+        }
+
+        // Filtrar la lista para eliminar el elemento borrado sin recargar la página
+        setLista((prevList) => prevList.filter((item) => item.id !== id))
+        setFilteredList((prevList) => prevList.filter((item) => item.id !== id));
+    };
     return (
         <>
             <div className="busqueda">
@@ -63,11 +93,11 @@ const Lista = ({ lista, type, creator }) => {
                                     <Button
                                         className="edit"
                                         size="lg"
-                                        onClick={() => navigate(constants.root + creator + "Modificar/" + type + "/" + item.id)}
+                                        onClick={() => navigate(constants.root + creator + "Modificar/" + type + "/" + item.id + "/" + item.name + "/" + (type === "asignaturas" ? item.subject_code : item.nip))}
                                     >
                                         <FaRegEdit />
                                     </Button>
-                                    <Button className="trash" size="lg" >
+                                    <Button className="trash" size="lg" onClick={() => borrar(item.id)}>
                                         <FaRegTrashAlt />
                                     </Button>
                                 </div>
@@ -85,11 +115,11 @@ const Lista = ({ lista, type, creator }) => {
                                     <Button
                                         className="edit"
                                         size="lg"
-                                        onClick={() => navigate(constants.root + creator + "Modificar/" + type + "/" + item.id)}
+                                        onClick={() => navigate(constants.root + creator + "Modificar/" + type + "/" + item.id + "/" + item.name + "/" + (type === "asignaturas" ? item.subject_code : item.nip))}
                                     >
                                         <FaRegEdit />
                                     </Button>
-                                    <Button className="trash" size="lg" >
+                                    <Button className="trash" size="lg" onClick={() => borrar(item.id)}>
                                         <FaRegTrashAlt />
                                     </Button>
                                 </div>

@@ -9,6 +9,7 @@ import FlechaVolver from "../../Components/FlechaVolver";
 import constants from "../../constants/constants";
 import { createCourse, createStudent, createTeacher } from "../../supabase/organization/organization";
 import { useAuth } from "../../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 
 const OrganizacionCrear = () => {
@@ -18,6 +19,7 @@ const OrganizacionCrear = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [error, setError] = useState("");
   const toggleVisibility = () => setIsVisible(!isVisible);
+  const navigate = useNavigate()
 
   // Variables que contienen el contenido de los input
   const [nombre, setNombre] = useState("")
@@ -83,6 +85,7 @@ const OrganizacionCrear = () => {
         return;
       }
     }
+    navigate(-1)
   }
 
   return (

@@ -1,6 +1,6 @@
 import Lista from "../../Components/Lista";
 import "../../css/Curso/CursoMenu.css"
-import {Tabs, Tab} from "@nextui-org/react";
+import { Tabs, Tab } from "@nextui-org/react";
 import FlechaVolver from "../../Components/FlechaVolver";
 import { useEffect, useState } from "react";
 import { useAuth } from "../../context/AuthContext";
@@ -8,8 +8,8 @@ import { getAllSubjects } from "../../supabase/course/course";
 
 const CursoMenu = () => {
 
-    const {user} = useAuth()
-    
+    const { user } = useAuth()
+
     // Asignaturas que posee el curso
     const [asignaturas, setAsignaturas] = useState([])
 
@@ -27,29 +27,29 @@ const CursoMenu = () => {
         if (user) {
             setCursoName(user.name)
             getAllItems(user.id)
-        }        
+        }
     }, [])
 
     useEffect(() => {
         if (user) {
             setCursoName(user.name)
             getAllItems(user.id)
-        }        
+        }
     }, [user])
 
     return (
         <div>
-            <FlechaVolver/>
+            <FlechaVolver />
             <h1 className="cur-menu-tit"> Bienvenido, {cursoName}</h1>
             <div className="cur-container">
-                <Tabs 
-                 color="primary"
-                 variant="underlined">
+                <Tabs
+                    color="primary"
+                    variant="underlined">
                     <Tab className="text-center text-xl" key="asignaturas" title="Asignaturas">
-                        <Lista lista={asignaturas} type={"asignaturas"} creator={"Curso"}></Lista>
+                        <Lista lista={asignaturas} setLista={setAsignaturas} type={"asignaturas"} creator={"Curso"}></Lista>
                     </Tab>
                 </Tabs>
-                
+
             </div>
         </div>
     )
