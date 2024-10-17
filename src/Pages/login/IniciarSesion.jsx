@@ -18,16 +18,11 @@ const IniciarSesion = () => {
     const [role, setRole] = useState(""); // Nuevo estado para la opción seleccionada
     const [organization, setOrganization] = useState(""); // Estado para la organización seleccionada
     const [organizaciones, setOrganizaciones] = useState([])
+    const [error, setError] = useState("");
     const navigate = useNavigate();
     const toggleVisibility = () => setIsVisible(!isVisible);
 
     const { login, type, isAuthenticated } = useAuth(); // Acceder a la función register desde el contexto
-
-
-    /**const usuario1 = "curso";
-    const usuario2 = "organizacion";
-    const password1 = "curso";
-    const password2 = "organizacion"; */
 
     const getAllItems = async () => {
         const organizaciones = await getAllOrganizations(1)
@@ -49,26 +44,26 @@ const IniciarSesion = () => {
     }, [type, isAuthenticated])
 
     const handleSubmit = async () => {
+        setError(""); // Reinicia el estado del error al intentar enviar el formulario
+
         if (role === "") {
-            alert("Por favor, selecciona un tipo de usuario"); // Si no se selecciona nada
+            setError("Por favor, selecciona un tipo de usuario."); // Si no se selecciona nada
+            window.scrollTo({ top: 0, behavior: "smooth" });
             return;
         }
 
         if (organization === "") {
-            alert("Por favor, selecciona una organizacion"); // Si no se selecciona nada
+            setError("Por favor, selecciona una organización."); // Si no se selecciona nada
+            window.scrollTo({ top: 0, behavior: "smooth" });
             return;
         }
 
-        /*if (nia === usuario1 && password === password1) {
-            navigate(constants.root + "CursoMenu");
-        } else if (nia === usuario2 && password === password2) {
-            navigate(constants.root + "OrganizacionMenu");
-        }*/
         // Si llega aquí, se ejecuta la petición para loguear
         const res = await login(nia, password, role, organization);
         console.log(res);
         if (res == false) {
-            alert("Usuario y/o contraseñas incorrectos ");
+            setError("Usuario y/o contraseñas incorrectos.");
+            window.scrollTo({ top: 0, behavior: "smooth" });
             return;
         }
     }
@@ -77,6 +72,14 @@ const IniciarSesion = () => {
         <>
             <FlechaVolver />
             <h1 className="org-mod-tit"> Inicio de Sesión </h1>
+
+            {/* Mensaje de error en color secundario */}
+            {error && (
+                <p style={{ color: "var(--color-second)", textAlign: "center" }}>
+                    {error}
+                </p>
+            )}
+
             <div className="mod-org-form space-y-20">
 
                 {/* Select para elegir la opción */}

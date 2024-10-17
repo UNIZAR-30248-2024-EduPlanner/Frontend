@@ -16,6 +16,7 @@ const CrearOrganizacion = () => {
     const [dominioOrganizacion, setDominioOrganizacion] = useState("");
     const [password, setPassword] = useState("");
     const [repeatPassword, setRepeatPassword] = useState("");
+    const [error, setError] = useState(""); // Estado para el mensaje de error
     const navigate = useNavigate();
 
     const { register } = useAuth(); // Acceder a la función register desde el contexto
@@ -23,6 +24,8 @@ const CrearOrganizacion = () => {
     const toggleVisibility = () => setIsVisible(!isVisible);
 
     const handleSubmit = async () => {
+        setError(""); // Limpiar cualquier mensaje de error anterior
+
         if (
             !nombreOrganizacion ||
             !dominioCorreo ||
@@ -31,23 +34,31 @@ const CrearOrganizacion = () => {
             !password ||
             !repeatPassword
         ) {
-            alert("Uno o varios campos están vacíos.");
+            setError("Uno o varios campos están vacíos.");
+            window.scrollTo({ top: 0, behavior: "smooth" });
+            return;
+        }
+
+        if (password.length < 6) {
+            setError("La contraseña debe tener al menos 6 caracteres.");
+            window.scrollTo({ top: 0, behavior: "smooth" });
             return;
         }
 
         if (password !== repeatPassword) {
-            alert("Las contraseñas no coinciden.");
+            setError("Las contraseñas no coinciden.");
+            window.scrollTo({ top: 0, behavior: "smooth" });
             return;
         }
 
         // Si llega aquí, se ejecuta la petición para crear la organización
         const res = await register(nombreOrganizacion, nipNia, password);
         if (res.error) {
-            alert("Hubo un error en el registro: " + res.error.message);
+            setError("Hubo un error en el registro: " + res.error.message);
+            window.scrollTo({ top: 0, behavior: "smooth" });
             return;
         }
 
-        alert("Registro exitoso. Organización creada.");
         // Redirigir o realizar otra acción tras el registro
         navigate(constants.root + "OrganizacionMenu");
     };
@@ -56,6 +67,19 @@ const CrearOrganizacion = () => {
         <>
             <FlechaVolver />
             <h1 className="org-mod-tit">Crear Organización</h1>
+
+            {/* Mensaje de error */}
+            {error && (
+                <p
+                    style={{
+                        color: "var(--color-second)",
+                        textAlign: "center", // Centra el texto
+                    }}
+                >
+                    {error}
+                </p>
+            )}
+
             <div className="mod-org-form space-y-12">
                 <Input
                     size="lg"
