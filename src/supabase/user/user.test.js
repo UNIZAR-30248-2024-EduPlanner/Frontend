@@ -45,6 +45,12 @@ describe('User API Tests', () => {
     expect(result).toBe(true);
   });
 
+  it('should get user info by ID', async () => {
+    const result = await f.getUserInfoById(userId);
+    expect(result.error).toBeNull();
+    expect(result.data.nip).toBe(testUser.nip);
+  });
+
   afterAll(async () => {
     await supabase
       .from('users')

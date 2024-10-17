@@ -1,5 +1,6 @@
 import { supabase } from '../supabaseClient.js';
 
+
 // Función para iniciar sesión (login) de un usuario
 export const loginUser = async (nip, pass, role, organization_id) => {
   const { data, error } = await supabase
@@ -66,3 +67,19 @@ export const getUserInfoByNIP = async (nip, organizationId) => {
 
   return data; // Devuelve el ID o null si no se encuentra
 };
+
+// Función para devolver la información de un usuario dado su ID
+export const getUserInfoById = async (id) => {
+  const { data, error } = await supabase
+    .from('users')
+    .select('*')
+    .eq('id', id)
+    .single();
+
+  if (error) {
+    console.error("Error al obtener la información del usuario:", error);
+    return { data: null, error }; // Devuelve el error de forma consistente
+  }
+
+  return { data, error: null }; // Devuelve tanto 'data' como 'error' de forma consistente
+}

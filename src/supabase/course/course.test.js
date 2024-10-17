@@ -30,7 +30,7 @@ const testArrayCourses = [
 
 
 const testSubject = {
-  subject_name: 'Subject Test',
+  name: 'Subject Test',
   subject_code: 66688
 };
 
@@ -96,7 +96,7 @@ describe('Course API Tests', () => {
   });
 
   it('should retrieve all subjects for the course', async () => {
-    const createResult = await f.createSubject(testSubject.subject_name, testSubject.subject_code, course_id);
+    const createResult = await f.createSubject(testSubject.name, testSubject.subject_code, course_id);
     expect(createResult.error).toBeNull();
 
     const subjects = await f.getAllSubjects(course_id);
@@ -112,7 +112,7 @@ describe('Course API Tests', () => {
   });
 
   it('should edit a subject', async () => {
-    const result = await f.editSubject(subjectId, { subject_name: 'Subject Test 2' });
+    const result = await f.editSubject(subjectId, { name: 'Subject Test 2' });
     expect(result.error).toBeNull();
   });
 
