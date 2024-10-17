@@ -45,18 +45,22 @@ export const AuthProvider = ({ children }) => {
         else if (userType == constants.profesor) role = 'teacher'
         else if (userType == constants.curso) role = 'course'
 
+        console.log(nip, pass, role, organizationId)
         // Llamada a la API para loguear
         res = await loginUser(nip, pass, role, organizationId)
         console.log(res)
-        if (res.error) return res
+        if (res == false) return res
 
         // Llamada a la API para conseguir la info del usuario logueado
-        res = getUserInfoByNIP(nip, organizationId)
+        res = await getUserInfoByNIP(nip, organizationId)
+        console.log(res)
         if (res.error) return res
 
         setUser(res.data)
         setIsAuthenticated(true)
         setType(userType)
+
+        return res
     }
 
     const logout = () => {

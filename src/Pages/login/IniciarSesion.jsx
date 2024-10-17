@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import FlechaVolver from "../../Components/FlechaVolver";
 import { getAllOrganizations } from "../../supabase/organization/organization";
+import { useAuth } from "../../context/AuthContext"; // Importar el hook useAuth
 
 
 
@@ -20,11 +21,13 @@ const IniciarSesion = () => {
     const navigate = useNavigate();
     const toggleVisibility = () => setIsVisible(!isVisible);
 
+    const { login } = useAuth(); // Acceder a la función register desde el contexto
 
-    const usuario1 = "curso";
+
+    /**const usuario1 = "curso";
     const usuario2 = "organizacion";
     const password1 = "curso";
-    const password2 = "organizacion";
+    const password2 = "organizacion"; */
 
     const getAllItems = async () => {
         const organizaciones = await getAllOrganizations(1)
@@ -36,7 +39,7 @@ const IniciarSesion = () => {
         getAllItems()
     }, [])
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         if (role === "") {
             alert("Por favor, selecciona un tipo de usuario"); // Si no se selecciona nada
             return;
@@ -47,14 +50,30 @@ const IniciarSesion = () => {
             return;
         }
 
-        if (nia === usuario1 && password === password1) {
+        /*if (nia === usuario1 && password === password1) {
             navigate(constants.root + "CursoMenu");
         } else if (nia === usuario2 && password === password2) {
             navigate(constants.root + "OrganizacionMenu");
-        } else {
-            alert("NIA o contraseña incorrectos"); // O cualquier otra acción de error
+        }*/
+        // Si llega aquí, se ejecuta la petición para loguear
+        const res = await login(nia, password, role, organization);
+        console.log(res);
+        if (res == false) {
+            alert("Usuario y/o contraseñas incorrectos ");
+            return;
         }
-    };
+
+        if (res.role == "student") {
+            // Redirigir o realizar otra acción tras el registro
+            //navigate(constants.root + "AlumnoMenu"); 
+        } else if (res.role == "teacher") {
+            //navigate(constants.root + "ProfesorMenu");
+        } else if (res.role == "course") {
+            navigate(constants.root + "CursoMenu");
+        } else if (res.role == "organization") {
+            navigate(constants.root + "OrganizacionMenu");
+        }
+    }
 
     return (
         <>
@@ -79,10 +98,10 @@ const IniciarSesion = () => {
                             boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)",
                         }}>
                         <option value="">Seleccionar...</option>
-                        <option value="Alumno">Alumno</option>
-                        <option value="Profesor">Profesor</option>
-                        <option value="Curso">Curso</option>
-                        <option value="Organizacion">Organizacion</option>
+                        <option value="alumno">Alumno</option>
+                        <option value="profesor">Profesor</option>
+                        <option value="curso">Curso</option>
+                        <option value="organization">Organizacion</option>
                     </select>
                 </div>
 

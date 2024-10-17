@@ -2,8 +2,11 @@ import "../../css/login/CrearOrganizacion.css";
 import { Input } from "@nextui-org/input";
 import { Button } from "@nextui-org/react";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import FlechaVolver from "../../Components/FlechaVolver";
+import { useAuth } from "../../context/AuthContext"; // Importar el hook useAuth
+import constants from "../../constants/constants";
 
 const CrearOrganizacion = () => {
     const [isVisible, setIsVisible] = useState(false);
@@ -13,10 +16,13 @@ const CrearOrganizacion = () => {
     const [dominioOrganizacion, setDominioOrganizacion] = useState("");
     const [password, setPassword] = useState("");
     const [repeatPassword, setRepeatPassword] = useState("");
+    const navigate = useNavigate();
+
+    const { register } = useAuth(); // Acceder a la función register desde el contexto
 
     const toggleVisibility = () => setIsVisible(!isVisible);
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         if (
             !nombreOrganizacion ||
             !dominioCorreo ||
@@ -34,7 +40,16 @@ const CrearOrganizacion = () => {
             return;
         }
 
-        // Si llega aqui peticion create a la base de datos
+        // Si llega aquí, se ejecuta la petición para crear la organización
+        const res = await register(nombreOrganizacion, nipNia, password);
+        if (res.error) {
+            alert("Hubo un error en el registro: " + res.error.message);
+            return;
+        }
+
+        alert("Registro exitoso. Organización creada.");
+        // Redirigir o realizar otra acción tras el registro
+        navigate(constants.root + "OrganizacionMenu");
     };
 
     return (
