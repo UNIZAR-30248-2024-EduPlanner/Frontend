@@ -5,62 +5,42 @@ import "../../css/Organizacion/OrganizacionMenu.css"
 
 import { Tabs, Tab } from "@nextui-org/react";
 import { getAllCourses, getAllStudents, getAllTeachers } from "../../supabase/organization/organization";
+import { useAuth } from "../../context/AuthContext";
 
 const OrganizacionMenu = () => {
+    const { user } = useAuth();
+
     const [alumnos, setAlumnos] = useState([])
     const [cursos, setCursos] = useState([])
     const [profesores, setProfesores] = useState([])
 
-    // const alumnos = [
-    //     { name: "José Miguel", nip: "839899" },
-    //     { name: "Leyre", nip: "839995" },
-    //     { name: "Gonzalo", nip: "839900" },
-    //     { name: "Flavio", nip: "839898" },
-    //     { name: "Nacho", nip: "839897" },
-    //     { name: "Pablo", nip: "840020" },
-    // ]
+    const [orgName, setOrgName] = useState(null)
 
-    // const cursos = [
-    //     { name: "Grado en Ingeniería Informática", nip: "1" },
-    //     { name: "Grado en Ingeniería Electrónica y Automaticci", nip: "2" },
-    //     { name: "Grado en Ingeniería Eléctrica", nip: "3" },
-    //     { name: "Grado en Ingeniería Industrial", nip: "4" },
-    //     { name: "Grado en Ingeniería Mecánica", nip: "5" },
-    //     { name: "Grado en Ingeniería de Telecomunicaciones", nip: "6" },
-    // ]
-
-    // const profesores = [
-    //     { name: "Rubén Béjar", nip: "10" },
-    //     { name: "Rubén Béjar", nip: "11" },
-    //     { name: "Rubén Béjar", nip: "12" },
-    //     { name: "Rubén Béjar", nip: "13" },
-    //     { name: "Rubén Béjar", nip: "14" },
-    //     { name: "Rubén Béjar", nip: "15" },
-    //     { name: "Rubén Béjar", nip: "16" },
-    //     { name: "Rubén Béjar", nip: "17" },
-    // ]
-
-    const getAllItems = async () => {
-        const courses = await getAllCourses(1)
+    const getAllItems = async (organization_id) => {
+        const courses = await getAllCourses(organization_id)
         if (courses.error) setCursos([])
         else setCursos(courses.data)
 
-        const students = await getAllStudents(1)
-        if (students.error) setAlumnos(students.data)
+        const students = await getAllStudents(organization_id)
+        if (students.error) setAlumnos([])
         else setAlumnos(students.data)
 
-        const teachers = await getAllTeachers(1)
-        if (teachers.error) setProfesores(teachers.data)
+        const teachers = await getAllTeachers(organization_id)
+        if (teachers.error) setProfesores([])
         else setProfesores(teachers.data)
     }
 
     useEffect(() => {
-        getAllItems()
-    }, [])
+        if (user) {
+            console.log(user)
+            setOrgName(user.name)
+            getAllItems(user.id)
+        }        
+    }, [user])
 
     return (
         <div>
-            <h1 className="org-menu-tit"> Bienvenido, Unizar </h1>
+            <h1 className="org-menu-tit"> Bienvenido, {orgName} </h1>
             <div className="tabs-org">
                 <Tabs
                     color="primary"

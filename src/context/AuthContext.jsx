@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import constants from "../constants/constants";
 import { getOrganizationById, getUserInfoByNIP, loginOrganization, registerOrganization } from "../supabase/organization/organization";
 import { loginCourse } from "../supabase/course/course";
@@ -23,6 +23,7 @@ export const AuthProvider = ({ children }) => {
     // Booleano que indica si hay un usuario logueado
     const [isAuthenticated, setIsAuthenticated] = useState(false)
 
+
     const register = async (name, nip, pass) => {
         const res = await registerOrganization(name, nip, pass)
         if (res.error) return res
@@ -40,10 +41,10 @@ export const AuthProvider = ({ children }) => {
     const login = async (nip, pass, userType, organizationId) => {
         var res, role;
 
-        if (userType == constants.organizacion) role = 'organization'
-        else if (userType == constants.alumno) role = 'student'
-        else if (userType == constants.profesor) role = 'teacher'
-        else if (userType == constants.curso) role = 'course'
+        role = userType == constants.alumno ? 'student' 
+             : userType == constants.profesor ? 'teacher'
+             : userType == constants.curso ? 'course' 
+             : '';
 
         console.log(nip, pass, role, organizationId)
         // Llamada a la API para loguear
@@ -65,9 +66,12 @@ export const AuthProvider = ({ children }) => {
             // Llamada a la API para conseguir la info del usuario logueado
             res = await getUserInfoByNIP(nip, organizationId)
             console.log(res)
-            if (res.error) return res    
+            if (res.error) return res  
+            console.log("heyy ", res.data)  
         }
 
+        localStorage.setItem("user", res.id)
+        localStorage.setItem("type", userType)
         setUser(res.data) // guardamos los datos del usuario
         setIsAuthenticated(true) // el usuario queda autenticado
         setType(userType) // se guarda el tipo de usuario
@@ -76,10 +80,33 @@ export const AuthProvider = ({ children }) => {
     }
 
     const logout = () => {
+        localStorage.removeItem("user")
         setUser(null)
         setIsAuthenticated(false)
         setType(null)
     }
+
+    // Esto es para que al refrescar la página la sesión se mantenga
+    // const recoverUser = async () => {
+    //     const userIdStored = localStorage.getItem("user");
+    //     if (!userIdStored) {
+    //         setIsAuthenticated(false);
+    //         setUser(null);
+    //         setType(null);
+    //     } else {
+    //         console.log("Hola")
+    //         console.log("UserStored: ", userIdStored)
+
+    //         const type = 
+    //         setUser(userIdStored)
+    //         setIsAuthenticated(true)
+    //         setType(localStorage.getItem("type"))
+    //     }
+    // }
+
+    // useEffect(() => {
+    //     recoverUser();
+    // }, [])
 
     return (
         <AuthContext.Provider

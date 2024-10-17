@@ -21,7 +21,7 @@ const IniciarSesion = () => {
     const navigate = useNavigate();
     const toggleVisibility = () => setIsVisible(!isVisible);
 
-    const { login } = useAuth(); // Acceder a la función register desde el contexto
+    const { login, type, isAuthenticated } = useAuth(); // Acceder a la función register desde el contexto
 
 
     /**const usuario1 = "curso";
@@ -38,6 +38,15 @@ const IniciarSesion = () => {
     useEffect(() => {
         getAllItems()
     }, [])
+
+    useEffect(() => {
+        if (isAuthenticated) {
+            if (type == constants.organizacion) navigate(constants.root + "OrganizacionMenu")
+            else if (type == constants.alumno) navigate(constants.root + "AlumnoMenu")
+            else if (type == constants.profesor) navigate(constants.root + "ProfesorMenu")
+            else if (type == constants.curso) navigate(constants.root + "CursoMenu")
+        }
+    }, [type, isAuthenticated])
 
     const handleSubmit = async () => {
         if (role === "") {
@@ -61,17 +70,6 @@ const IniciarSesion = () => {
         if (res == false) {
             alert("Usuario y/o contraseñas incorrectos ");
             return;
-        }
-
-        if (res.role == "student") {
-            // Redirigir o realizar otra acción tras el registro
-            //navigate(constants.root + "AlumnoMenu"); 
-        } else if (res.role == "teacher") {
-            //navigate(constants.root + "ProfesorMenu");
-        } else if (res.role == "course") {
-            navigate(constants.root + "CursoMenu");
-        } else if (res.role == "organization") {
-            navigate(constants.root + "OrganizacionMenu");
         }
     }
 

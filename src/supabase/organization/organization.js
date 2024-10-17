@@ -232,7 +232,7 @@ export const getUserInfoByNIP = async (nip, organizationId) => {
         return null; // En caso de error, devolver null
     }
 
-    return data; // Devuelve el ID o null si no se encuentra
+    return {data}; // Devuelve el ID o null si no se encuentra
 };
 
 // Funcion para mostrar todas las organizaciones existentes
