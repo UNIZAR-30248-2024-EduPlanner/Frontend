@@ -187,12 +187,12 @@ export const editTeacher = async (teacherId, updates) => {
     return { data, error };
 };
 
-// Función para obtener el ID de la organización por su NIP
-export const getOrganizationIdByNIP = async (nip) => {
+// Función para obtener el ID de la organización por su nombre
+export const getOrganizationIdByName = async (name) => {
     const { data, error } = await supabase
         .from('organization')
         .select('id')
-        .eq('nip', nip)
+        .eq('name', name)
         .single(); // Devuelve solo un resultado
 
     if (error) {
@@ -256,15 +256,21 @@ export const getAllOrganizations = async () => {
 }
 
 
-export const getOrganizationByNIP = async (nip) => {
+// Función para obtener una organización por su ID
+export const getOrganizationById = async (organizationId) => {
     const { data, error } = await supabase
         .from('organization')
         .select('*')
-        .eq('nip', nip)
-        .single();
-    console.log('Organización por NIP', data);
-    return { data, error };
-}
+        .eq('id', organizationId)
+        .single(); // Devuelve solo un resultado
+
+    if (error) {
+        console.error("Error al obtener la organización:", error);
+        return { data: null, error }; // En caso de error, devolver null
+    }
+    console.log("Organización por el ID dado:", data);
+    return { data, error: null }; // Devuelve la organización encontrada
+};
 
 
 // Función para eliminar una organización y sus registros asociados

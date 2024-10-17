@@ -31,7 +31,7 @@ const testArrayCourses = [
 
 const testSubject = {
   subject_name: 'Subject Test',
-  subject_code: 888888
+  subject_code: 66688
 };
 
 let organization_id = 1;
@@ -106,6 +106,11 @@ describe('Course API Tests', () => {
     expect(subjectId).not.toBeNull();
   });
 
+  it('should create a new subject', async () => {
+    const result = await f.createSubject('Subject Test 3', 789123, course_id);
+    expect(result.error).toBeNull();
+  });
+
   it('should edit a subject', async () => {
     const result = await f.editSubject(subjectId, { subject_name: 'Subject Test 2' });
     expect(result.error).toBeNull();
@@ -136,9 +141,11 @@ describe('Course API Tests', () => {
     if (course_id) {
       await fo.eliminateCourse(course_id);
     }
+    /*
     if (subjectId) {
       await f.eliminateSubject(subjectId);
     }
+      */
   });
 
 });

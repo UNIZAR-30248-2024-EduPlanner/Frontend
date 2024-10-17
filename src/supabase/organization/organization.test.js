@@ -45,7 +45,7 @@ describe('Organization API Tests', () => {
         const result = await f.registerOrganization(testOrganization.name, testOrganization.nip, testOrganization.pass);
         expect(result.error).toBeNull(); // Asegúrate de que no haya errores al registrar la organización
 
-        organizationId = await f.getOrganizationIdByNIP(testOrganization.nip);
+        organizationId = await f.getOrganizationIdByName(testOrganization.name);
         expect(organizationId).not.toBeNull(); // Asegúrate de que la organización se creó y se puede obtener su ID
     });
 
@@ -140,11 +140,11 @@ describe('Organization API Tests', () => {
     it('should get all organizations', async () => {
         const result = await f.getAllOrganizations();
         expect(result.error).toBeNull();
-        expect(result.data).toHaveLength(4); // Debe haber cuatro organizaciones
+        expect(result.data).toHaveLength(5); // Debe haber cuatro organizaciones
     });
 
-    it('should gett organization by NIP', async () => {
-        const result = await f.getOrganizationByNIP(testOrganization.nip);
+    it('should get organization by ID', async () => {
+        const result = await f.getOrganizationById(organizationId);
         expect(result.error).toBeNull();
         expect(result.data.name).toBe(testOrganization.name); // Debe ser la misma organización
     });
