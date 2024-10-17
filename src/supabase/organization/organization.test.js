@@ -62,7 +62,7 @@ describe('Organization API Tests', () => {
     // Prueba para iniciar sesión
     it('should login organization successfully', async () => {
         const result = await f.loginOrganization(testOrganization.nip, testOrganization.pass);
-        expect(result).toBe(true);
+        expect(result.error).toBeNull();
     });
 
     // Prueba para obtener todos los cursos

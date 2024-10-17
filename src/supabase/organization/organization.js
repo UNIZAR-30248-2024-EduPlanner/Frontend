@@ -6,7 +6,11 @@ export const registerOrganization = async (name, nip, pass) => {
     const { data, error } = await supabase
         .from('organization')
         .insert([{ name, nip, pass }]);
-    return { data, error };
+    if (error) {
+        console.error("Error al registrar la organización:", error);
+        return { data: null, error }; // Devuelve el error y data como null de forma consistente
+    }
+    return { data, error: null }; // Devuelve tanto 'data' como 'error' de forma consistente
 };
 
 // Función para iniciar sesión (login)
@@ -20,10 +24,10 @@ export const loginOrganization = async (nip, pass) => {
 
     if (error) {
         console.error("Error al iniciar sesión:", error);
-        return false; // Error en la consulta
+        return { data: null, error }; // Error en la consulta
     }
 
-    return !!data; // Devuelve true si hay datos (organización encontrada), false de lo contrario
+    return { data: !!data, error: null }; // Devuelve true si hay datos (organización encontrada), false de lo contrario
 };
 
 // Función para iniciar sesión (login) de un usuario
@@ -36,12 +40,13 @@ export const loginUser = async (nip, pass, role, organization_id) => {
         .eq('role', role)
         .eq('organization_id', organization_id)
         .single();
+
     if (error) {
-        console.error("Error al iniciar sesión en el curso:", error);
-        return false; // Error en la consulta
+        console.error("Error al iniciar sesión del usuario:", error);
+        return { data: null, error }; // Devuelve el error y data como null de forma consistente
     }
 
-    return !!data; // Devuelve true si hay datos (curso encontrado), false de lo contrario
+    return { data: !!data, error: null }; // Devuelve true si hay datos, false si no, y error como null
 };
 
 // Función para registrar un nuevo curso
@@ -58,7 +63,12 @@ export const registerUser = async (name, nip, pass, role, organization_id) => {
             },
         ]);
 
-    return { data, error }; // Devuelve tanto 'data' como 'error' para una respuesta consistente
+    if (error) {
+        console.error("Error al registrar el usuario:", error);
+        return { data: null, error }; // Devuelve el error y data como null de forma consistente
+    }
+
+    return { data, error: null }; // Devuelve tanto 'data' como 'error' de forma consistente
 };
 
 // Función para obtener todos los cursos que posee la organización
@@ -232,7 +242,7 @@ export const getUserInfoByNIP = async (nip, organizationId) => {
         return null; // En caso de error, devolver null
     }
 
-    return {data}; // Devuelve el ID o null si no se encuentra
+    return { data }; // Devuelve el ID o null si no se encuentra
 };
 
 // Funcion para mostrar todas las organizaciones existentes

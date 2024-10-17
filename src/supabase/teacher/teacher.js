@@ -9,20 +9,21 @@ export const registerArrayTeachers = async (teachers, organization_id) => {
         role: 'teacher',
         organization_id
       }
-    }, organization_id);
+    });
 
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from('users')
       .insert(teachersWithOrgId);
 
     if (error) {
       console.error('Error al insertar los profesores:', error);
-      return false;
+      return { data: null, error };
     }
 
     console.log('Profesores insertados correctamente:', teachersWithOrgId);
-    return true;
+    return { data, error: null };
   } catch (err) {
     console.error('Ha ocurrido un error:', err);
+    return { data: null, error: err };
   }
 }
