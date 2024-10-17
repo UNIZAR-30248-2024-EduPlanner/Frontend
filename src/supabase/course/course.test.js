@@ -141,11 +141,11 @@ describe('Course API Tests', () => {
     if (course_id) {
       await fo.eliminateCourse(course_id);
     }
-    /*
+
     if (subjectId) {
       await f.eliminateSubject(subjectId);
     }
-      */
+
   });
 
 });
