@@ -2,7 +2,7 @@ import "../css/Home.css";
 import { useNavigate } from "react-router-dom";
 import constants from "../constants/constants";
 import { Button } from "@nextui-org/react";
-import EduplannerLogo from "../assets/Eduplanner.png";  // Importa la imagen
+import EduplannerLogo from "../assets/Eduplanner.png";
 
 const Home = () => {
     const navigate = useNavigate();
