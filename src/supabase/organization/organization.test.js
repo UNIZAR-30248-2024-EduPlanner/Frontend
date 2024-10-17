@@ -140,7 +140,7 @@ describe('Organization API Tests', () => {
     it('should get all organizations', async () => {
         const result = await f.getAllOrganizations();
         expect(result.error).toBeNull();
-        expect(result.data).toHaveLength(5); // Debe haber cuatro organizaciones
+        expect(result.data).toHaveLength(4); // Debe haber cuatro organizaciones
     });
 
     it('should get organization by ID', async () => {
