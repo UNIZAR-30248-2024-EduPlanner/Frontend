@@ -9,46 +9,46 @@ import OrganizacionCrear from "../Pages/Organizacion/OrganizacionCrear"
 import OrganizacionModificar from "../Pages/Organizacion/OrganizacionModificar"
 import CrearOrganizacion from "../Pages/login/CrearOrganizacion"
 import IniciarSesion from "../Pages/login/IniciarSesion"
-import {ProtectedRouter, ProtectedUser} from "./ProtectedRouter"
+import { ProtectedRouter, ProtectedUser } from "./ProtectedRouter"
 import { AuthProvider } from "../context/AuthContext"
 
 const RouterComponent = () => {
     return (
         <AuthProvider>
-        <BrowserRouter>
-            <Routes>
-                <Route path={constants.root} element={<Home />} />
-                <Route path={constants.root + "IniciarSesion"} element={<IniciarSesion />} />
-                <Route path={constants.root + "CrearOrganizacion"} element={<CrearOrganizacion />} />
+            <BrowserRouter>
+                <Routes>
+                    <Route path={constants.root} element={<Home />} />
+                    <Route path={constants.root + "IniciarSesion"} element={<IniciarSesion />} />
+                    <Route path={constants.root + "CrearOrganizacion"} element={<CrearOrganizacion />} />
 
-                <Route path={constants.root + "OrganizacionMenu"} element={<OrganizacionMenu />} />
-                <Route path={constants.root + "OrganizacionCrear/:type"} element={<OrganizacionCrear />} />
-                <Route path={constants.root + "OrganizacionModificar/:type/:id"} element={<OrganizacionModificar />} />
+                    <Route path={constants.root + "OrganizacionMenu"} element={<OrganizacionMenu />} />
+                    <Route path={constants.root + "OrganizacionCrear/:type"} element={<OrganizacionCrear />} />
+                    <Route path={constants.root + "OrganizacionModificar/:type/:id/:nombreViejo/:nipViejo"} element={<OrganizacionModificar />} />
 
-                <Route path={constants.root + "CursoMenu"} element={<CursoMenu />} />
-                <Route path={constants.root + "CursoCrear/:type/"} element={<CursoCrear />} />
-                <Route path={constants.root + "CursoModificar/:type/:id"} element={<CursoModificar />} />
+                    <Route path={constants.root + "CursoMenu"} element={<CursoMenu />} />
+                    <Route path={constants.root + "CursoCrear/:type/"} element={<CursoCrear />} />
+                    <Route path={constants.root + "CursoModificar/:type/:id/:nombreViejo/:nipViejo"} element={<CursoModificar />} />
 
-                <Route element={<ProtectedRouter/>}>
-                    {/* USUARIO ORGANIZACIÓN */}
-                    <Route element={<ProtectedUser userType={constants.organizacion}/>}>
+                    <Route element={<ProtectedRouter />}>
+                        {/* USUARIO ORGANIZACIÓN */}
+                        <Route element={<ProtectedUser userType={constants.organizacion} />}>
+                        </Route>
+
+                        {/* USUARIO CURSO */}
+                        <Route element={<ProtectedUser userType={constants.curso} />}>
+                        </Route>
+
+                        {/* USUARIO ALUMNO */}
+                        <Route element={<ProtectedUser userType={constants.alumno} />}>
+                        </Route>
+
+                        {/* USUARIO PROFESOR */}
+                        <Route element={<ProtectedUser userType={constants.profesor} />}>
+                        </Route>
+
                     </Route>
-                    
-                    {/* USUARIO CURSO */}
-                    <Route element={<ProtectedUser userType={constants.curso}/>}>
-                    </Route>
-
-                    {/* USUARIO ALUMNO */}
-                    <Route element={<ProtectedUser userType={constants.alumno}/>}>
-                    </Route>
-
-                    {/* USUARIO PROFESOR */}
-                    <Route element={<ProtectedUser userType={constants.profesor}/>}>
-                    </Route>
-
-                </Route>
-            </Routes>
-        </BrowserRouter>
+                </Routes>
+            </BrowserRouter>
         </AuthProvider>
 
     )

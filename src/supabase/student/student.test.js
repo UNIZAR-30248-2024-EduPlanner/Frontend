@@ -41,7 +41,7 @@ describe('Student API Tests', () => {
       .eq('nip', testArrayStudents[2].nip);
 
     const result = await f.registerArrayStudents(testArrayStudents, organizationId);
-    expect(result).toBe(true);
+    expect(result.error).toBeNull(); // Verifica que no haya error
   });
 
   // Prueba para registrar un array de estudiantes
@@ -60,6 +60,7 @@ describe('Student API Tests', () => {
       .from('users')
       .delete()
       .eq('nip', 66666);
+
     const result = await f.registerArrayStudents([
       {
         name: 'Estudiante 4',
@@ -77,10 +78,9 @@ describe('Student API Tests', () => {
         pass: 'studentpass6'
       }
     ], organizationId);
-    expect(result).toBe(true);
+
+    expect(result.error).toBeNull(); // Verifica que no haya error
   });
-
-
 
   // Limpiar datos después de las pruebas
   afterAll(async () => {

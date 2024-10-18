@@ -1,5 +1,6 @@
 import { supabase } from '../supabaseClient.js';
 
+
 // Función para iniciar sesión (login) de un usuario
 export const loginUser = async (nip, pass, role, organization_id) => {
   const { data, error } = await supabase
@@ -10,15 +11,17 @@ export const loginUser = async (nip, pass, role, organization_id) => {
     .eq('role', role)
     .eq('organization_id', organization_id)
     .single();
+
   if (error) {
-    console.error("Error al iniciar sesión en el curso:", error);
-    return false; // Error en la consulta
+    console.error("Error al iniciar sesión del usuario:", error);
+    return { data: null, error }; // Devuelve el error y data como null de forma consistente
   }
 
-  return !!data; // Devuelve true si hay datos (curso encontrado), false de lo contrario
+  return { data: !!data, error: null }; // Devuelve true si hay datos, false si no, y error como null
 };
 
-// Función para registrar un nuevo curso
+
+// Función para registrar un nuevo usuario
 export const registerUser = async (name, nip, pass, role, organization_id) => {
   const { data, error } = await supabase
     .from('users')
@@ -32,8 +35,14 @@ export const registerUser = async (name, nip, pass, role, organization_id) => {
       },
     ]);
 
-  return { data, error }; // Devuelve tanto 'data' como 'error' para una respuesta consistente
+  if (error) {
+    console.error("Error al registrar el usuario:", error);
+    return { data: null, error }; // Devuelve el error y data como null de forma consistente
+  }
+
+  return { data, error: null }; // Devuelve tanto 'data' como 'error' de forma consistente
 };
+
 
 export const getUserIdByNIP = async (nip, organizationId) => {
   const { data, error } = await supabase
@@ -45,24 +54,42 @@ export const getUserIdByNIP = async (nip, organizationId) => {
 
   if (error) {
     console.error("Error al obtener el ID de usuario:", error);
-    return null; // En caso de error, devolver null
+    return { data: null, error }; // Devuelve el error y data como null de forma consistente
   }
 
-  return data ? data.id : null; // Devuelve el ID o null si no se encuentra
+  return { data: data ? data.id : null, error: null }; // Devuelve tanto 'data' como 'error' de forma consistente
 };
+
 
 export const getUserInfoByNIP = async (nip, organizationId) => {
   const { data, error } = await supabase
     .from('users')
-    .select('*') // Solo seleccionamos el ID
+    .select('*') // Seleccionamos toda la información del usuario
     .eq('nip', nip)
-    .eq('organization_id', organizationId) // Comprobar también por ID de organización
+    .eq('organization_id', organizationId) // Comprobamos también por ID de organización
     .single(); // Devuelve solo un resultado
 
   if (error) {
     console.error("Error al obtener el ID de usuario:", error);
-    return null; // En caso de error, devolver null
+    return { data: null, error }; // Devuelve el error y data como null de forma consistente
   }
 
-  return data; // Devuelve el ID o null si no se encuentra
+  return { data, error: null }; // Devuelve tanto 'data' como 'error' de forma consistente
 };
+
+
+// Función para devolver la información de un usuario dado su ID
+export const getUserInfoById = async (id) => {
+  const { data, error } = await supabase
+    .from('users')
+    .select('*')
+    .eq('id', id)
+    .single();
+
+  if (error) {
+    console.error("Error al obtener la información del usuario:", error);
+    return { data: null, error }; // Devuelve el error de forma consistente
+  }
+
+  return { data, error: null }; // Devuelve tanto 'data' como 'error' de forma consistente
+}

@@ -40,7 +40,7 @@ describe('Teacher API Tests', () => {
       .eq('nip', testArrayTeachers[2].nip);
 
     const result = await f.registerArrayTeachers(testArrayTeachers, organizationId);
-    expect(result).toBe(true);
+    expect(result.error).toBeNull(); // Verifica que no haya error
   });
 
   // Prueba para registrar un array de profesores
@@ -76,7 +76,7 @@ describe('Teacher API Tests', () => {
         pass: 'teacherpass6'
       }
     ], organizationId);
-    expect(result).toBe(true);
+    expect(result.error).toBeNull(); // Verifica que no haya error
   });
 
   afterAll(async () => {

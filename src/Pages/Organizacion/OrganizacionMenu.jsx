@@ -35,25 +35,24 @@ const OrganizacionMenu = () => {
             console.log(user)
             setOrgName(user.name)
             getAllItems(user.id)
-        }        
+        }
     }, [user])
 
     return (
         <div>
             <h1 className="org-menu-tit"> Bienvenido, {orgName} </h1>
             <div className="tabs-org">
-                <Tabs
-                    color="primary"
+                <Tabs color="primary"
                     variant="underlined"
                     defaultSelectedKey="cursos">
                     <Tab className="text-center text-xl" key="alumnos" title="Alumnos">
-                        <Lista lista={alumnos} type={"alumnos"} creator={"Organizacion"} />
+                        <Lista lista={alumnos} setLista={setAlumnos} type={"alumnos"} creator={"Organizacion"} />
                     </Tab>
                     <Tab className="text-center text-xl" key="cursos" title="Cursos">
-                        <Lista lista={cursos} type={"cursos"} creator={"Organizacion"} />
+                        <Lista lista={cursos} setLista={setCursos} type={"cursos"} creator={"Organizacion"} />
                     </Tab>
                     <Tab className="text-center text-xl" key="profesores" title="Profesores">
-                        <Lista lista={profesores} type={"profesores"} creator={"Organizacion"} />
+                        <Lista lista={profesores} setLista={setProfesores} type={"profesores"} creator={"Organizacion"} />
                     </Tab>
                 </Tabs>
             </div>
