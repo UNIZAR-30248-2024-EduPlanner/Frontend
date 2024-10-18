@@ -22,8 +22,8 @@ const SubidaFichero = ({ type, lista, setLista }) => {
 
         fileReader.onload = () => {
             const text = fileReader.result;
-            const lines = text.split("\n");
-
+            const lines = text.split(/\r?\n|\r/);
+            
             const parsedData = [];
             const erroresEncontrados = [];
 
