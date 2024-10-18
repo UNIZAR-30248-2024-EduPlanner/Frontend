@@ -8,6 +8,7 @@ import FlechaVolver from "../../Components/FlechaVolver";
 import { editCourse, editStudent, editTeacher } from "../../supabase/organization/organization";
 import constants from "../../constants/constants";
 import { useNavigate } from "react-router-dom";
+import Logout from "../../Components/Logout";
 
 const OrganizacionModificar = () => {
     const { type } = useParams()
@@ -89,6 +90,7 @@ const OrganizacionModificar = () => {
     return (
         <>
             <FlechaVolver />
+            <Logout/>
             <h1 className="org-mod-tit"> Modificar {typeSingular} </h1>
             {/* Mensaje de error */}
             {error && (

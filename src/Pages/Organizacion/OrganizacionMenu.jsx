@@ -6,6 +6,7 @@ import "../../css/Organizacion/OrganizacionMenu.css"
 import { Tabs, Tab } from "@nextui-org/react";
 import { getAllCourses, getAllStudents, getAllTeachers } from "../../supabase/organization/organization";
 import { useAuth } from "../../context/AuthContext";
+import Logout from "../../Components/Logout";
 
 const OrganizacionMenu = () => {
     const { user } = useAuth();
@@ -40,6 +41,7 @@ const OrganizacionMenu = () => {
 
     return (
         <div>
+            <Logout/>
             <h1 className="org-menu-tit"> Bienvenido, {orgName} </h1>
             <div className="tabs-org">
                 <Tabs color="primary"

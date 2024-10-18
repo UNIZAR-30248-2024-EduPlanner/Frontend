@@ -11,6 +11,11 @@ import { createCourse, createStudent, createTeacher } from "../../supabase/organ
 import { useAuth } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
+// Para el Modal
+import {useDisclosure} from "@nextui-org/react";
+import ModalComponent from "../../Components/ModalComponent";
+import Logout from "../../Components/Logout";
+
 
 const OrganizacionCrear = () => {
   const { type } = useParams()
@@ -28,17 +33,15 @@ const OrganizacionCrear = () => {
   const [lista, setLista] = useState([])
   const { user } = useAuth();
 
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+
   // Funciones para crear el item
   const create = async () => {
     // TODO: dependiendo el tipo a crear, crear uno u otro
     // llamada a funcion crear
     setError(""); // Limpiar cualquier mensaje de error anterior
 
-    if (
-      !nombre ||
-      !nip ||
-      !password
-    ) {
+    if ( !nombre || !nip ||!password ) {
       setError("Uno o varios campos están vacíos.");
       window.scrollTo({ top: 0, behavior: "smooth" });
       return;
@@ -91,6 +94,7 @@ const OrganizacionCrear = () => {
   return (
     <>
       <FlechaVolver />
+      <Logout/>
       <h1 className="org-crear-tit"> Crear {type} </h1>
       <div className="org-crear-container">
         <div className="org-crear-uno">
@@ -149,9 +153,18 @@ const OrganizacionCrear = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
-            <Button size="lg" color="primary" onClick={create}>
+            <Button size="lg" color="primary" onClick={onOpen}>
               Crear
             </Button>
+            <ModalComponent
+                isOpen={isOpen}
+                onOpenChange={onOpenChange}
+                title="Confirmar creación"
+                texto="¿Estás seguro de que quieres crear este elemento?"
+                onAccept={() => {
+                    create(); // Ejecutar crear
+                }}
+            />
           </div>
         </div>
         <div className="fich">

@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 import constants from "../constants/constants";
 import { getOrganizationById, getUserInfoByNIP, loginOrganization, registerOrganization } from "../supabase/organization/organization";
 import { loginCourse } from "../supabase/course/course";
-import { loginUser } from "../supabase/user/user";
+import { getUserInfoById, loginUser } from "../supabase/user/user";
 
 const AuthContext = createContext();
 
@@ -70,7 +70,8 @@ export const AuthProvider = ({ children }) => {
             console.log("heyy ", res.data)  
         }
 
-        localStorage.setItem("user", res.id)
+        console.log("Guardo el id en lS: ", res.data.id)
+        localStorage.setItem("user", res.data.id);  // Si user es un objeto
         localStorage.setItem("type", userType)
         setUser(res.data) // guardamos los datos del usuario
         setIsAuthenticated(true) // el usuario queda autenticado
@@ -81,32 +82,41 @@ export const AuthProvider = ({ children }) => {
 
     const logout = () => {
         localStorage.removeItem("user")
+        localStorage.removeItem("type")
         setUser(null)
         setIsAuthenticated(false)
         setType(null)
     }
 
     // Esto es para que al refrescar la página la sesión se mantenga
-    // const recoverUser = async () => {
-    //     const userIdStored = localStorage.getItem("user");
-    //     if (!userIdStored) {
-    //         setIsAuthenticated(false);
-    //         setUser(null);
-    //         setType(null);
-    //     } else {
-    //         console.log("Hola")
-    //         console.log("UserStored: ", userIdStored)
+    const recoverUser = async () => {
+        const userIdStored = localStorage.getItem("user");
+        console.log(userIdStored)
+        console.log(userIdStored === "undefined")
+        if (userIdStored == null || userIdStored == "undefined") {
+            setIsAuthenticated(false);
+            setUser(null);
+            setType(null);
+        } else {
+            console.log("UserStored: ", userIdStored)
+            const userType = localStorage.getItem("type")
 
-    //         const type = 
-    //         setUser(userIdStored)
-    //         setIsAuthenticated(true)
-    //         setType(localStorage.getItem("type"))
-    //     }
-    // }
+            if (userType == constants.organizacion) {
+                const res = await getOrganizationById(userIdStored)
+                if (!res.error) setUser(res.data)
+            } else {
+                const res = await getUserInfoById(userIdStored)
+                if (!res.error) setUser(res.data)
+            }
 
-    // useEffect(() => {
-    //     recoverUser();
-    // }, [])
+            setType(userType)
+            setIsAuthenticated(true)
+        }
+    }
+
+    useEffect(() => {
+        recoverUser();
+    }, [])
 
     return (
         <AuthContext.Provider

@@ -1,18 +1,18 @@
-.flecha {
-    .flecha-volver-container {
+.logout {
+    .logout-container {
         background-color: transparent;
         position: fixed;
         top: 1vh;
-        left: 1vw;
-        font-size: 14rem;
+        right: 1vw;
+        font-size: 52rem;
         color: var(--color-primary);
     }
     
-    .flecha-volver {
-        font-size: 100%;
+    .logout {
+        font-size: 60rem;
     }
     
-    .flecha-volver:hover {
+    .logout:hover {
         opacity: 0.75;
     }    
 }

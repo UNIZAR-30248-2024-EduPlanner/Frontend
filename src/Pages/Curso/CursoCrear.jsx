@@ -8,6 +8,7 @@ import { createSubject } from "../../supabase/course/course";
 import { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import Logout from "../../Components/Logout";
 
 const CursoCrear = () => {
     const { type } = useParams()
@@ -56,6 +57,7 @@ const CursoCrear = () => {
     return (
         <>
             <FlechaVolver />
+            <Logout/>
             <h1 className="cur-crear-tit"> Crear {type} </h1>
             <div className="cur-crear-container">
                 <div className="cur-crear-uno">

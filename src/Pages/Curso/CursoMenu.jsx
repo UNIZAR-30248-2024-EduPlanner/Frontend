@@ -5,6 +5,7 @@ import FlechaVolver from "../../Components/FlechaVolver";
 import { useEffect, useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { getAllSubjects } from "../../supabase/course/course";
+import Logout from "../../Components/Logout";
 
 const CursoMenu = () => {
 
@@ -40,6 +41,7 @@ const CursoMenu = () => {
     return (
         <div>
             <FlechaVolver />
+            <Logout/>
             <h1 className="cur-menu-tit"> Bienvenido, {cursoName}</h1>
             <div className="cur-container">
                 <Tabs

@@ -6,6 +6,7 @@ import "../../css/Curso/CursoModificar.css"
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { editSubject } from "../../supabase/course/course";
+import Logout from "../../Components/Logout";
 
 const CursoModificar = () => {
     const { type } = useParams()
@@ -54,6 +55,7 @@ const CursoModificar = () => {
     return (
         <>
             <FlechaVolver />
+            <Logout/>
             <h1 className="cur-mod-tit"> Modificar {typeSingular} </h1>
             <div className="cur-mod-form space-y-20">
                 {/* Mensaje de error */}

@@ -35,6 +35,7 @@ const IniciarSesion = () => {
     }, [])
 
     useEffect(() => {
+        console.log("isAuthenticated: ", isAuthenticated)
         if (isAuthenticated) {
             if (type == constants.organizacion) navigate(constants.root + "OrganizacionMenu")
             else if (type == constants.alumno) navigate(constants.root + "AlumnoMenu")
