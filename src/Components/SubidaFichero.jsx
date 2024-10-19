@@ -64,9 +64,9 @@ const SubidaFichero = ({ type, lista, setLista }) => {
                             return;
                         }
 
-                        // Validar que 'Contraseña' sea una cadena no vacía
-                        if (!pass || typeof pass !== "string") {
-                            erroresEncontrados.push(`Línea ${index + 1}: Contraseña no válida.`);
+                        // Validar que 'Contraseña' sea una cadena no vacía y tenga al menos 6 caracteres
+                        if (!pass || typeof pass !== "string" || pass.length < 6) {
+                            erroresEncontrados.push(`Línea ${index + 1}: Contraseña no válida. Debe tener al menos 6 caracteres.`);
                             return;
                         }
 
