@@ -1,4 +1,4 @@
-import { ScrollShadow } from "@nextui-org/react";
+import { ScrollShadow, useDisclosure } from "@nextui-org/react";
 import { Button } from "@nextui-org/react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -8,6 +8,7 @@ import { registerArrayStudents } from "../supabase/student/student";
 import { registerArrayTeachers } from "../supabase/teacher/teacher";
 import { registerArrayCourses, registerArraySubject } from "../supabase/course/course";
 import { useAuth } from "../context/AuthContext";
+import ModalComponent from "./ModalComponent";
 
 
 // Referencia: https://github.com/NelsonCode/drag-and-drop-files-react/blob/master/src/components/DragArea/index.js
@@ -17,6 +18,8 @@ const SubidaFichero = ({ type, lista, setLista }) => {
     const navigate = useNavigate();
     const [error, setError] = useState("");
     const { user } = useAuth()
+
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
     const readFile = (e) => {
         console.log("Hola")
@@ -281,11 +284,21 @@ const SubidaFichero = ({ type, lista, setLista }) => {
             </div>
             {lista.length > 0 && errores.length == 0 && (
                 <div className="crear-button">
-                    <Button size="lg" color="primary" onClick={() => create(lista)}>
+                    <Button size="lg" color="primary" onClick={() => onOpen()}>
                         Crear la lista
                     </Button>
                 </div>
             )}
+            <ModalComponent
+                isOpen={isOpen}
+                onOpenChange={onOpenChange}
+                title="Confirmar creación"
+                texto="¿Estás seguro de que quieres crear esta lista de elementos?"
+                onAccept={() => {
+                    create(lista); // Ejecutar crear
+                }}
+            />
+
         </>
     )
 }
