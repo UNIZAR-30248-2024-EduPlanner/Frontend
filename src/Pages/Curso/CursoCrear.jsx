@@ -57,7 +57,7 @@ const CursoCrear = () => {
     return (
         <>
             <FlechaVolver />
-            <Logout/>
+            <Logout />
             <h1 className="cur-crear-tit"> Crear {type} </h1>
             <div className="cur-crear-container">
                 <div className="cur-crear-uno">
@@ -105,6 +105,12 @@ const CursoCrear = () => {
                 </div>
                 <div className="fich">
                     <h2 className="cur-crear-tit"> Sube un fichero de {type} </h2>
+                    <p className="formato">
+                        El formato del fichero por línea será el siguiente: <br />
+                        <span>
+                            Nombre de la asignatura;Codigo; <br />
+                        </span>
+                    </p>
                     <SubidaFichero type={type} lista={lista} setLista={setLista} />
                 </div>
             </div>

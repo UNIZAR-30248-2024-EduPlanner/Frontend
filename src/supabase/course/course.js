@@ -60,6 +60,31 @@ export const registerArrayCourses = async (courses, organization_id) => {
     }
 };
 
+// Función para registrar un array de cursos
+export const registerArraySubject = async (subjects, course_id) => {
+    try {
+        const subjectsWithOrgId = subjects.map(subjects => ({
+            ...subjects,
+            course_id,
+        }));
+
+        const { error } = await supabase
+            .from('subjects')
+            .insert(subjectsWithOrgId);
+
+        if (error) {
+            console.error('Error al insertar los cursos:', error);
+            return { data: null, error }; // Devolver objeto con error
+        }
+
+        console.log('Cursos insertados correctamente:', subjectsWithOrgId);
+        return { data: true, error: null }; // Devuelve true si se insertaron correctamente
+    } catch (err) {
+        console.error('Ha ocurrido un error:', err);
+        return { data: null, error: err }; // Devolver objeto con error
+    }
+};
+
 // Función para obtener todas las asignaturas que posee un curso
 export const getAllSubjects = async (courseId) => {
     const { data, error } = await supabase
