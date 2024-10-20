@@ -1,74 +1,117 @@
-// src/api/organization.js
-import { supabase } from '../supabaseClient';
+import bcrypt from 'bcrypt';
+import { supabase } from '../supabaseClient.js';
 
 // Función para registrar una organización
 export const registerOrganization = async (name, nip, pass) => {
-    const { data, error } = await supabase
-        .from('organization')
-        .insert([{ name, nip, pass }]);
-    if (error) {
-        console.error("Error al registrar la organización:", error);
-        return { data: null, error }; // Devuelve el error y data como null de forma consistente
+    try {
+        // Generar el hash de la contraseña
+        const saltRounds = 10;
+        const hashedPassword = await bcrypt.hash(pass, saltRounds);
+
+        // Insertar la organización con la contraseña cifrada
+        const { data, error } = await supabase
+            .from('organization')
+            .insert([{ name, nip, pass: hashedPassword }]);
+
+        if (error) {
+            console.error("Error al registrar la organización:", error);
+            return { data: null, error };
+        }
+
+        return { data, error: null };
+    } catch (error) {
+        console.error("Error al cifrar la contraseña:", error);
+        return { data: null, error };
     }
-    return { data, error: null }; // Devuelve tanto 'data' como 'error' de forma consistente
 };
 
-// Función para iniciar sesión (login)
-export const loginOrganization = async (nip, pass) => {
-    const { data, error } = await supabase
-        .from('organization')
-        .select('*')
-        .eq('nip', nip)
-        .eq('pass', pass)
-        .single(); // Devuelve solo un resultado
+// Función para iniciar sesión (login) de la organización
+export const loginOrganization = async (id, nip, pass) => {
+    try {
+        const { data, error } = await supabase
+            .from('organization')
+            .select('*') // Seleccionamos el hash de la contraseña
+            .eq('nip', nip)
+            .eq('id', id)
+            .single();
 
-    if (error) {
+        if (error || !data) {
+            console.error("Error al buscar la organización:", error);
+            return { data: null, error: "Organización no encontrada" };
+        }
+
+        // Verificar la contraseña proporcionada contra el hash almacenado
+        const passwordMatch = await bcrypt.compare(pass, data.pass);
+        if (!passwordMatch) {
+            return { data: null, error: "Contraseña incorrecta" };
+        }
+
+        return { data: true, error: null }; // Inicio de sesión exitoso
+    } catch (error) {
         console.error("Error al iniciar sesión:", error);
-        return { data: null, error }; // Error en la consulta
+        return { data: null, error };
     }
+};
 
-    return { data: !!data, error: null }; // Devuelve true si hay datos (organización encontrada), false de lo contrario
+// Función para registrar un nuevo usuario
+export const registerUser = async (name, nip, pass, role, organization_id) => {
+    try {
+        // Cifrar la contraseña del usuario
+        const saltRounds = 10;
+        const hashedPassword = await bcrypt.hash(pass, saltRounds);
+
+        // Insertar el usuario con la contraseña cifrada
+        const { data, error } = await supabase
+            .from('users')
+            .insert([
+                {
+                    name,
+                    nip,
+                    pass: hashedPassword, // Almacena la contraseña cifrada
+                    role,
+                    organization_id,
+                },
+            ]);
+
+        if (error) {
+            console.error("Error al registrar el usuario:", error);
+            return { data: null, error };
+        }
+
+        return { data, error: null };
+    } catch (error) {
+        console.error("Error al cifrar la contraseña del usuario:", error);
+        return { data: null, error };
+    }
 };
 
 // Función para iniciar sesión (login) de un usuario
 export const loginUser = async (nip, pass, role, organization_id) => {
-    const { data, error } = await supabase
-        .from('users')
-        .select('*')
-        .eq('nip', nip)
-        .eq('pass', pass)
-        .eq('role', role)
-        .eq('organization_id', organization_id)
-        .single();
+    try {
+        const { data, error } = await supabase
+            .from('users')
+            .select('*') // Selecciona solo la contraseña cifrada
+            .eq('nip', nip)
+            .eq('role', role)
+            .eq('organization_id', organization_id)
+            .single();
 
-    if (error) {
+        if (error || !data) {
+            console.error("Error al iniciar sesión del usuario:", error);
+            return { data: null, error: "Usuario no encontrado" };
+        }
+
+        // Verificar la contraseña proporcionada contra el hash almacenado
+        const passwordMatch = await bcrypt.compare(pass, data.pass);
+        if (!passwordMatch) {
+            return { data: null, error: "Contraseña incorrecta" };
+        }
+
+        return { data: true, error: null }; // Inicio de sesión exitoso
+    } catch (error) {
         console.error("Error al iniciar sesión del usuario:", error);
-        return { data: null, error }; // Devuelve el error y data como null de forma consistente
+        return { data: null, error };
     }
-
-    return { data: !!data, error: null }; // Devuelve true si hay datos, false si no, y error como null
-};
-
-// Función para registrar un nuevo curso
-export const registerUser = async (name, nip, pass, role, organization_id) => {
-    const { data, error } = await supabase
-        .from('users')
-        .insert([
-            {
-                name,
-                nip,
-                pass, // Almacena la contraseña de forma segura en producción
-                role,
-                organization_id, // Relación con la organización a la que pertenece
-            },
-        ]);
-
-    if (error) {
-        console.error("Error al registrar el usuario:", error);
-        return { data: null, error }; // Devuelve el error y data como null de forma consistente
-    }
-
-    return { data, error: null }; // Devuelve tanto 'data' como 'error' de forma consistente
 };
 
 // Función para obtener todos los cursos que posee la organización
@@ -84,11 +127,7 @@ export const getAllCourses = async (organizationId) => {
 
 // Función para crear un curso
 export const createCourse = async (name, nip, pass, organizationId) => {
-    const { data, error } = await supabase
-        .from('users')
-        .insert([{ name, nip, pass, role: 'course', organization_id: organizationId }]);
-
-    return { data, error };
+    return await registerUser(name, nip, pass, 'course', organizationId);
 };
 
 // Función para eliminar un curso
@@ -126,11 +165,7 @@ export const getAllStudents = async (organizationId) => {
 
 // Función para crear un alumno
 export const createStudent = async (name, nip, pass, organizationId) => {
-    const { data, error } = await supabase
-        .from('users')
-        .insert([{ name, nip, pass, role: 'student', organization_id: organizationId }]);
-
-    return { data, error };
+    return await registerUser(name, nip, pass, 'student', organizationId);
 };
 
 // Función para eliminar un alumno
@@ -168,11 +203,7 @@ export const getAllTeachers = async (organizationId) => {
 
 // Función para crear un profesor
 export const createTeacher = async (name, nip, pass, organizationId) => {
-    const { data, error } = await supabase
-        .from('users')
-        .insert([{ name, nip, pass, role: 'teacher', organization_id: organizationId }]);
-
-    return { data, error };
+    return await registerUser(name, nip, pass, 'teacher', organizationId);
 };
 
 // Función para eliminar un profesor

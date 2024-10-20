@@ -65,8 +65,9 @@ describe('Organization API Tests', () => {
     });
 
     it('should login organization successfully', async () => {
-        const result = await f.loginOrganization(testOrganization.nip, testOrganization.pass);
+        const result = await f.loginOrganization(organizationId,testOrganization.nip, testOrganization.pass);
         expect(result.error).toBeNull();
+        expect(result.data).toBe(true);
     });
 
     it('should retrieve all courses for the organization', async () => {
@@ -179,6 +180,7 @@ describe('Organization API Tests', () => {
             .from('organization')
             .delete()
             .eq('nip', 987654321);
+        
 
         // Eliminar organización
         /*

@@ -6,3 +6,4 @@ npm install -D tailwindcss postcss autoprefixer
 npm install @nextui-org/react framer-motion
 npm uninstall jest jest-cli babel-jest @testing-library/jest-dom jest-environment-jsdom
 npm install -D vitest
+npm install bcrypt
