@@ -17,7 +17,13 @@ const testCourse = {
 };
 
 const testStudent = {
-    name: 'Estudiante Test',
+    name: 'Estudiante Test ',
+    nip: 111111111,
+    pass: 'studentpass'
+};
+
+const failTestStudent = {
+    name: 'Estudiante Test Fail',
     nip: 111111111,
     pass: 'studentpass'
 };
@@ -49,7 +55,6 @@ describe('Organization API Tests', () => {
         expect(organizationId).not.toBeNull(); // Asegúrate de que la organización se creó y se puede obtener su ID
     });
 
-    // Prueba para registrar una organización
     it('should register a new organization', async () => {
         await supabase
             .from('organization')
@@ -59,13 +64,11 @@ describe('Organization API Tests', () => {
         expect(result.error).toBeNull();
     });
 
-    // Prueba para iniciar sesión
     it('should login organization successfully', async () => {
         const result = await f.loginOrganization(testOrganization.nip, testOrganization.pass);
         expect(result.error).toBeNull();
     });
 
-    // Prueba para obtener todos los cursos
     it('should retrieve all courses for the organization', async () => {
         const createResult = await f.createCourse(testCourse.name, testCourse.nip, testCourse.pass, organizationId);
         expect(createResult.error).toBeNull();
@@ -77,7 +80,6 @@ describe('Organization API Tests', () => {
         expect(courseId).not.toBeNull();
     });
 
-    // Prueba para crear un alumno
     it('should create a new student', async () => {
         const result = await f.createStudent(testStudent.name, testStudent.nip, testStudent.pass, organizationId);
         expect(result.error).toBeNull();
@@ -89,17 +91,22 @@ describe('Organization API Tests', () => {
         expect(studentId).not.toBeNull();
     });
 
-    it('should recieve all student info', async () => {
-        const result = await f.getUserInfoByNIP(testStudent.nip, organizationId);
-        //expect(result.error).toBeNull();
-        console.log(result);
+    it('should not create a new student with the same NIP', async () => {
+        const result = await f.createStudent(failTestStudent.name, failTestStudent.nip, failTestStudent.pass, organizationId);
+        expect(result.error).not.toBeNull();
     });
 
-    // Prueba para crear un profesor
+    it('should recieve all student info', async () => {
+        const result = await f.getUserInfoByNIP(testStudent.nip, organizationId);
+        expect(result.data.id).toBe(studentId);
+        expect(result.data.name).toBe(testStudent.name);
+        expect(result.data.role).toBe('student');
+        expect(result.data.organization_id).toBe(organizationId);
+    });
+
     it('should create a new teacher', async () => {
         const result = await f.createTeacher(testTeacher.name, testTeacher.nip, testTeacher.pass, organizationId);
         expect(result.error).toBeNull();
-
         const teachers = await f.getAllTeachers(organizationId);
         expect(teachers.error).toBeNull();
         expect(teachers.data).toHaveLength(1); // Debe haber un profesor
@@ -107,7 +114,6 @@ describe('Organization API Tests', () => {
         expect(teacherId).not.toBeNull();
     });
 
-    // Prueba para editar un curso
     it('should edit the course', async () => {
         const updates = { name: 'Curso Test Modificado' };
         const result = await f.editCourse(courseId, updates);
@@ -117,7 +123,6 @@ describe('Organization API Tests', () => {
         expect(updatedCourse.data[0].name).toBe(updates.name); // Verificar que el nombre fue actualizado
     });
 
-    // Prueba para editar un alumno
     it('should edit the student', async () => {
         const updates = { name: 'Estudiante Modificado' };
         const result = await f.editStudent(studentId, updates);
@@ -127,7 +132,6 @@ describe('Organization API Tests', () => {
         expect(updatedStudent.data[0].name).toBe(updates.name); // Verificar que el nombre fue actualizado
     });
 
-    // Prueba para editar un profesor
     it('should edit the teacher', async () => {
         const updates = { name: 'Profesor Modificado' };
         const result = await f.editTeacher(teacherId, updates);
@@ -140,7 +144,7 @@ describe('Organization API Tests', () => {
     it('should get all organizations', async () => {
         const result = await f.getAllOrganizations();
         expect(result.error).toBeNull();
-        expect(result.data).toHaveLength(4); // Debe haber cuatro organizaciones
+        expect(result.data).toHaveLength(4); // Ojo aquí, si se añaden más organizaciones, este número cambiará
     });
 
     it('should get organization by ID', async () => {

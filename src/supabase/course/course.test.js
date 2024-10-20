@@ -9,6 +9,12 @@ const testCourse = {
   pass: 'coursepass',
 };
 
+const failTestCourse = {
+  name: 'Curso Test Fail',
+  nip: 888888,
+  pass: 'coursepass',
+};
+
 const testArrayCourses = [
   {
     name: 'Curso Test 3',
@@ -71,6 +77,16 @@ describe('Course API Tests', () => {
       .eq('nip', 1111111111);
   });
 
+  it('should not register a course with an existing NIP', async () => {
+    const result = await f.registerCourse(failTestCourse.name, failTestCourse.nip, failTestCourse.pass, organization_id);
+    expect(result.error).not.toBeNull();
+  });
+
+  it('should not regiser a course with the same NIP as the organization who belongs', async () => {
+    const result = await f.registerCourse('Curso Test 3', (await fo.getOrganizationById(organization_id)).data.nip, failTestCourse.pass, organization_id);
+    expect(result.error).not.toBeNull();
+  });
+
   it('should register an array of courses', async () => {
     await supabase
       .from('users')
@@ -112,9 +128,24 @@ describe('Course API Tests', () => {
     expect(result.error).toBeNull();
   });
 
+  it('should not create a subject with an existing subject code', async () => {
+    const result = await f.createSubject('Subject Test 4', 789123, course_id);
+    expect(result.error).not.toBeNull();
+  });
+
+  it('should not create a subject with an invalid course ID', async () => {
+    const result = await f.createSubject('Subject Test 5', 7894, 999999999);
+    expect(result.error).not.toBeNull();
+  });
+
   it('should edit a subject', async () => {
     const result = await f.editSubject(subjectId, { name: 'Subject Test 2' });
     expect(result.error).toBeNull();
+  });
+
+  it('should not change the subject code to an existing one', async () => {
+    const result = await f.editSubject(subjectId, { subject_code: 789123 });
+    expect(result.error).not.toBeNull();
   });
 
   it('should delete a subject', async () => {
