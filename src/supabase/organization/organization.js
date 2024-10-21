@@ -1,4 +1,4 @@
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import { supabase } from '../supabaseClient.js';
 
 // Función para registrar una organización
