@@ -143,6 +143,10 @@ export const eliminateCourse = async (courseId) => {
 
 // Función para editar un curso
 export const editCourse = async (courseId, updates) => {
+    if (updates.pass) {  // Si updates.pass tiene algún valor
+        const saltRounds = 10;
+        updates.pass = await bcrypt.hash(updates.pass, saltRounds);
+    }
     const { data, error } = await supabase
         .from('users')
         .update(updates)
@@ -181,6 +185,12 @@ export const eliminateStudent = async (studentId) => {
 
 // Función para editar un alumno
 export const editStudent = async (studentId, updates) => {
+    //Si queremos modificar la contraseña hay que generar un nuevo hash
+    if (updates.pass) {  // Si updates.pass tiene algún valor
+        const saltRounds = 10;
+        updates.pass = await bcrypt.hash(updates.pass, saltRounds);
+    }
+
     const { data, error } = await supabase
         .from('users')
         .update(updates)
@@ -219,6 +229,10 @@ export const eliminateTeacher = async (teacherId) => {
 
 // Función para editar un profesor
 export const editTeacher = async (teacherId, updates) => {
+    if (updates.pass) {  // Si updates.pass tiene algún valor
+        const saltRounds = 10;
+        updates.pass = await bcrypt.hash(updates.pass, saltRounds);
+    }
     const { data, error } = await supabase
         .from('users')
         .update(updates)

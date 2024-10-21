@@ -92,6 +92,18 @@ describe('Organization API Tests', () => {
         expect(studentId).not.toBeNull();
     });
 
+    it('should create a new student, login, edit the password and login again without problems', async () => {
+        const result = await f.createStudent("Oscar Checa Cebolla", 34325, "oscar", organizationId);
+        expect(result.error).toBeNull();
+        const resultLogin = await f.loginUser(34325, "oscar", "student",organizationId);
+        expect(resultLogin.error).toBeNull();
+        const resultEdit = await f.editStudent(await f.getUserIdByNIP(34325, organizationId), {pass: "oscar2"});
+        expect(resultEdit.error).toBeNull();
+        const resultLogin2 = await f.loginUser(34325, "oscar2","student",organizationId,);
+        expect(resultLogin2.error).toBeNull();
+        await f.eliminateStudent(await f.getUserIdByNIP(34325, organizationId));
+    });
+
     it('should not create a new student with the same NIP', async () => {
         const result = await f.createStudent(failTestStudent.name, failTestStudent.nip, failTestStudent.pass, organizationId);
         expect(result.error).not.toBeNull();
