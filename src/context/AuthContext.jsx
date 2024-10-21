@@ -50,7 +50,7 @@ export const AuthProvider = ({ children }) => {
         // Llamada a la API para loguear
 
         if (userType == constants.organizacion) {
-            res = await loginOrganization(nip, pass) // login
+            res = await loginOrganization(organizationId, nip, pass) // login
             console.log(res)
             if (res == false) return res
 
