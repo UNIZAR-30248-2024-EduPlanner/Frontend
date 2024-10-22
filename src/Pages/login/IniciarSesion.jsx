@@ -135,6 +135,7 @@ const IniciarSesion = () => {
 
                 {/* Campo NIA / NIP */}
                 <Input
+                    name="nia/nip"
                     size="lg"
                     type="name"
                     labelPlacement="outside"
@@ -149,6 +150,7 @@ const IniciarSesion = () => {
 
                 {/* Campo Contraseña */}
                 <Input
+                    name="password"
                     label="Contraseña"
                     size="lg"
                     labelPlacement="outside"
