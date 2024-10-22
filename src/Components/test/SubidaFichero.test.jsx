@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import SubidaFichero from '../SubidaFichero';
 
@@ -29,4 +29,37 @@ describe("SubidaFichero Component Tests", () => {
 
         expect(inputElement).toBeInTheDocument();
     });
+
+    it("should charge and proccess students file", async () => {
+        const setListaMock = vi.fn();
+        const file = new File(["Juan Perez;123456;password;"], "test.csv", {
+          type: "text/csv",
+        });
+
+        render(<SubidaFichero type="alumnos" lista={[]} setLista={setListaMock} />);
+
+        const input = screen.getByTestId("file-input");
+        fireEvent.change(input, { target: { files: [file] } });
+
+        await waitFor(() => {
+            expect(setListaMock).toHaveBeenCalledWith([{ name: "Juan Perez", nip: 123456, pass: "password" },]);
+        });
+    });
+
+    it("should show error message when students file has incorrect number of fields", async () => {
+        const setListaMock = vi.fn();
+        const file = new File(["Juan Perez;abc123;short"], "test.csv", {
+          type: "text/csv",
+        });
+    
+        render(<SubidaFichero type="alumnos" lista={[]} setLista={setListaMock} />);
+    
+        const input = screen.getByTestId("file-input");
+        fireEvent.change(input, { target: { files: [file] } });
+    
+        await waitFor(() => {
+            const errorList = screen.getByRole("list");
+            expect(errorList).toHaveTextContent("Número incorrecto de campos");
+        });
+      });
 });

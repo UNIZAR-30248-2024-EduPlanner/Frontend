@@ -205,6 +205,7 @@ const SubidaFichero = ({ type, lista, setLista }) => {
                 )}
                 <input
                     className="file-upload-input"
+                    data-testid="file-input"
                     type="file"
                     onChange={(e) => type === "asignaturas" ? readFileSubjects(e) : readFile(e)}
                 />
@@ -284,7 +285,7 @@ const SubidaFichero = ({ type, lista, setLista }) => {
             </div>
             {lista.length > 0 && errores.length == 0 && (
                 <div className="crear-button">
-                    <Button size="lg" color="primary" onClick={() => onOpen()}>
+                    <Button name="create-list" size="lg" color="primary" onClick={() => onOpen()}>
                         Crear la lista
                     </Button>
                 </div>
