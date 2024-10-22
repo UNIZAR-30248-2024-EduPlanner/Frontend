@@ -112,6 +112,7 @@ const OrganizacionCrear = () => {
               </p>
             )}
             <Input
+              name="name"
               size="lg"
               type="name"
               labelPlacement="outside"
@@ -123,6 +124,7 @@ const OrganizacionCrear = () => {
               onChange={(e) => setNombre(e.target.value)}
             />
             <Input
+              name="nip/nia"
               size="lg"
               type="name"
               color="primary"
@@ -134,6 +136,7 @@ const OrganizacionCrear = () => {
               onChange={(e) => setNip(e.target.value)}
             />
             <Input
+              name="password"
               label="Contraseña"
               size="lg"
               labelPlacement="outside"

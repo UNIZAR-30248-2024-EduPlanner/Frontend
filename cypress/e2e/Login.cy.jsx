@@ -6,7 +6,7 @@ const testOrganization = {
     pass: 'password'
 };
 
-describe("Home Component e2e Tests", () => {
+describe("E2E Flow: Login as Organization", () => {
     beforeEach(() => {
         cy.visit(`http://localhost:5173${constants.root}`);
     });
@@ -15,25 +15,19 @@ describe("Home Component e2e Tests", () => {
         cy.get("button").contains("Iniciar sesión").click();
         cy.url().should("include", "/IniciarSesion");
         
-        // Seleccionar el tipo de usuario (Organización)
         cy.get("select").first().select('Organizacion');
 
-        // Seleccionar la organización
         cy.get("select").eq(1).select(testOrganization.name);
 
-        // Ingresar NIA/NIP y contraseña
         cy.get("input[name='nia/nip']").type(testOrganization.nip);
         cy.get("input[name='password']").type(testOrganization.pass);
 
         cy.get("button").contains("Enviar").click();
 
-        // Verificar que la URL cambie a la página de inicio después del login
         cy.url().should("include", "/OrganizacionMenu");
 
-        // Cerrar sesión
         cy.get(".logout-container").click();
 
-        // Verificar que la URL cambie a la página de inicio después del logout
         cy.url().should("include", "/EduPlanner");
     });
 });
