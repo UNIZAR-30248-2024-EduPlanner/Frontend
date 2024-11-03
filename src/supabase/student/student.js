@@ -47,7 +47,7 @@ export const getSubjectsByStudentId = async (student_id) => {
   }
 }
 
-export const matriculateStudent = async (student_nip, subject_name) => {
+export const matriculateStudent = async (student_nip, subject_code) => {
   try {
     const student = await supabase
       .from('users')
@@ -63,7 +63,7 @@ export const matriculateStudent = async (student_nip, subject_name) => {
     const subject = await supabase
       .from('subjects')
       .select('id')
-      .eq('name', subject_name);
+      .eq('subject_code', subject_code);
 
     if (subject.error) {
       console.error('Error al obtener la asignatura:', subject.error);
@@ -100,11 +100,11 @@ export const matriculateStudentOnMultipleSubjects = async (student_nip, subjects
       return { data: null, error: student.error }; // Retorna el error
     }
 
-    const subjectsIds = await Promise.all(subjects.map(async subject_name => {
+    const subjectsIds = await Promise.all(subjects.map(async subject => {
       const { data, error } = await supabase
         .from('subjects')
         .select('id')
-        .eq('name', subject_name);
+        .eq('subject_code', subject);
 
       if (error) {
         console.error('Error al obtener la asignatura:', error);

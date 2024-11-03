@@ -48,7 +48,7 @@ export const getSubjectsByTeacherId = async (teacher_id) => {
   }
 }
 
-export const assignSubjectToTeacher = async (teacher_nip, subject_name) => {
+export const assignSubjectToTeacher = async (teacher_nip, subject_code) => {
   try {
     const teacher = await supabase
       .from('users')
@@ -64,7 +64,7 @@ export const assignSubjectToTeacher = async (teacher_nip, subject_name) => {
     const subject = await supabase
       .from('subjects')
       .select('id')
-      .eq('name', subject_name);
+      .eq('subject_code', subject_code);
 
     if (subject.error) {
       console.error('Error al obtener la asignatura:', subject.error);
@@ -108,7 +108,7 @@ export const assingArraySubjectsToTeacher = async (teacher_nip, subjects) => {
       const { data, error } = await supabase
         .from('subjects')
         .select('id')
-        .eq('name', subject);
+        .eq('subject_code', subject);
 
       if (error) {
         console.error('Error al obtener la asignatura:', error);
