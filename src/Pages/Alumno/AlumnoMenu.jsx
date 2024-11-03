@@ -1,19 +1,19 @@
 import { Button } from "@nextui-org/react";
 import { useDisclosure } from "@nextui-org/react";
 import ModalComponent from "../../Components/ModalHorario";
+import ModalComponentcreate from "../../Components/ModalEditarHorarios";
 import { useState } from "react";
-
 
 const AlumnoMenu = () => {
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
-    // Función para abrir y cerrar el modal
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [modalData, setModalData] = useState(null);
+
+    // Funciones para abrir y cerrar los modales
     const openModal = () => setIsModalOpen(true);
     const closeModal = () => setIsModalOpen(false);
-    const [modalData, setModalData] = useState(null);
-    //para probar el modal
-    const [isModalOpen, setIsModalOpen] = useState(false);
 
-
+    // Datos de prueba para el modal
     const asignatura_prueba = {
         id: "1",
         subject_code: "30000",
@@ -42,30 +42,43 @@ const AlumnoMenu = () => {
     };
 
     return (
-        <div className="flex justify-center items-center h-screen">
-            <Button size="lg" onClick={() => handleOpenModal(asignatura_prueba)}>
-                Abrir Modal horario prueba
-            </Button>
+        <div>
+            <div>
+                <Button size="lg" onClick={openModal}>
+                    Abrir editar horario
+                </Button>
+            </div>
+            <div className="flex justify-center items-center h-screen">
+                <Button size="lg" onClick={() => handleOpenModal(asignatura_prueba)}>
+                    Abrir Modal horario prueba
+                </Button>
 
-            <Button size="lg" onClick={() => handleOpenModal(personal_prueba)}>
-                Abrir Modal personal prueba
-            </Button>
+                <Button size="lg" onClick={() => handleOpenModal(personal_prueba)}>
+                    Abrir Modal personal prueba
+                </Button>
 
-            {/* Modal para la asignatura de prueba */}
-            <ModalComponent
-                isOpen={isOpen}
-                onOpenChange={onOpenChange}
-                title={modalData ? `${modalData.subject_code ? modalData.subject_code + " - " : ""}${modalData.name}` : ""}
-                date_start={modalData?.date_start}
-                date_finish={modalData?.date_finish}
-                place={modalData?.place || ""}
-                group={modalData?.group || null}
-                descripcion={modalData?.descripcion}
-                creador={modalData?.subject_id || modalData?.user_id}
-                onAccept={closeModal}
-            />
+                <ModalComponent
+                    isOpen={isOpen}
+                    onOpenChange={onOpenChange}
+                    title={modalData ? `${modalData.subject_code ? modalData.subject_code + " - " : ""}${modalData.name}` : ""}
+                    date_start={modalData?.date_start}
+                    date_finish={modalData?.date_finish}
+                    place={modalData?.place || ""}
+                    group={modalData?.group || null}
+                    descripcion={modalData?.descripcion}
+                    creador={modalData?.subject_id || modalData?.user_id}
+                    onAccept={onOpenChange}  // Si onOpenChange controla el cierre
+                />
+
+                <ModalComponentcreate
+                    isOpen={isModalOpen}
+                    onOpenChange={closeModal}  // Cambiado para asegurar que funcione
+                />
+            </div>
         </div>
     );
 };
 
 export default AlumnoMenu;
+
+
