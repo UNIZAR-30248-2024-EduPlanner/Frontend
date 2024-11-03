@@ -82,6 +82,26 @@ describe('Student API Tests', () => {
     expect(result.error).toBeNull(); // Verifica que no haya error
   });
 
+  // Matricular un estudiante en una asignatura
+  it('should matriculate a student in a subject', async () => {
+    const result = await f.matriculateStudent(testArrayStudents[0].nip, 'Matematicas 1');
+    expect(result.error).toBeNull(); // Verifica que no haya error
+  });
+
+  // Matricular un estudiante en múltiples asignaturas
+  it('should matriculate a student in multiple subjects', async () => {
+    const result = await f.matriculateStudentOnMultipleSubjects(testArrayStudents[1].nip, ['Matematicas 1', 'Matematicas 2']);
+    expect(result.error).toBeNull(); // Verifica que no haya error
+  });
+
+  // Obtener las asignaturas de un estudiante
+  it('should get the subjects of a student', async () => {
+    const studentId = (await f.getStudentIdByNip(testArrayStudents[0].nip));
+    const result = await f.getSubjectsByStudentId(studentId);
+    expect(result.error).toBeNull(); // Verifica que no haya error
+  });
+
+
   // Limpiar datos después de las pruebas
   afterAll(async () => {
     await supabase

@@ -79,6 +79,27 @@ describe('Teacher API Tests', () => {
     expect(result.error).toBeNull(); // Verifica que no haya error
   });
 
+  // Prueba para asignar una asignatura a un profesor
+  it('should assign a subject to a teacher', async () => {
+    const result = await f.assignSubjectToTeacher(testArrayTeachers[1].nip, 'Matematicas 1');
+    expect(result.error).toBeNull(); // Verifica que no haya error
+  });
+
+  // Prueba para asignar múltiples asignaturas a un profesor
+  it('should assign multiple subjects to a teacher', async () => {
+    const result = await f.assingArraySubjectsToTeacher(testArrayTeachers[2].nip, ['Matematicas 1', 'Matematicas 2']);
+    expect(result.error).toBeNull(); // Verifica que no haya error
+  });
+
+  // Prueba para obtener las asignaturas de un profesor
+  it('should get the subjects of a teacher', async () => {
+    const teacherId = (await f.getTeacherIdByNip(testArrayTeachers[0].nip));
+    expect(teacherId).not.toBeNull(); // Asegúrate de que el profesor exista
+
+    const result = await f.getSubjectsByTeacherId(teacherId);
+    expect(result.error).toBeNull(); // Verifica que no haya error
+  });
+
   afterAll(async () => {
     await supabase
       .from('users')
