@@ -9,8 +9,6 @@ import FlechaVolver from "../../Components/FlechaVolver";
 import { getAllOrganizations } from "../../supabase/organization/organization";
 import { useAuth } from "../../context/AuthContext"; // Importar el hook useAuth
 
-
-
 const IniciarSesion = () => {
     const [isVisible, setIsVisible] = useState(false);
     const [nia, setNia] = useState("");

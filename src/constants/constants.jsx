@@ -1,6 +1,6 @@
 const constants = {
     // Raíz del proyecto
-    root: '/Frontend/EduPlanner/',
+    root: '/Frontend/',
     
     organizacion: 'organization',
     alumno: 'alumno',
