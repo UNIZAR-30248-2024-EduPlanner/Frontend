@@ -20,7 +20,6 @@ const updatedHoliday = {
 
 // Variables para almacenar IDs
 let holidayId;
-let holidayId2;
 describe('Holiday API Tests', () => {
     // Configuración inicial
     beforeAll(async () => {
