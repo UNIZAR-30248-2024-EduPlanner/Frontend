@@ -1,7 +1,7 @@
 import '../css/Calendario.css'
 import FlechaVolver from "../Components/FlechaVolver"
 import { FaRegArrowAltCircleLeft, FaRegArrowAltCircleRight } from "react-icons/fa";
-import { Button } from '@nextui-org/react'
+import { Button, Tooltip } from '@nextui-org/react'
 import { useEffect, useState } from 'react'
 
 const Calendario = () => {
@@ -114,13 +114,67 @@ const Calendario = () => {
     // Dias de la semana requerida
     const [diasSemana, setDiasSemana] = useState([])
 
+    // Primer día de la semana actual
+    const [mondayWeek, setMondayWeek] = useState(null)
+
+    // Mes actual
+    const [monthYear, setMonthYear] = useState(null)
+
+    const changeWeek = (next) => {
+        const newMonday = new Date(mondayWeek)
+        if (next) {
+            newMonday.setDate(newMonday.getDate() + 7);
+        } else {
+            newMonday.setDate(newMonday.getDate() - 7);
+        }
+        setMondayWeek(newMonday);
+
+        // Extraemos el mes y año
+        setMonthYear(numberToMonth(newMonday.getMonth()) + " " + newMonday.getFullYear())        
+
+        // Array para almacenar solo los números de los días de la semana desde lunes a domingo
+        const days = [];
+
+        for (let i = 0; i < 7; i++) {
+          const nextDay = new Date(newMonday);
+          nextDay.setDate(newMonday.getDate() + i);
+          days.push(nameDays[i] + nextDay.getDate()); // Solo el número del día
+        }
+    
+        setDiasSemana(days);
+    }
+
+    const numberToMonth = (number) => {
+        if (number < 0 || number > 11) {
+            console.error("number debe ser un número entre 0 y 11");
+        } else {
+            const month = 
+                number === 0 ? "Enero" :
+                number === 1 ? "Febrero" :
+                number === 2 ? "Marzo" :
+                number === 3 ? "Abril" :
+                number === 4 ? "Mayo" :
+                number === 5 ? "Junio" :
+                number === 6 ? "Julio" :
+                number === 7 ? "Agosto" :
+                number === 8 ? "Septiembre" :
+                number === 9 ? "Octubre" :
+                number === 10 ? "Noviembre" : "Diciembre";
+            return month;
+        }
+    }
+
     useEffect(() => {
         const today = new Date();
         const dayOfWeek = today.getDay(); // 0 (Domingo) - 6 (Sábado)
-        
+
         // Calcular el lunes de esta semana
         const monday = new Date(today);
         monday.setDate(today.getDate() - (dayOfWeek === 0 ? 6 : dayOfWeek - 1));
+        setMondayWeek(monday)
+        
+        // Extraemos el mes y año
+        setMonthYear(numberToMonth(monday.getMonth()) + " " + monday.getFullYear())
     
         // Array para almacenar solo los números de los días de la semana desde lunes a domingo
         const days = [];
@@ -131,7 +185,6 @@ const Calendario = () => {
           days.push(nameDays[i] + nextDay.getDate()); // Solo el número del día
         }
     
-        console.log(days)
         setDiasSemana(days);
       }, []);
 
@@ -144,14 +197,30 @@ const Calendario = () => {
                 </Button>
             </div>
             <div className="mes-tit flex">
-                <h1 className="mes-tit"> Octubre 2024 </h1>
+                <h1 className="mes-tit"> {monthYear} </h1>
             </div>
 
             <div className="relative">
                 <div className="flex bg-primary text-white text-[1.5rem] items-center font-bold">
                     <div className="first-col">
-                        <FaRegArrowAltCircleLeft/>
-                        <FaRegArrowAltCircleRight/>
+                        <Tooltip content="Anterior semana">
+                            <Button 
+                              className="text-[2rem] bg-primary text-white min-w-0" 
+                              size="sm"
+                              onClick={() => changeWeek(false)}
+                            >
+                                <FaRegArrowAltCircleLeft/>
+                            </Button>
+                        </Tooltip>
+                        <Tooltip content="Siguiente semana">
+                            <Button 
+                              className="text-[2rem] bg-primary text-white min-w-0" 
+                              size="sm"
+                              onClick={() => changeWeek(true)}
+                            >
+                                <FaRegArrowAltCircleRight/>
+                            </Button>
+                        </Tooltip>
                     </div>
                     {diasSemana.map((d, idx) => (
                         <p className="d text-center" key={idx}> {d} </p>
