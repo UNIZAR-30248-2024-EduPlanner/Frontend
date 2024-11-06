@@ -11,7 +11,7 @@ export const createCustomEvent = async (name, description, groupName, startTime,
             start_time: startTime,
             end_time: endTime,
             user_id: userId
-        }]);
+        }]).select();
 
     return { data, error };
 };
@@ -42,6 +42,17 @@ export const getCustomEventsByUser = async (userId) => {
         .from('custom_event')
         .select('*')
         .eq('user_id', userId);
+
+    return { data, error };  // Asegúrate de que ambos se devuelvan
+};
+
+
+// Obtener un evento personalizado por su ID
+export const getCustomEventById = async (eventId) => {
+    const { data, error } = await supabase
+        .from('custom_event')
+        .select('*')
+        .eq('id', eventId);
 
     return { data, error };
 };
