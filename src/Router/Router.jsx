@@ -12,6 +12,7 @@ import IniciarSesion from "../Pages/login/IniciarSesion"
 import { ProtectedRouter, ProtectedUser } from "./ProtectedRouter"
 import { AuthProvider, useAuth } from "../context/AuthContext"
 import { useEffect } from "react"
+import Calendario from "../Pages/Calendario"
 
 const RouterComponent = () => {
     return (
@@ -41,6 +42,8 @@ const AppRoutes = () => {
             <Route path={constants.root} element={<Home />} />
             <Route path={constants.root + "IniciarSesion"} element={<IniciarSesion />} />
             <Route path={constants.root + "CrearOrganizacion"} element={<CrearOrganizacion />} />
+            <Route path={constants.root + "Calendario"} element={<Calendario />} />
+
 
             <Route element={<ProtectedRouter />}>
                 {/* USUARIO ORGANIZACIÓN */}

@@ -35,7 +35,6 @@ const IniciarSesion = () => {
     }, [])
 
     useEffect(() => {
-        console.log("isAuthenticated: ", isAuthenticated)
         if (isAuthenticated) {
             if (type == constants.organizacion) navigate(constants.root + "OrganizacionMenu")
             else if (type == constants.alumno) navigate(constants.root + "AlumnoMenu")
@@ -85,7 +84,7 @@ const IniciarSesion = () => {
 
                 {/* Select para elegir la opción */}
                 <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginBottom: "20px" }}>
-                    <label>Seleccione que tipo de usuario es:</label>
+                    <label>Seleccione qué tipo de usuario es:</label>
                     <select
                         value={role}
                         onChange={(e) => setRole(e.target.value)}
