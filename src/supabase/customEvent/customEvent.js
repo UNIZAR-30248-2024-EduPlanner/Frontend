@@ -14,6 +14,7 @@ export const createCustomEvent = async (name, description, groupName, date, star
             user_id: userId
         }]).select();
 
+    console.log(data);
     return { data, error };
 };
 
@@ -23,7 +24,7 @@ export const editCustomEvent = async (eventId, updates) => {
         .from('custom_event')
         .update(updates)
         .eq('id', eventId);
-
+    console.log(data);
     return { data, error };
 };
 
@@ -43,7 +44,7 @@ export const getCustomEventsByUser = async (userId) => {
         .from('custom_event')
         .select('*')
         .eq('user_id', userId);
-
+    console.log(data);
     return { data, error };  // Asegúrate de que ambos se devuelvan
 };
 
@@ -54,6 +55,6 @@ export const getCustomEventById = async (eventId) => {
         .from('custom_event')
         .select('*')
         .eq('id', eventId);
-
+    console.log(data);
     return { data, error };
 };

@@ -51,6 +51,8 @@ export const createAcademicEventAndPublish = async (name, startingDate, endDate,
         }
     }
 
+    console.log(academicEvent);
+
     return { data: academicEvent, error: null };
 };
 
@@ -72,7 +74,7 @@ export const createAcademicEvent = async (name, startingDate, endDate, groupName
             subject_id: subjectId
         }])
         .select();
-
+    console.log(data);
     return { data, error };
 };
 
@@ -84,6 +86,7 @@ export const editAcademicEvent = async (eventId, updates) => {
         .eq('id', eventId)
         .select();
 
+    console.log(data);
     return { data, error };
 };
 
@@ -103,6 +106,8 @@ export const getAcademicEventsBySubject = async (subjectId) => {
         .from('academic_event')
         .select('*')
         .eq('subject_id', subjectId);
+
+    console.log(data);
 
     return { data, error };
 };

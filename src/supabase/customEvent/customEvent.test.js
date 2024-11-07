@@ -34,11 +34,8 @@ describe('Custom Event API Tests', () => {
 
     it('should delete a custom event', async () => {
         const result = await f.deleteCustomEvent(eventId);
-        console.log(result);
         expect(result.error).toBeNull();  // Asegúrate de que no haya errores
-
         const deletedEvent = await f.getCustomEventById(eventId);
-        console.log(deletedEvent);
         expect(deletedEvent.data).toHaveLength(0);  // Verificar que el evento fue eliminado
     });
 
@@ -57,6 +54,13 @@ describe('Custom Event API Tests', () => {
         expect(eventsResult.data).toHaveLength(2);  // Debe haber 2 eventos creados
         expect(eventsResult.data[0].name).toBe('Evento 1');  // Verificar que el primer evento sea correcto
         expect(eventsResult.data[1].name).toBe('Evento 2');  // Verificar que el segundo evento sea correcto
+    });
+
+    it('should retrieve a custom event by its ID', async () => {
+        // Obtener un evento por su ID
+        const eventResult = await f.getCustomEventById(events[0].id);
+        expect(eventResult.error).toBeNull();  // Verificar que no haya error
+        expect(eventResult.data[0].name).toBe('Evento 1');  // Verificar que el evento obtenido sea correcto
     });
 
 

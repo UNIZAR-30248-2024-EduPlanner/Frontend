@@ -6,7 +6,7 @@ export const createCustomAcademicEvent = async (userId, eventId) => {
         .from('custom_academic_event')
         .insert([{ user_id: userId, event_id: eventId, visible: true }])
         .select();
-
+    console.log(data);
     return { data, error };
 };
 
@@ -18,28 +18,49 @@ export const editCustomAcademicEventVisibility = async (userId, eventId, visible
         .eq('user_id', userId)
         .eq('event_id', eventId)
         .select();
-
+    console.log(data);
     return { data, error };
 };
 
 // Obtener el contenido completo de los eventos académicos visibles para un usuario
-export const getFullVisibleAcademicEventsForUser = async (userId) => {
-    const { data, error } = await supabase
-        .from('custom_academic_event')
-        .select('event_id, academic_event(*)')  // Selecciona event_id y el contenido completo de academic_event
-        .eq('user_id', userId)
-        .eq('visible', true);
+export async function getFullVisibleAcademicEventsForUser(userId) {
+    try {
+        // 1. Obtener la lista de event_id visibles en custom_academic_event para el userId dado
+        const { data: customEvents, error: customEventError } = await supabase
+            .from('custom_academic_event')
+            .select('event_id')
+            .eq('user_id', userId)
+            .eq('visible', true);
 
-    if (error) {
-        console.error('Error al obtener eventos académicos visibles:', error);
+        if (customEventError) {
+            return { data: null, error: customEventError };
+        }
+
+        // Verificar si hay eventos visibles
+        if (!customEvents || customEvents.length === 0) {
+            return { data: [], error: null };
+        }
+
+        // Extraer los event_id de los resultados
+        const eventIds = customEvents.map(event => event.event_id);
+
+        // 2. Obtener la información completa de cada evento en academic_event
+        const { data: academicEvents, error: academicEventError } = await supabase
+            .from('academic_event')
+            .select('*')
+            .in('id', eventIds);
+
+        if (academicEventError) {
+            return { data: null, error: academicEventError };
+        }
+
+        // Devolver la lista de eventos
+        return { data: academicEvents, error: null };
+
+    } catch (error) {
         return { data: null, error };
     }
-
-    // Extraer solo los detalles de los eventos académicos
-    const academicEvents = data.map(item => item.academic_event);
-
-    return { data: academicEvents, error: null };
-};
+}
 
 
 // Eliminar la personalización de visibilidad de un evento académico
@@ -60,6 +81,6 @@ export const getVisibleAcademicEventsForUser = async (userId) => {
         .select('event_id')
         .eq('user_id', userId)
         .eq('visible', true);
-
+    console.log(data);
     return { data, error };
 };

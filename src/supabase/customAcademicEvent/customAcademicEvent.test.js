@@ -29,6 +29,7 @@ describe('Custom Academic Event API Tests', () => {
 
   it('should get full visible academic events for user', async () => {
     const result = await f.getFullVisibleAcademicEventsForUser(userId);
+    console.log(result);
     expect(result.error).toBeNull(); // Verificar que no haya error
     expect(result.data).not.toBeNull(); // Debe haber un evento creado
   });

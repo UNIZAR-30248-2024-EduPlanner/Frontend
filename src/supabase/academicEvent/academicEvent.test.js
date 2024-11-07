@@ -48,6 +48,7 @@ describe('Academic Event API Tests', () => {
 
   it('should get academic events by subject', async () => {
     const result = await f.getAcademicEventsBySubject(subject_id);
+    console.log(result);
     expect(result.error).toBeNull(); // Verificar que no haya error
     expect(result.data).not.toBeNull(); // Debe haber un evento creado
   });

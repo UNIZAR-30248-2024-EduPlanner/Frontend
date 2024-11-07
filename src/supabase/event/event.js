@@ -45,5 +45,6 @@ export const getAllEventsForUser = async (userId) => {
         ...customEvents.map(event => ({ ...baseAcademicEventFields, ...event })),  // Eventos personalizados con campos de academic_event en null
     ];
 
+    console.log(`Eventos para el usuario ${userId}:`, allEvents);
     return { data: allEvents, error: null };
 };
