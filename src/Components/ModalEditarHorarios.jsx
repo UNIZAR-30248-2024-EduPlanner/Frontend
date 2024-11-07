@@ -6,32 +6,9 @@ import { Tabs, Tab } from "@nextui-org/react";
 import { useState } from "react";
 
 
-const ModalEditarHorarios = ({ isOpen, onOpenChange }) => {
+const ModalEditarHorarios = ({ isOpen, onOpenChange, listaCompletaEventos }) => {
     const { user } = useAuth();
 
-    // Listas de ejemplo
-    const asignaturas = [
-        { id: "asignatura1", nombre: "Programación 1" },
-        { id: "asignatura2", nombre: "Matemáticas" },
-    ];
-
-    const grupos = [
-        { id: "grupo1", nombre: "Grupo A", asignatura: "asignatura1" },
-        { id: "grupo2", nombre: "Grupo B", asignatura: "asignatura1" },
-        { id: "grupo3", nombre: "Grupo C", asignatura: "asignatura2" },
-    ];
-
-    const horarios = [
-        { id: "horario1", nombre: "Lunes 10:00 - 12:00", grupo: "grupo1" },
-        { id: "horario2", nombre: "Martes 14:00 - 16:00", grupo: "grupo1" },
-        { id: "horario3", nombre: "Miércoles 09:00 - 11:00", grupo: "grupo1" },
-        { id: "horario4", nombre: "Lunes 12:00 - 14:00", grupo: "grupo2" },
-        { id: "horario5", nombre: "Martes 16:00 - 18:00", grupo: "grupo2" },
-        { id: "horario6", nombre: "Miércoles 11:00 - 13:00", grupo: "grupo2" },
-        { id: "horario7", nombre: "Jueves 09:00 - 11:00", grupo: "grupo3" },
-        { id: "horario8", nombre: "Jueves 11:00 - 13:00", grupo: "grupo3" },
-        { id: "horario9", nombre: "Viernes 10:00 - 12:00", grupo: "grupo3" },
-    ];
 
     const [selectedAsignatura, setSelectedAsignatura] = useState(null);
     const [selectedGrupo, setSelectedGrupo] = useState(null);
@@ -42,8 +19,22 @@ const ModalEditarHorarios = ({ isOpen, onOpenChange }) => {
     const [espacioReservado, setEspacioReservado] = useState("");
     const [descripcion, setDescripcion] = useState("");
 
-    const filteredGrupos = grupos.filter(grupo => grupo.asignatura === selectedAsignatura);
-    const filteredHorarios = horarios.filter(horario => horario.grupo === selectedGrupo);
+    const filteredGrupos = Array.from(new Set(
+        listaCompletaEventos
+            .filter(evento => evento.name === selectedAsignatura)
+            .map(evento => evento.group_name)
+    ));
+
+    const filteredHorarios = listaCompletaEventos.filter(evento =>
+        evento.name === selectedAsignatura && evento.group_name === selectedGrupo
+    );
+
+    const obtenerDiaSemana = (fechaStr) => {
+        const diasSemana = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+        const [anio, mes, dia] = fechaStr.split("-").map(Number);
+        const fecha = new Date(anio, mes - 1, dia);
+        return diasSemana[fecha.getDay()];
+    };
 
     return (
         <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
@@ -64,13 +55,15 @@ const ModalEditarHorarios = ({ isOpen, onOpenChange }) => {
                                                 onChange={(value) => {
                                                     setSelectedAsignatura(value[0]);
                                                     setSelectedGrupo(null); // Reiniciar la selección de grupo al cambiar asignatura
+                                                    setSelectedHorarios([]); // Reiniciar selección de horarios
                                                 }}
                                             >
-                                                {asignaturas.map(asignatura => (
-                                                    <Checkbox key={asignatura.id} value={asignatura.id}>
-                                                        {asignatura.nombre}
-                                                    </Checkbox>
-                                                ))}
+                                                {Array.from(new Set(listaCompletaEventos.map(evento => evento.name)))
+                                                    .map(subjectId => (
+                                                        <Checkbox key={subjectId} value={subjectId}>
+                                                            {`${subjectId}`}
+                                                        </Checkbox>
+                                                    ))}
                                             </CheckboxGroup>
                                         </div>
                                         <div>
@@ -78,11 +71,14 @@ const ModalEditarHorarios = ({ isOpen, onOpenChange }) => {
                                             <CheckboxGroup
                                                 label="Grupos"
                                                 value={selectedGrupo ? [selectedGrupo] : []}
-                                                onChange={(value) => setSelectedGrupo(value[0])}
+                                                onChange={(value) => {
+                                                    setSelectedGrupo(value[0]);
+                                                    setSelectedHorarios([]); // Reiniciar selección de horarios
+                                                }}
                                             >
                                                 {filteredGrupos.map(grupo => (
-                                                    <Checkbox key={grupo.id} value={grupo.id}>
-                                                        {grupo.nombre}
+                                                    <Checkbox key={grupo} value={grupo}>
+                                                        {grupo}
                                                     </Checkbox>
                                                 ))}
                                             </CheckboxGroup>
@@ -96,18 +92,12 @@ const ModalEditarHorarios = ({ isOpen, onOpenChange }) => {
                                             >
                                                 {filteredHorarios.map(horario => (
                                                     <Checkbox key={horario.id} value={horario.id}>
-                                                        {horario.nombre}
+                                                        {obtenerDiaSemana(horario.starting_date) + " " + horario.start_time.slice(0, 5) + " " + horario.end_time.slice(0, 5)}
                                                     </Checkbox>
                                                 ))}
                                             </CheckboxGroup>
                                         </div>
                                         <Button color="primary" onPress={() => {
-                                            // Lógica para enviar horarios deseados
-                                            /**
-                                             * 
-                                             * Mantiene los seleccionados en las pestañas deseleccionadas.
-                                             * Consultar al grupo si se quiere asi o se cambia
-                                             */
                                             console.log("Horarios seleccionados:", selectedHorarios);
                                         }}>
                                             Añadir a calendario
