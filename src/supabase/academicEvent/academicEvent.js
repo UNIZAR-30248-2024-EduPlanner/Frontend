@@ -81,7 +81,8 @@ export const editAcademicEvent = async (eventId, updates) => {
     const { data, error } = await supabase
         .from('academic_event')
         .update(updates)
-        .eq('id', eventId);
+        .eq('id', eventId)
+        .select();
 
     return { data, error };
 };
