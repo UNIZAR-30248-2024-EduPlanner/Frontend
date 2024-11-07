@@ -4,7 +4,8 @@ import { supabase } from '../supabaseClient.js';
 export const createCustomAcademicEvent = async (userId, eventId) => {
     const { data, error } = await supabase
         .from('custom_academic_event')
-        .insert([{ user_id: userId, event_id: eventId, visible:true }]);
+        .insert([{ user_id: userId, event_id: eventId, visible: true }])
+        .select();
 
     return { data, error };
 };
@@ -15,7 +16,8 @@ export const editCustomAcademicEventVisibility = async (userId, eventId, visible
         .from('custom_academic_event')
         .update({ visible })
         .eq('user_id', userId)
-        .eq('event_id', eventId);
+        .eq('event_id', eventId)
+        .select();
 
     return { data, error };
 };

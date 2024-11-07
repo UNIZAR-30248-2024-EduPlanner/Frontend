@@ -1,5 +1,5 @@
-import { getFullVisibleAcademicEventsForUser } from './academicEventFunctions.js';
-import { getCustomEventsByUser } from './customEventFunctions.js';
+import { getFullVisibleAcademicEventsForUser } from '../customAcademicEvent/customAcademicEvent.js';
+import { getCustomEventsByUser } from '../customEvent/customEvent.js';
 
 // Función que obtiene todos los eventos visibles para un usuario y sus eventos personalizados
 export const getAllEventsForUser = async (userId) => {

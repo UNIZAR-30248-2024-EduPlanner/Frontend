@@ -15,7 +15,7 @@ describe('Custom Event API Tests', () => {
     });
 
     it('should create a new custom event', async () => {
-        const result = await f.createCustomEvent('Evento Test', 'Descripción del evento', 'Grupo Test', '10:00:00', '12:00:00', userId);
+        const result = await f.createCustomEvent('Evento Test', 'Descripción del evento', 'Grupo Test', '2021-12-02', '10:00:00', '12:00:00', userId);
         if (!result.data) console.error(result.error);
         expect(result.data).toHaveLength(1); // El evento debe haber sido creado
         expect(result.data[0].name).toBe('Evento Test');  // Verificar que el nombre del evento es correcto
@@ -44,8 +44,8 @@ describe('Custom Event API Tests', () => {
 
     it('should retrieve all custom events for a user', async () => {
         // Crear dos eventos para el usuario
-        const result1 = await f.createCustomEvent('Evento 1', 'Descripción 1', 'Grupo A', '10:00:00', '12:00:00', userId);
-        const result2 = await f.createCustomEvent('Evento 2', 'Descripción 2', 'Grupo B', '10:00:00', '12:00:00', userId);
+        const result1 = await f.createCustomEvent('Evento 1', 'Descripción 1', 'Grupo A', '2021-12-02', '10:00:00', '12:00:00', userId);
+        const result2 = await f.createCustomEvent('Evento 2', 'Descripción 2', 'Grupo B', '2021-12-02', '10:00:00', '12:00:00', userId);
         events.push(result1.data[0]);
         events.push(result2.data[0]);
         expect(result1.error).toBeNull();

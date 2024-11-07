@@ -1,13 +1,14 @@
 import { supabase } from '../supabaseClient.js';
 
 // Crear un evento personalizado
-export const createCustomEvent = async (name, description, groupName, startTime, endTime, userId) => {
+export const createCustomEvent = async (name, description, groupName, date, startTime, endTime, userId) => {
     const { data, error } = await supabase
         .from('custom_event')
         .insert([{
             name,
             description,
             group_name: groupName,
+            date: date,
             start_time: startTime,
             end_time: endTime,
             user_id: userId
