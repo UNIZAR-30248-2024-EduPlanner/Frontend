@@ -11,7 +11,7 @@ describe('Custom Academic Event API Tests', () => {
   beforeAll(async () => {
     userId = 43;
     subject_id = 12;
-    academicEvent = await ae.createAcademicEvent('Evento Académico 1', '2021-12-01', '2021-12-01', 'Grupo A', 1, 'Descripción 1', 'Académico', '10:00:00', '12:00:00', subject_id);
+    academicEvent = await ae.createAcademicEvent('Evento Académico 1', '2021-12-01', '2021-12-01', 'Grupo A', 1, 'Descripción 1', 'Académico', 'Clase A', '10:00:00', '12:00:00', subject_id);
   });
 
   it('should create a custom academic event', async () => {
