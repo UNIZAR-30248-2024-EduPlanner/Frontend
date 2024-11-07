@@ -59,7 +59,6 @@ describe('Custom Academic Event API Tests', () => {
   });
 
   it('should get visible academic events for user', async () => {
-    
     const result = await f.getFullVisibleAcademicEventsForUser(userId);
     console.log("Eventos academicos personalizados: ", result);
     expect(result.error).toBeNull(); // Verificar que no haya error

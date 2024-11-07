@@ -87,6 +87,58 @@ export const matriculateStudent = async (student_nip, subject_code) => {
   }
 }
 
+export const unenrollStudent = async (student_nip, subject_code) => {
+  try {
+    // Obtener el ID del estudiante
+    const student = await supabase
+      .from('users')
+      .select('id')
+      .eq('nip', student_nip)
+      .eq('role', 'student');
+
+    if (student.error) {
+      console.error('Error al obtener el estudiante:', student.error);
+      return { data: null, error: student.error };
+    }
+
+    // Obtener el ID de la asignatura
+    const subject = await supabase
+      .from('subjects')
+      .select('id')
+      .eq('subject_code', subject_code);
+
+    if (subject.error) {
+      console.error('Error al obtener la asignatura:', subject.error);
+      return { data: null, error: subject.error };
+    }
+
+    // Verificar que el estudiante y la asignatura existan
+    if (!student.data.length || !subject.data.length) {
+      const errorMsg = "Estudiante o asignatura no encontrados";
+      console.error(errorMsg);
+      return { data: null, error: errorMsg };
+    }
+
+    // Eliminar la inscripción de la tabla enrollments
+    const { data, error } = await supabase
+      .from('enrollments')
+      .delete()
+      .match({ student_id: student.data[0].id, subject_id: subject.data[0].id });
+
+    if (error) {
+      console.error('Error al desmatricular al estudiante:', error);
+      return { data: null, error };
+    }
+
+    console.log('Estudiante desmatriculado correctamente:', data);
+    return { data, error: null };
+  } catch (err) {
+    console.error('Ha ocurrido un error:', err);
+    return { data: null, error: err };
+  }
+};
+
+
 export const matriculateStudentOnMultipleSubjects = async (student_nip, subjects) => {
   try {
     const student = await supabase

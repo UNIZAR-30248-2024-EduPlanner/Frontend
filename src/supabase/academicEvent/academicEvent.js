@@ -7,6 +7,9 @@ import * as f from '../customAcademicEvent/customAcademicEvent.js';
 export const createAcademicEventAndPublish = async (name, startingDate, endDate, groupName, periodicity, description, type, place, startTime, endTime, subjectId) => {
     // Primero, creamos el evento académico
     const { data: academicEvent, error: academicEventError } = await createAcademicEvent(name, startingDate, endDate, groupName, periodicity, description, type, place, startTime, endTime, subjectId);
+    console.log("Evento académico a publicar", academicEvent);
+    console.log("Id del evento académico a publicar", academicEvent[0].id);
+
 
     if (academicEventError) {
         console.error('Error al crear el evento académico:', academicEventError);
@@ -43,7 +46,7 @@ export const createAcademicEventAndPublish = async (name, startingDate, endDate,
 
     // Publicamos el evento académico a todos los usuarios relacionados con la asignatura
     for (let userId of userIds) {
-        const { error: customAcademicEventError } = await f.createCustomAcademicEvent(userId, academicEvent.id);
+        const { error: customAcademicEventError } = await f.createCustomAcademicEvent(userId, academicEvent[0].id);
 
         if (customAcademicEventError) {
             console.error('Error al publicar el evento académico para el usuario:', customAcademicEventError);
@@ -74,7 +77,6 @@ export const createAcademicEvent = async (name, startingDate, endDate, groupName
             subject_id: subjectId
         }])
         .select();
-    console.log(data);
     return { data, error };
 };
 
