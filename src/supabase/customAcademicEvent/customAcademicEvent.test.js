@@ -66,10 +66,10 @@ describe('Custom Academic Event API Tests', () => {
   });
   
   afterAll(async () => {
-    f.deleteCustomAcademicEvent(userId, academicEvent.data[0].id);
-    ae.deleteAcademicEvent(academicEvent.data[0].id);
-    f.deleteCustomAcademicEvent(userId, academicEvent2.data[0].id);
-    ae.deleteAcademicEvent(academicEvent2.data[0].id);
+    await f.deleteCustomAcademicEvent(userId, academicEvent.data[0].id);
+    await ae.deleteAcademicEvent(academicEvent.data[0].id);
+    await f.deleteCustomAcademicEvent(userId, academicEvent2.data[0].id);
+    await ae.deleteAcademicEvent(academicEvent2.data[0].id);
   });
 }
 );

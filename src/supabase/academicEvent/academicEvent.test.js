@@ -81,7 +81,7 @@ describe('Academic Event API Tests', () => {
   });
 
   afterAll(async () => {
-    f.deleteAcademicEvent(academicEventPublished.data[0].id);
+    await f.deleteAcademicEvent(academicEventPublished.data[0].id);
     await unenrollStudent(nip,subject_code);
     await unenrollStudent(nip2,subject_code);
   });
