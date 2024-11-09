@@ -62,7 +62,6 @@ export async function getFullVisibleAcademicEventsForUser(userId) {
     }
 }
 
-
 // Eliminar la personalización de visibilidad de un evento académico
 export const deleteCustomAcademicEvent = async (userId, eventId) => {
     const { data, error } = await supabase

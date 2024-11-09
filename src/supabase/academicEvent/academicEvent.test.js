@@ -36,7 +36,7 @@ describe('Academic Event API Tests', () => {
   });
 
   it('should create and publish an academic event', async () => {
-    academicEventPublished = await f.createAcademicEventAndPublish('Evento Académico 2', '2021-12-01', '2021-12-01', 'Grupo A', 1, 'Descripción 2', 'Académico', 'Clase A', '10:00:00', '12:00:00', subject_id);
+    academicEventPublished = await f.createAcademicEventAndPublish('Evento Académico 2', '2021-12-01', '2021-12-01', 'Grupo A', 1, 'Descripción 2', 'Académico', 'Clase A', '11:00:00', '12:00:00', subject_id);
     expect(academicEventPublished.error).toBeNull(); // Verificar que no haya error
     expect(academicEventPublished.data).not.toBeNull(); // Debe haber un evento creado.
     expect(academicEventPublished.data).toHaveLength(1); // Debe haber un evento creado.
