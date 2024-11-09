@@ -90,6 +90,15 @@ describe('Teacher API Tests', () => {
     const result = await f.assingArraySubjectsToTeacher(testArrayTeachers[2].nip, [20001, 20002]);
     expect(result.error).toBeNull(); // Verifica que no haya error
   });
+  it('should unassign a subject from a teacher', async () => {
+    const result = await f.unassignSubjectFromTeacher(testArrayTeachers[1].nip, 20001);
+    expect(result.error).toBeNull(); // Verifica que no haya error
+  });
+
+  it('should unassign multiple subjects from a teacher', async () => {
+    const result = await f.unassignArraySubjectsFromTeacher(testArrayTeachers[2].nip, [20001, 20002]);
+    expect(result.error).toBeNull(); // Verifica que no haya error
+  });
 
   // Prueba para obtener las asignaturas de un profesor
   it('should get the subjects of a teacher', async () => {

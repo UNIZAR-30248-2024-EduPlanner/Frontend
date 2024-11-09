@@ -72,7 +72,7 @@ export const matriculateStudent = async (student_nip, subject_code) => {
 
     const { data, error } = await supabase
       .from('enrollments')
-      .insert([{ student_id: student.data[0].id, subject_id: subject.data[0].id }]);
+      .insert([{ student_id: student.data[0].id, subject_id: subject.data[0].id }]).select();
 
     if (error) {
       console.error('Error al matricular al estudiante:', error);
@@ -123,7 +123,7 @@ export const unenrollStudent = async (student_nip, subject_code) => {
     const { data, error } = await supabase
       .from('enrollments')
       .delete()
-      .match({ student_id: student.data[0].id, subject_id: subject.data[0].id });
+      .match({ student_id: student.data[0].id, subject_id: subject.data[0].id }).select();
 
     if (error) {
       console.error('Error al desmatricular al estudiante:', error);
@@ -170,7 +170,7 @@ export const matriculateStudentOnMultipleSubjects = async (student_nip, subjects
       .from('enrollments')
       .insert(subjectsIds.map(subject_id => {
         return { student_id: student.data[0].id, subject_id };
-      }));
+      })).select();
 
     if (error) {
       console.error('Error al matricular al estudiante:', error);
@@ -182,6 +182,54 @@ export const matriculateStudentOnMultipleSubjects = async (student_nip, subjects
   } catch (err) {
     console.error('Ha ocurrido un error:', err);
     return { data: null, error: err }; // Retorna el error
+  }
+}
+
+export const unenrollStudentFromMultipleSubjects = async (student_nip, subjects) => {
+  try {
+    // Obtener el ID del estudiante
+    const student = await supabase
+      .from('users')
+      .select('id')
+      .eq('nip', student_nip)
+      .eq('role', 'student');
+
+    if (student.error) {
+      console.error('Error al obtener el estudiante:', student.error);
+      return { data: null, error: student.error };
+    }
+
+    const subjectsIds = await Promise.all(subjects.map(async subject => {
+      const { data, error } = await supabase
+        .from('subjects')
+        .select('id')
+        .eq('subject_code', subject);
+
+      if (error) {
+        console.error('Error al obtener la asignatura:', error);
+        return { data: null, error }; // Retorna el error
+      }
+
+      return data[0].id;
+    }));
+
+    // Eliminar la inscripción de la tabla enrollments
+    const { data, error } = await supabase
+      .from('enrollments')
+      .delete()
+      .in('subject_id', subjectsIds)
+      .eq('student_id', student.data[0].id).select();
+
+    if (error) {
+      console.error('Error al desmatricular al estudiante:', error);
+      return { data: null, error };
+    }
+
+    console.log('Estudiante desmatriculado correctamente:', data);
+    return { data, error: null };
+  } catch (err) {
+    console.error('Ha ocurrido un error:', err);
+    return { data: null, error: err };
   }
 }
 

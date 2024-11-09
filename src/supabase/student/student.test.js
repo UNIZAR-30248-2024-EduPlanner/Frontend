@@ -94,6 +94,16 @@ describe('Student API Tests', () => {
     expect(result.error).toBeNull(); // Verifica que no haya error
   });
 
+  it('should unenroll an student from a subject', async () => {
+    const result = await f.unenrollStudent(testArrayStudents[0].nip, 20001);
+    expect(result.error).toBeNull(); // Verifica que no haya error
+  });
+
+  it('should unenroll an student from multiple subjects', async () => {
+    const result = await f.unenrollStudentFromMultipleSubjects(testArrayStudents[1].nip, [20001, 20002]);
+    expect(result.error).toBeNull(); // Verifica que no haya error
+  });
+
   // Obtener las asignaturas de un estudiante
   it('should get the subjects of a student', async () => {
     const studentId = (await f.getStudentIdByNip(testArrayStudents[0].nip));

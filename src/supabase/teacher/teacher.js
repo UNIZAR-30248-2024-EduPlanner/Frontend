@@ -40,7 +40,7 @@ export const getSubjectsByTeacherId = async (teacher_id) => {
       return { data: null, error };
     }
 
-    console.log('Asignaturas obtenidas correctamente:', data);
+    console.log('Asignaturas del profesor obtenidas correctamente:', data);
     return { data, error: null };
   } catch (err) {
     console.error('Ha ocurrido un error:', err);
@@ -48,155 +48,161 @@ export const getSubjectsByTeacherId = async (teacher_id) => {
   }
 }
 
-export const assignSubjectToTeacher = async (teacher_nip, subject_code) => {
-  try {
-    const teacher = await supabase
-      .from('users')
-      .select('id')
-      .eq('nip', teacher_nip)
-      .eq('role', 'teacher');
+export const assignSubjectToTeacher = async (nip, subjectCode) => {
+  const teacher = await supabase
+    .from('users')
+    .select('id')
+    .eq('nip', nip)
+    .eq('role', 'teacher')
+    .single();
 
-    if (teacher.error) {
-      console.error('Error al obtener el profesor:', teacher.error);
-      return { data: null, error: teacher.error };
-    }
-
-    const subject = await supabase
-      .from('subjects')
-      .select('id')
-      .eq('subject_code', subject_code);
-
-    if (subject.error) {
-      console.error('Error al obtener la asignatura:', subject.error);
-      return { data: null, error: subject.error };
-    }
-
-    const { data, error } = await supabase
-      .from('teachings')
-      .insert({
-        teacher_id: teacher.data[0].id,
-        subject_id: subject.data[0].id
-      });
-
-    if (error) {
-      console.error('Error al asignar la asignatura al profesor:', error);
-      return { data: null, error };
-    }
-
-    console.log('Asignatura asignada correctamente:', data);
-    return { data, error: null };
-  } catch (err) {
-    console.error('Ha ocurrido un error:', err);
-    return { data: null, error: err };
+  if (teacher.error) {
+    console.error('Error al obtener el ID del profesor:', teacher.error);
+    return { data: null, error: teacher.error };
   }
-}
 
-export const unassignSubjectFromTeacher = async (teacher_nip, subject_code) => {
-  try {
-    // Obtener el ID del profesor
-    const teacher = await supabase
-      .from('users')
-      .select('id')
-      .eq('nip', teacher_nip)
-      .eq('role', 'teacher');
+  const subject = await supabase
+    .from('subjects')
+    .select('id')
+    .eq('subject_code', subjectCode)
+    .single();
 
-    if (teacher.error) {
-      console.error('Error al obtener el profesor:', teacher.error);
-      return { data: null, error: teacher.error };
-    }
-    
-    // Verificar si el profesor existe
-    if (teacher.data.length === 0) {
-      const errorMsg = 'Profesor no encontrado';
-      console.error(errorMsg);
-      return { data: null, error: errorMsg };
-    }
-
-    // Obtener el ID de la asignatura
-    const subject = await supabase
-      .from('subjects')
-      .select('id')
-      .eq('subject_code', subject_code);
-
-    if (subject.error) {
-      console.error('Error al obtener la asignatura:', subject.error);
-      return { data: null, error: subject.error };
-    }
-    
-    // Verificar si la asignatura existe
-    if (subject.data.length === 0) {
-      const errorMsg = 'Asignatura no encontrada';
-      console.error(errorMsg);
-      return { data: null, error: errorMsg };
-    }
-
-    // Eliminar la relación en la tabla teachings
-    const { data, error } = await supabase
-      .from('teachings')
-      .delete()
-      .match({ teacher_id: teacher.data[0].id, subject_id: subject.data[0].id });
-
-    if (error) {
-      console.error('Error al desasignar la asignatura del profesor:', error);
-      return { data: null, error };
-    }
-
-    console.log('Asignatura desasignada correctamente:', data);
-    return { data, error: null };
-  } catch (err) {
-    console.error('Ha ocurrido un error:', err);
-    return { data: null, error: err };
+  if (subject.error) {
+    console.error('Error al obtener el ID de la asignatura:', subject.error);
+    return { data: null, error: subject.error };
   }
+
+  const { data, error } = await supabase
+    .from('teachings')
+    .insert([{ teacher_id: teacher.data.id, subject_id: subject.data.id }]).select();
+
+  if (error) {
+    console.error('Error al insertar la asignatura al profesor:', error);
+    return { data: null, error };
+  }
+
+  console.log('Asignatura insertada al profesor correctamente:', data);
+  return { data, error: null };
 };
 
+export const unassignSubjectFromTeacher = async (nip, subjectCode) => {
+  const teacher = await supabase
+    .from('users')
+    .select('id')
+    .eq('nip', nip)
+    .eq('role', 'teacher')
+    .single();
 
-export const assingArraySubjectsToTeacher = async (teacher_nip, subjects) => {
-  try {
-    const teacher = await supabase
-      .from('users')
-      .select('id')
-      .eq('nip', teacher_nip)
-      .eq('role', 'teacher');
-
-    if (teacher.error) {
-      console.error('Error al obtener el profesor:', teacher.error);
-      return { data: null, error: teacher.error };
-    }
-
-    const subjectsId = await Promise.all(subjects.map(async subject => {
-      const { data, error } = await supabase
-        .from('subjects')
-        .select('id')
-        .eq('subject_code', subject);
-
-      if (error) {
-        console.error('Error al obtener la asignatura:', error);
-        return { data: null, error };
-      }
-
-      return data[0].id;
-    }));
-
-    const { data, error } = await supabase
-      .from('teachings')
-      .insert(subjectsId.map(subject_id => {
-        return {
-          teacher_id: teacher.data[0].id,
-          subject_id
-        }
-      }));
-
-    if (error) {
-      console.error('Error al asignar las asignaturas al profesor:', error);
-      return { data: null, error };
-    }
-
-    console.log('Asignaturas asignadas correctamente:', data);
-    return { data, error: null };
-  } catch (err) {
-    console.error('Ha ocurrido un error:', err);
-    return { data: null, error: err };
+  if (teacher.error) {
+    console.error('Error al obtener el ID del profesor:', teacher.error);
+    return { data: null, error: teacher.error };
   }
+
+  const subject = await supabase
+    .from('subjects')
+    .select('id')
+    .eq('subject_code', subjectCode)
+    .single();
+
+  if (subject.error) {
+    console.error('Error al obtener el ID de la asignatura:', subject.error);
+    return { data: null, error: subject.error };
+  }
+
+  const { data, error } = await supabase
+    .from('teachings')
+    .delete()
+    .eq('teacher_id', teacher.data.id)
+    .eq('subject_id', subject.data.id)
+    .select();
+
+  if (error) {
+    console.error('Error al eliminar la asignatura del profesor:', error);
+    return { data: null, error };
+  }
+
+  console.log('Asignatura eliminada del profesor correctamente:', data);
+  return { data, error: null };
+};
+
+export const assingArraySubjectsToTeacher = async (nip, subjectCodes) => {
+  const teacher = await supabase
+    .from('users')
+    .select('id')
+    .eq('nip', nip)
+    .eq('role', 'teacher')
+    .single();
+
+  if (teacher.error) {
+    console.error('Error al obtener el ID del profesor:', teacher.error);
+    return { data: null, error: teacher.error };
+  }
+
+  const subjects = await supabase
+    .from('subjects')
+    .select('id')
+    .in('subject_code', subjectCodes);
+
+  if (subjects.error) {
+    console.error('Error al obtener los IDs de las asignaturas:', subjects.error);
+    return { data: null, error: subjects.error };
+  }
+
+  const teacherId = teacher.data.id;
+  const subjectIds = subjects.data.map(subject => subject.id);
+
+  const { data, error } = await supabase
+    .from('teachings')
+    .insert(subjectIds.map(subjectId => ({ teacher_id: teacherId, subject_id: subjectId }))).select();
+
+  if (error) {
+    console.error('Error al insertar las asignaturas al profesor:', error);
+    return { data: null, error };
+  }
+
+  console.log('Asignaturas insertadas al profesor correctamente:', data);
+  return { data, error: null };
+};
+
+export const unassignArraySubjectsFromTeacher = async (nip, subjectCodes) => {
+  const teacher = await supabase
+    .from('users')
+    .select('id')
+    .eq('nip', nip)
+    .eq('role', 'teacher')
+    .single();
+
+  if (teacher.error) {
+    console.error('Error al obtener el ID del profesor:', teacher.error);
+    return { data: null, error: teacher.error };
+  }
+
+  const subjects = await supabase
+    .from('subjects')
+    .select('id')
+    .in('subject_code', subjectCodes);
+
+  if (subjects.error) {
+    console.error('Error al obtener los IDs de las asignaturas:', subjects.error);
+    return { data: null, error: subjects.error };
+  }
+
+  const teacherId = teacher.data.id;
+  const subjectIds = subjects.data.map(subject => subject.id);
+
+  const { data, error } = await supabase
+    .from('teachings')
+    .delete()
+    .eq('teacher_id', teacherId)
+    .in('subject_id', subjectIds).select();
+
+  if (error) {
+    console.error('Error al eliminar las asignaturas del profesor:', error);
+    return { data: null, error };
+  }
+
+  console.log('Asignaturas eliminadas del profesor correctamente:', data);
+  return { data, error: null };
 }
 
 export const getTeacherIdByNip = async (nip) => {
