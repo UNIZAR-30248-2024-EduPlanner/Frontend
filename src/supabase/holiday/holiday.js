@@ -4,8 +4,8 @@ import { supabase } from '../supabaseClient.js';
 export const createHoliday = async (name, date, description, recurrent, organizationId) => {
     const { data, error } = await supabase
         .from('holiday')
-        .insert([{ name, date, description, recurrent, organization_id: organizationId }]);
-    
+        .insert([{ name, date, description, recurrent, organization_id: organizationId }]).select();
+    console.log(data);
     return { data, error };
 };
 
@@ -14,8 +14,8 @@ export const editHoliday = async (holidayId, updates) => {
     const { data, error } = await supabase
         .from('holiday')
         .update(updates)
-        .eq('id', holidayId);
-    
+        .eq('id', holidayId).select();
+    console.log(data);
     return { data, error };
 };
 
@@ -24,8 +24,8 @@ export const deleteHoliday = async (holidayId) => {
     const { data, error } = await supabase
         .from('holiday')
         .delete()
-        .eq('id', holidayId);
-
+        .eq('id', holidayId).select();
+    console.log(data);
     return { data, error };
 };
 
@@ -34,8 +34,8 @@ export const deleteHolidayByDate = async (date) => {
     const { data, error } = await supabase
         .from('holiday')
         .delete()
-        .eq('date', date);
-
+        .eq('date', date).select();
+    console.log(data);
     return { data, error };
 };
 
@@ -44,7 +44,7 @@ export const getAllHolidaysByOrganization = async (organizationId) => {
     const { data, error } = await supabase
         .from('holiday')
         .select('*')
-        .eq('organization_id', organizationId);
-
+        .eq('organization_id', organizationId).select();
+    console.log(data);
     return { data, error };
 };
