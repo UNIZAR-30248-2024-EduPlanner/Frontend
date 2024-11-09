@@ -38,6 +38,17 @@ const testSubject = {
   subject_code: 66688,
 };
 
+const testArraySubjects = [
+  {
+    name: 'Subject Test 2',
+    subject_code: 66689,
+  },
+  {
+    name: 'Subject Test 3',
+    subject_code: 66690,
+  },
+];
+
 let organization_id = 1;
 let course_id;
 let subjectId;
@@ -153,6 +164,21 @@ describe('Course API Tests', () => {
     expect(result.error).toBeNull();
   });
 
+  it('should register array of subjects', async () => {
+    await supabase
+      .from('subjects')
+      .delete()
+      .eq('subject_code', testArraySubjects[0].subject_code);
+
+    await supabase
+      .from('subjects')
+      .delete()
+      .eq('subject_code', testArraySubjects[1].subject_code);
+
+    const result = await f.registerArraySubject(testArraySubjects, course_id);
+    expect(result.data).toBe(true);
+  });
+
   afterAll(async () => {
     await supabase
       .from('users')
@@ -168,6 +194,16 @@ describe('Course API Tests', () => {
       .from('users')
       .delete()
       .eq('nip', testArrayCourses[2].nip);
+
+    await supabase
+      .from('subjects')
+      .delete()
+      .eq('subject_code', testArraySubjects[0].subject_code);
+
+    await supabase
+      .from('subjects')
+      .delete()
+      .eq('subject_code', testArraySubjects[1].subject_code);
 
     if (course_id) {
       await fo.eliminateCourse(course_id);
