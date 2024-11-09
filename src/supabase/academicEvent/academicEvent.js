@@ -8,7 +8,6 @@ export const createAcademicEventAndPublish = async (name, startingDate, endDate,
     // Primero, creamos el evento académico
     const { data: academicEvent, error: academicEventError } = await createAcademicEvent(name, startingDate, endDate, groupName, periodicity, description, type, place, startTime, endTime, subjectId);
     console.log("Evento académico a publicar", academicEvent);
-    console.log("Id del evento académico a publicar", academicEvent[0].id);
 
 
     if (academicEventError) {
