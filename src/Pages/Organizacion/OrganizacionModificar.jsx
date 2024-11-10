@@ -105,6 +105,7 @@ const OrganizacionModificar = () => {
             )}
             <div className="mod-org-form space-y-20">
                 <Input
+                    name="nombre"
                     size="lg"
                     type="name"
                     labelPlacement="outside"
@@ -116,6 +117,7 @@ const OrganizacionModificar = () => {
                     onChange={(e) => setNombre(e.target.value)}
                 />
                 <Input
+                    name="nip/nia"
                     size="lg"
                     type="name"
                     color="primary"
@@ -127,6 +129,7 @@ const OrganizacionModificar = () => {
                     onChange={(e) => setNip(e.target.value)}
                 />
                 <Input
+                    name="password"
                     label="Contraseña"
                     size="lg"
                     labelPlacement="outside"
