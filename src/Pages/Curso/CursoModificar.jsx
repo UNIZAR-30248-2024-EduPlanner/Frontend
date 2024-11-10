@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom"
 import { Input } from "@nextui-org/input";
 import { Button } from "@nextui-org/react";
 import "../../css/Curso/CursoModificar.css"
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { editSubject } from "../../supabase/course/course";
 import Logout from "../../Components/Logout";
@@ -13,6 +13,7 @@ const CursoModificar = () => {
     const typeSingular = type.slice(0, -1)
     const { id } = useParams()
     const [error, setError] = useState("");
+    const location = useLocation();
     const navigate = useNavigate()
     const { nombreViejo } = useParams()
     const { nipViejo } = useParams()
@@ -52,6 +53,11 @@ const CursoModificar = () => {
         }
         navigate(-1)
     }
+
+    const calendar = () => {
+        navigate(`${location.pathname}/calendario/`)
+    }
+    
     return (
         <>
             <FlechaVolver />
@@ -93,9 +99,14 @@ const CursoModificar = () => {
                     value={nip}
                     onChange={(e) => setNip(e.target.value)}
                 />
-                <Button size="lg" color="primary" onClick={update}>
-                    Modificar
-                </Button>
+                <div className="botones">
+                    <Button size="lg" color="primary" onClick={calendar}>
+                        Modificar calendario
+                    </Button>
+                    <Button size="lg" color="primary" onClick={update}>
+                        Modificar
+                    </Button>
+                </div>
             </div>
         </>
     )

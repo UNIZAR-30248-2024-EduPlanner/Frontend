@@ -8,6 +8,7 @@ import CursoModificar from "../Pages/Curso/CursoModificar"
 import OrganizacionCrear from "../Pages/Organizacion/OrganizacionCrear"
 import OrganizacionModificar from "../Pages/Organizacion/OrganizacionModificar"
 import CrearOrganizacion from "../Pages/login/CrearOrganizacion"
+import CalendarioAsignatura from "../Pages/Curso/CalendarioAsignatura"
 import IniciarSesion from "../Pages/login/IniciarSesion"
 import { ProtectedRouter, ProtectedUser } from "./ProtectedRouter"
 import { AuthProvider, useAuth } from "../context/AuthContext"
@@ -58,6 +59,7 @@ const AppRoutes = () => {
                     <Route path={constants.root + "CursoMenu"} element={<CursoMenu />} />
                     <Route path={constants.root + "CursoCrear/:type/"} element={<CursoCrear />} />
                     <Route path={constants.root + "CursoModificar/:type/:id/:nombreViejo/:nipViejo"} element={<CursoModificar />} />
+                    <Route path={constants.root + "CursoModificar/:type/:id/:nombreViejo/:nipViejo/calendario"} element={<CalendarioAsignatura />} />
                 </Route>
 
                 {/* USUARIO ALUMNO */}
@@ -68,6 +70,9 @@ const AppRoutes = () => {
                 <Route element={<ProtectedUser userType={constants.profesor} />}>
                 </Route>
             </Route>
+            
+            {/* RUTA DESCONOCIDA */}
+            <Route path="*" element={<IniciarSesion />} />
         </Routes>
     )
 }

@@ -1,0 +1,36 @@
+.calendario {
+    width: 100vw;
+}
+
+.mes-tit {
+    display: flex;
+    justify-content: center;
+    font-weight: bold;
+    align-items: center;
+}
+
+.personalizar {
+    position: absolute;
+    top: 1vh;
+    right: 1vw;
+}
+
+.calen {
+    position: relative;
+}
+
+.first-col {
+    display: flex;
+    width: 5vw;
+    height: 7vh;
+    justify-content: center;
+    background-color: var(--color-primary);
+    font-size: 1.25rem;
+    color: white;
+    font-weight: bold;
+    align-items: center;
+}
+
+.d {
+    width: 13.57vw;
+}
