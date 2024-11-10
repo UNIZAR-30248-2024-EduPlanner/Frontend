@@ -60,7 +60,7 @@ export const registerArrayCourses = async (courses, organization_id) => {
     }
 };
 
-// Función para registrar un array de cursos
+// Función para registrar un array de asignaturas
 export const registerArraySubject = async (subjects, course_id) => {
     try {
         const subjectsWithOrgId = subjects.map(subjects => ({

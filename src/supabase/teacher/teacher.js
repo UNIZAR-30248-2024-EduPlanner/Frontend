@@ -1,4 +1,6 @@
 import { supabase } from '../supabaseClient.js';
+import {getAcademicEventsBySubject} from '../academicEvent/academicEvent';
+import {createCustomAcademicEvent, deleteCustomAcademicEvent} from '../customAcademicEvent/customAcademicEvent';
 
 export const registerArrayTeachers = async (teachers, organization_id) => {
   try {
@@ -40,7 +42,7 @@ export const getSubjectsByTeacherId = async (teacher_id) => {
       return { data: null, error };
     }
 
-    console.log('Asignaturas obtenidas correctamente:', data);
+    console.log('Asignaturas del profesor obtenidas correctamente:', data);
     return { data, error: null };
   } catch (err) {
     console.error('Ha ocurrido un error:', err);
@@ -48,94 +50,151 @@ export const getSubjectsByTeacherId = async (teacher_id) => {
   }
 }
 
-export const assignSubjectToTeacher = async (teacher_nip, subject_code) => {
-  try {
-    const teacher = await supabase
-      .from('users')
-      .select('id')
-      .eq('nip', teacher_nip)
-      .eq('role', 'teacher');
+export const assignSubjectToTeacher = async (nip, subjectCode) => {
+  const teacher = await supabase
+    .from('users')
+    .select('id')
+    .eq('nip', nip)
+    .eq('role', 'teacher')
+    .single();
 
-    if (teacher.error) {
-      console.error('Error al obtener el profesor:', teacher.error);
-      return { data: null, error: teacher.error };
-    }
-
-    const subject = await supabase
-      .from('subjects')
-      .select('id')
-      .eq('subject_code', subject_code);
-
-    if (subject.error) {
-      console.error('Error al obtener la asignatura:', subject.error);
-      return { data: null, error: subject.error };
-    }
-
-    const { data, error } = await supabase
-      .from('teachings')
-      .insert({
-        teacher_id: teacher.data[0].id,
-        subject_id: subject.data[0].id
-      });
-
-    if (error) {
-      console.error('Error al asignar la asignatura al profesor:', error);
-      return { data: null, error };
-    }
-
-    console.log('Asignatura asignada correctamente:', data);
-    return { data, error: null };
-  } catch (err) {
-    console.error('Ha ocurrido un error:', err);
-    return { data: null, error: err };
+  if (teacher.error) {
+    console.error('Error al obtener el ID del profesor:', teacher.error);
+    return { data: null, error: teacher.error };
   }
-}
 
-export const assingArraySubjectsToTeacher = async (teacher_nip, subjects) => {
-  try {
-    const teacher = await supabase
-      .from('users')
-      .select('id')
-      .eq('nip', teacher_nip)
-      .eq('role', 'teacher');
+  const subject = await supabase
+    .from('subjects')
+    .select('id')
+    .eq('subject_code', subjectCode)
+    .single();
 
-    if (teacher.error) {
-      console.error('Error al obtener el profesor:', teacher.error);
-      return { data: null, error: teacher.error };
+  if (subject.error) {
+    console.error('Error al obtener el ID de la asignatura:', subject.error);
+    return { data: null, error: subject.error };
+  }
+
+  const { data, error } = await supabase
+    .from('teachings')
+    .insert([{ teacher_id: teacher.data.id, subject_id: subject.data.id }]).select();
+
+  if (error) {
+    console.error('Error al insertar la asignatura al profesor:', error);
+    return { data: null, error };
+  }
+
+  //Ahora añadir todos los eventos academicos de la asignatura al estudiante
+  const academicEvents = await getAcademicEventsBySubject(subject.data.id);
+  if (academicEvents.error) {
+    console.error('Error al obtener los eventos academicos de la asignatura:', academicEvents.error);
+    return { data: null, error: academicEvents.error }; // Retorna el error
+  }
+
+  //Crear un evento personalizado en el alumno para cada evento academico de la asignatura
+  for (let event of academicEvents.data) {
+    const customEvent = await createCustomAcademicEvent(teacher.data.id, event.id);
+    if (customEvent.error) {
+      console.error('Error al crear el evento personalizado:', customEvent.error);
+      return { data: null, error: customEvent.error }; // Retorna el error
     }
+  }
 
-    const subjectsId = await Promise.all(subjects.map(async subject => {
-      const { data, error } = await supabase
-        .from('subjects')
-        .select('id')
-        .eq('subject_code', subject);
+  console.log('Asignatura insertada al profesor correctamente:', data);
+  return { data, error: null };
+};
 
-      if (error) {
-        console.error('Error al obtener la asignatura:', error);
-        return { data: null, error };
+export const unassignSubjectFromTeacher = async (nip, subjectCode) => {
+  const teacher = await supabase
+    .from('users')
+    .select('id')
+    .eq('nip', nip)
+    .eq('role', 'teacher')
+    .single();
+
+  if (teacher.error) {
+    console.error('Error al obtener el ID del profesor:', teacher.error);
+    return { data: null, error: teacher.error };
+  }
+
+  const subject = await supabase
+    .from('subjects')
+    .select('id')
+    .eq('subject_code', subjectCode)
+    .single();
+
+  if (subject.error) {
+    console.error('Error al obtener el ID de la asignatura:', subject.error);
+    return { data: null, error: subject.error };
+  }
+
+  const { data, error } = await supabase
+    .from('teachings')
+    .delete()
+    .eq('teacher_id', teacher.data.id)
+    .eq('subject_id', subject.data.id)
+    .select();
+
+  if (error) {
+    console.error('Error al eliminar la asignatura del profesor:', error);
+    return { data: null, error };
+  }
+
+  //Ahora hay que eliminar los eventos personalizados de la asignatura al profesor
+  const academicEvents = await getAcademicEventsBySubject(subject.data.id);
+  if (academicEvents.error) {
+    console.error('Error al obtener los eventos academicos de la asignatura:', academicEvents.error);
+    return { data: null, error: academicEvents.error }; // Retorna el error
+  }
+
+  //Eliminar un evento personalizado en el profesor para cada evento academico de la asignatura
+  for (let event of academicEvents.data) {
+    const customEvent = await deleteCustomAcademicEvent(teacher.data.id, event.id);
+    if (customEvent.error) {
+      console.error('Error al eliminar el evento personalizado:', customEvent.error);
+      return { data: null, error: customEvent.error }; // Retorna el error
+    }
+  }
+
+  console.log('Asignatura eliminada del profesor correctamente:', data);
+  return { data, error: null };
+};
+
+export const assingArraySubjectsToTeacher = async (nip, subjectCodes) => {
+  try {
+    // Matricular al estudiante en cada asignatura utilizando la función matriculateStudent
+    for (const subject of subjectCodes) {
+      const result = await assignSubjectToTeacher(nip, subject);
+
+      if (result.error) {
+        console.error(`Error al asignar al profesor en la asignatura ${subject}:`, result.error);
+        return { data: null, error: result.error };
       }
-
-      return data[0].id;
-    }));
-
-    const { data, error } = await supabase
-      .from('teachings')
-      .insert(subjectsId.map(subject_id => {
-        return {
-          teacher_id: teacher.data[0].id,
-          subject_id
-        }
-      }));
-
-    if (error) {
-      console.error('Error al asignar las asignaturas al profesor:', error);
-      return { data: null, error };
     }
 
-    console.log('Asignaturas asignadas correctamente:', data);
-    return { data, error: null };
+    console.log('Profesor asignado correctamente en múltiples asignaturas');
+    return { data: `Profesor asignado en ${subjectCodes.length} asignaturas`, error: null };
   } catch (err) {
-    console.error('Ha ocurrido un error:', err);
+    console.error('Ha ocurrido un error al asignar al profesor en múltiples asignaturas:', err);
+    return { data: null, error: err };
+  }
+};
+
+export const unassignArraySubjectsFromTeacher = async (nip, subjectCodes) => {
+  try {
+    // Matricular al estudiante en cada asignatura utilizando la función matriculateStudent
+    for (const subject of subjectCodes) {
+      const result = await unassignSubjectFromTeacher(nip, subject);
+
+      if (result.error) {
+        console.error(`Error al desasignar al profesor de la asignatura ${subject}:`, result.error);
+        return { data: null, error: result.error };
+      }
+    }
+
+    console.log('Profesor desasignado correctamente en múltiples asignaturas');
+    return { data: `Profesor desasignador en ${subjectCodes.length} asignaturas`, error: null };
+  } catch (err) {
+    console.error('Ha ocurrido un error al desasignar al profesor en múltiples asignaturas:', err);
     return { data: null, error: err };
   }
 }
