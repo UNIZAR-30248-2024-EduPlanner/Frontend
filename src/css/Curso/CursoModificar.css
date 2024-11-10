@@ -12,3 +12,9 @@
     align-items: center;
     margin-top: 5vh;
 }
+
+.botones {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
