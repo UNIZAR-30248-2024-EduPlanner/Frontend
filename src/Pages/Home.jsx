@@ -9,7 +9,7 @@ import 'react-image-gallery/styles/css/image-gallery.css';
 
 // Imágenes de ejemplo
 import image1 from "../assets/image1.jpg";
-import image2 from "../assets/image2.jpg";
+import image2 from "../assets/image2.jpeg";
 import image3 from "../assets/image3.jpg";
 import image4 from "../assets/image4.jpg";
 import image5 from "../assets/image5.jpg";
@@ -54,19 +54,17 @@ const Home = () => {
             <hr className="separator" />
 
             <header className="header">
-                <h1>Bienvenido a EduPlanner</h1>
-                <p>La plataforma que mejora la planificación educativa de tu organización.</p>
+                <h1 className="header-title">Bienvenido a EduPlanner</h1>
+                <p className="header-subtitle">La plataforma que mejora la planificación educativa de tu organización.</p>
             </header>
 
             {/* Galería de imágenes */}
             <div className="image-slice">
                 <Gallery
                     items={images}
-                    showThumbnails={false} // Oculta las miniaturas
-                    autoPlay={true}        // Activa la reproducción automática
-                    slideInterval={3000}   // Intervalo de 3 segundos para el cambio de imagen
-                    showFullscreenButton={false} // Deshabilita el botón de pantalla completa
-                    showPlayButton={false} // Deshabilita el botón de reproducción
+                    autoPlay={true}
+                    slideInterval={3000}
+                    showPlayButton={false}
                 />
             </div>
 

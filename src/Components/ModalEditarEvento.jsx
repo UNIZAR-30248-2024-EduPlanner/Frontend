@@ -1,7 +1,7 @@
 import { Button, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter } from "@nextui-org/react";
 import { useAuth } from "../context/AuthContext";
 import { useState, useEffect } from "react";
-import ModalComponent from './ModalComponent'; // Importa el modal de confirmación
+import ModalComponent from './ModalComponent';
 
 const ModalEditarEvento = ({ isOpen, onOpenChange, title, date_start, date_finish, place, description }) => {
     const { user } = useAuth();

@@ -7,22 +7,18 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    /* Centra los elementos horizontalmente */
 }
 
-/* Contenedor del logo */
 .logo-container {
     position: absolute;
     top: 20px;
     left: 20px;
 }
 
-/* Logo */
 .eduplanner-logo {
     width: 120px;
 }
 
-/* Botones en la parte superior derecha */
 .button-container {
     position: absolute;
     top: 20px;
@@ -31,42 +27,35 @@
     gap: 15px;
 }
 
-/* Línea separadora */
-.separator {
-    margin: 70px 0 20px;
-    /* Coloca la línea justo debajo de los botones */
-    border: 0;
-    border-top: 60px solid #00796b;
-    /* Verde azulado */
-}
-
-/* Contenedor del slice de imágenes */
 .image-slice {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: 20px 0;
-    width: 100%;
-    /* El contenedor ocupa todo el ancho */
-    height: 200px;
-    /* Ajusta el tamaño del contenedor */
-    overflow: hidden;
-    /* Oculta el contenido fuera del contenedor */
+    width: 600px;
+    height: 300px;
+    margin: 0 auto;
+    border: 1px solid #ddd;
 }
 
-/* Estilo de las imágenes */
 .image-slice img {
     width: 100%;
-    /* Las imágenes ocupan todo el contenedor */
-    height: auto;
-    object-fit: cover;
+    height: 100%;
+    object-fit: contain;
     transition: opacity 1s ease-in-out;
-    /* Efecto de desvanecimiento para el cambio de imágenes */
 }
 
-/* Footer */
 .footer {
     margin-top: auto;
     text-align: center;
     color: #004d40;
+}
+
+.header-title {
+    text-align: center;
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+    color: #004d40;
+}
+
+.header-subtitle {
+    text-align: center;
+    font-size: 1.5rem;
+    color: #00695c;
 }
