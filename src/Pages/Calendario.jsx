@@ -3,6 +3,7 @@ import FlechaVolver from "../Components/FlechaVolver"
 import { FaRegArrowAltCircleLeft, FaRegArrowAltCircleRight } from "react-icons/fa";
 import { Button, Tooltip } from '@nextui-org/react'
 import { useEffect, useState } from 'react'
+import { calcularSolapes, convertirAHorasEnMinutos } from '../Components/Solape';
 
 const Calendario = () => {
 
@@ -14,8 +15,51 @@ const Calendario = () => {
     const nameDays = ["L", "M", "X", "J", "V", "S", "D"];
     const alturaPorHora = 7; // Altura por hora en vh
     const alturaPorMinuto = 7 / 60; // Altura por minuto en vh
-    
 
+    const horariosAux = [
+        {
+            start: "8:00", end: "10:00", day: "L",
+            name: "Matemáticas II",
+        },
+        {
+            start: "8:00", end: "10:00", day: "L",
+            name: "Matemáticas I",
+        },
+        {
+            start: "8:00", end: "10:00", day: "L",
+            name: "Programación I",
+        },
+        {
+            start: "8:00", end: "10:00", day: "L",
+            name: "Programación I",
+        },
+        {
+            start: "10:00", end: "12:00", day: "L",
+            name: "FAE",
+        },
+        {
+            start: "10:00", end: "12:00", day: "L",
+            name: "IC",
+        },
+        {
+            start: "10:00", end: "12:00", day: "L",
+            name: "Matemáticas II",
+        },
+        {
+            start: "10:00", end: "12:00", day: "L",
+            name: "Matemáticas I",
+        },
+        {
+            start: "12:00", end: "13:00", day: "L",
+            name: "Matemáticas II",
+        },
+        {
+            start: "13:00", end: "14:00", day: "L",
+            name: "Matemáticas II",
+        },
+    ]
+    
+    // Función que convierte colores en hexadecimal a RGB
     function hexToRgb(hex) {
         // Eliminar el carácter '#' si está presente
         hex = hex.replace(/^#/, '');
@@ -28,6 +72,8 @@ const Calendario = () => {
         return { r, g, b };
     }
     
+    // Devuelve 'black' o 'white' para usar como color del texto sobre un color
+    // de fondo en hexadecimal <hex>
     function getContrastColor(hex) {
         const { r, g, b } = hexToRgb(hex);
         
@@ -38,63 +84,65 @@ const Calendario = () => {
         return luminance >= 128 ? 'black' : 'white';
     }
 
-    // Horarios de la semana actual
+    // Contiene una lista de {name: <name>, color: #XXXXXX}
+    const colores = [];
+
+    // Devuelve el color de la asignatura <name> y si no está genera un color aleatorio
+    // para esa asignatura y lo guarda en el vector colores
+    const getColor = (name) => {
+        const elem = colores.find((e) => e.name === name);
+
+        if (elem) {
+            return elem.color;
+        } else {
+            // Genera un color hexadecimal aleatorio
+            const color = `#${Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0')}`;
+            
+            // Añade el nuevo color al array `colores`
+            colores.push({ name, color });
+            
+            return color;
+        }
+    }
+
+    // Da formato a los horarios de la semana. Establece el estilo de los 
+    // componentes que permite mostrarlos por pantalla
     const procesarHorarios = (h) => {
         const res = [];
     
-        h.map((e) => {
+        h.map((e, idx) => {
             const [hoursStart, minutesStart] = e.start.split(":").map(part => parseInt(part, 10));
-            const [hoursEnd, minutesEnd] = e.end.split(":").map(part => parseInt(part, 10));
-            const acc = minutesStart > minutesEnd ? 1 : 0;
-    
+
             // Imprimir el índice encontrado para depuración
             const dayIndex = nameDays.findIndex((v) => v === e.day);
+
+            // Calcula los solapes del horario con otros horarios
+            // <numSolapes> contiene el número de solapes de <e> con otros horarios
+            // en su franja horaria
+            // <position> indica la posición horizontal en caso de que exista solape
+            const [numSolapes, position] = calcularSolapes(h, idx);
+
+            // Color de la asignatura
+            const color = getColor(e.name)
     
+            const minutosS = convertirAHorasEnMinutos(e.start)
+            const minutosE = convertirAHorasEnMinutos(e.end)
+
             res.push({
                 name: e.name,
                 start: e.start,
                 end: e.end,
-                height: ((hoursEnd - hoursStart - acc) * alturaPorHora + Math.abs(minutesEnd - minutesStart) * alturaPorMinuto).toString() + "vh",
+                height: ((minutosE - minutosS) * alturaPorMinuto).toString() + "vh",
+                width: numSolapes == 0 ? wCol : wCol / numSolapes,
                 top: ((hoursStart - firstHour + 1) * alturaPorHora + minutesStart * alturaPorMinuto).toString() + "vh",
-                left: (wFirstCol + (dayIndex * wCol)).toString() + "vw",
-                color: e.color,
-                textColor: getContrastColor(e.color)
+                left: (wFirstCol + (dayIndex * wCol) + (numSolapes == 0 ? 0 : position * (wCol / numSolapes))).toString() + "vw",
+                color: color,
+                textColor: getContrastColor(color)
             });
         });
     
         return res;
     };
-    
-    const horariosAux = [
-        {
-            start: "9:30",
-            end: "11:00",
-            day: "L", // Debe coincidir con el array nameDays
-            name: "Programación I",
-            color: "#989898"
-        },
-        {
-            start: "12:30",
-            end: "13:30",
-            day: "M", // Debe coincidir con el array nameDays
-            name: "Programación I",
-            color: "#989898"
-        },
-        {
-            start: "10:00",
-            end: "14:00",
-            day: "J", // Debe coincidir con el array nameDays
-            name: "Matemáticas II",
-            color: "#125478"
-        },
-        {
-            start: "16:00",
-            end: "18:30",
-            day: "J", // Debe coincidir con el array nameDays
-            name: "Matemáticas II",
-            color: "#125478"
-        },
-    ]
 
     const horarios = procesarHorarios(horariosAux)
 
@@ -120,6 +168,10 @@ const Calendario = () => {
     // Mes actual
     const [monthYear, setMonthYear] = useState(null)
 
+    // Cambia todo lo neceario relacionado con una semana al avanzar o retroceder
+    // en el calendario una semana.
+    // Si <next> = true avanza una semana
+    // Si <next> = false retrocede una semana 
     const changeWeek = (next) => {
         const newMonday = new Date(mondayWeek)
         if (next) {
@@ -144,6 +196,7 @@ const Calendario = () => {
         setDiasSemana(days);
     }
 
+    // Si 0 <= number <= 11, convierte number en un string acorde al mes 
     const numberToMonth = (number) => {
         if (number < 0 || number > 11) {
             console.error("number debe ser un número entre 0 y 11");
@@ -247,7 +300,7 @@ const Calendario = () => {
                             top: `${h.top}`,
                             left: `${h.left}`,
                             height: `${h.height}`,
-                            width: `${wCol}vw`,
+                            width: `${h.width}vw`,
                             color: `${h.textColor}`,
                             backgroundColor: `${h.color}`,
                             borderWidth: "1px",
