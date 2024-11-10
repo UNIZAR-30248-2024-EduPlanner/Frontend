@@ -113,7 +113,6 @@ const ModalEditarEvento = ({ isOpen, onOpenChange, title, date_start, date_finis
                 </ModalContent>
             </Modal>
 
-            {/* Modal de confirmación */}
             <ModalComponent
                 isOpen={isConfirmModalOpen}
                 onOpenChange={setConfirmModalOpen}

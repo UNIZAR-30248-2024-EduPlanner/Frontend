@@ -1,31 +1,72 @@
-.page-form {
+/* Fondo de la página */
+.home-container {
+    background-color: #e0f7fa;
+    /* Fondo azul claro */
+    min-height: 100vh;
+    padding: 20px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    margin-top: 5vh;
-    /* height: 100vh; */
+    /* Centra los elementos horizontalmente */
 }
 
-.button-iniciar-sesion {
-    padding: 30px;
-    font-size: 50px;
+/* Contenedor del logo */
+.logo-container {
+    position: absolute;
+    top: 20px;
+    left: 20px;
 }
 
-.text-eduplanner {
-    font-size: 16px;
-    text-align: center;
-}
-
-.button-crear-organizacion {
-    padding: 30px;
-    font-size: 25px;
-}
-
+/* Logo */
 .eduplanner-logo {
-    width: 20vw;
-    height: auto;
+    width: 120px;
+}
+
+/* Botones en la parte superior derecha */
+.button-container {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    gap: 15px;
+}
+
+/* Línea separadora */
+.separator {
+    margin: 70px 0 20px;
+    /* Coloca la línea justo debajo de los botones */
+    border: 0;
+    border-top: 60px solid #00796b;
+    /* Verde azulado */
+}
+
+/* Contenedor del slice de imágenes */
+.image-slice {
+    display: flex;
     justify-content: center;
-    margin: auto;
-    margin-top: 5vh;
+    align-items: center;
+    margin: 20px 0;
+    width: 100%;
+    /* El contenedor ocupa todo el ancho */
+    height: 200px;
+    /* Ajusta el tamaño del contenedor */
+    overflow: hidden;
+    /* Oculta el contenido fuera del contenedor */
+}
+
+/* Estilo de las imágenes */
+.image-slice img {
+    width: 100%;
+    /* Las imágenes ocupan todo el contenedor */
+    height: auto;
+    object-fit: cover;
+    transition: opacity 1s ease-in-out;
+    /* Efecto de desvanecimiento para el cambio de imágenes */
+}
+
+/* Footer */
+.footer {
+    margin-top: auto;
+    text-align: center;
+    color: #004d40;
 }
