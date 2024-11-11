@@ -22,59 +22,51 @@ const Calendario = () => {
     const alturaPorHora = 7; // Altura por hora en vh
     const alturaPorMinuto = 7 / 60; // Altura por minuto en vh
 
-    const listaCompletaEventos = [
-        { id: "horario1", name: "Matematicas I", starting_date: "2024-11-4", end_date: null, group_name: "Grupo A", periodicity: null, description: null, start_time: "10:00:00", end_time: "12:00:00", subject_id: "1", type: null, place: "Aula A.11" },
-        { id: "horario2", name: "Matematicas I", starting_date: "2024-11-5", end_date: null, group_name: "Grupo A", periodicity: null, description: null, start_time: "14:00:00", end_time: "16:00:00", subject_id: "1", type: null, place: "Aula A.11" },
-        { id: "horario3", name: "Matematicas I", starting_date: "2024-11-6", end_date: null, group_name: "Grupo A", periodicity: null, description: null, start_time: "09:00:00", end_time: "11:00:00", subject_id: "1", type: null, place: "Aula A.11" },
-        { id: "horario4", name: "Matematicas I", starting_date: "2024-11-4", end_date: null, group_name: "Grupo B", periodicity: null, description: null, start_time: "12:00:00", end_time: "14:00:00", subject_id: "1", type: null, place: "Aula A.11" },
-        { id: "horario5", name: "Matematicas I", starting_date: "2024-11-5", end_date: null, group_name: "Grupo B", periodicity: null, description: null, start_time: "16:00:00", end_time: "18:00:00", subject_id: "1", type: null, place: "Aula A.11" },
-        { id: "horario6", name: "Matematicas I", starting_date: "2024-11-6", end_date: null, group_name: "Grupo B", periodicity: null, description: null, start_time: "11:00:00", end_time: "13:00:00", subject_id: "1", type: null, place: "Aula A.11" },
-        { id: "horario7", name: "Fisica y electronica", starting_date: "2024-11-7", end_date: null, group_name: "Grupo C", periodicity: null, description: null, start_time: "09:00:00", end_time: "11:00:00", subject_id: "2", type: null, place: "Aula A.11" },
-        { id: "horario8", name: "Fisica y electronica", starting_date: "2024-11-7", end_date: null, group_name: "Grupo C", periodicity: null, description: null, start_time: "11:00:00", end_time: "13:00:00", subject_id: "2", type: null, place: "Aula A.11" },
-        { id: "horario9", name: "Fisica y electronica", starting_date: "2024-11-8", end_date: null, group_name: "Grupo C", periodicity: null, description: null, start_time: "10:00:00", end_time: "12:00:00", subject_id: "2", type: null, place: "Aula A.11" }
-    ];
     const horariosAux = [
         {
-            start: "8:00", end: "10:00", day: "L",
-            name: "Matemáticas II",
+            id: "test1", name: "Matemáticas II", starting_date: "2024-11-4", end_date: null, group_name: "Grupo D", periodicity: null, description: "srvwwe", start: "8:00", end: "10:00", subject_id: "1", type: null, place: "Aula B.1",
         },
         {
-            start: "8:00", end: "10:00", day: "L",
-            name: "Matemáticas I",
+            id: "test2", name: "Matemáticas I", starting_date: "2024-11-4", end_date: null, group_name: "Grupo A", periodicity: null, description: "srvwwe", start: "8:00", end: "10:00", subject_id: "2", type: null, place: "Aula A.11",
         },
         {
-            start: "8:00", end: "10:00", day: "L",
-            name: "Programación I",
+            id: "test3", name: "Programación I", starting_date: "2024-11-4", end_date: null, group_name: "Grupo E", periodicity: null, description: "srvwwe", start: "8:00", end: "10:00", subject_id: "3", type: null, place: "Laboratorio C.3",
         },
         {
-            start: "8:00", end: "10:00", day: "L",
-            name: "Programación I",
+            id: "test4", name: "Programación I", starting_date: "2024-11-4", end_date: null, group_name: "Grupo E", periodicity: null, description: "srvwwe", start: "8:00", end: "10:00", subject_id: "4", type: null, place: "Laboratorio C.3",
         },
         {
-            start: "10:00", end: "12:00", day: "L",
-            name: "FAE",
+            id: "test5", name: "FAE", starting_date: "2024-11-4", end_date: null, group_name: "Grupo F", periodicity: null, description: null, start: "10:00", end: "12:00", subject_id: "5", type: null, place: "Aula D.4",
         },
         {
-            start: "10:00", end: "12:00", day: "L",
-            name: "IC",
+            id: "test6", name: "IC", starting_date: "2024-11-4", end_date: null, group_name: "Grupo G", periodicity: null, description: null, start: "10:00", end: "12:00", subject_id: "6", type: null, place: "Aula E.5",
         },
         {
-            start: "10:00", end: "12:00", day: "L",
-            name: "Matemáticas II",
+            id: "test7", name: "Matemáticas II", starting_date: "2024-11-4", end_date: null, group_name: "Grupo D", periodicity: null, description: null, start: "10:00", end: "12:00", subject_id: "37", type: null, place: "Aula B.1",
         },
         {
-            start: "10:00", end: "12:00", day: "L",
-            name: "Matemáticas I",
+            id: "test8", name: "Matemáticas I", starting_date: "2024-11-4", end_date: null, group_name: "Grupo A", periodicity: null, description: null, start: "10:00", end: "12:00", subject_id: "8", type: null, place: "Aula A.11",
         },
         {
-            start: "12:00", end: "13:00", day: "L",
-            name: "Matemáticas II",
+            id: "test9", name: "Matemáticas II", starting_date: "2024-11-4", end_date: null, group_name: "Grupo D", periodicity: null, description: null, start: "12:00", end: "13:00", subject_id: "9", type: null, place: "Aula B.1",
         },
         {
-            start: "13:00", end: "14:00", day: "L",
-            name: "Matemáticas II",
-        },
-    ]
+            id: "test10", name: "Matemáticas II", starting_date: "2024-11-4", end_date: null, group_name: "Grupo D", periodicity: null, description: null, start: "13:00", end: "14:00", subject_id: "11", type: null, place: "Aula B.1",
+        }
+    ];
+
+    // Función que obtiene el día de la semana a partir de una fecha en formato "YYYY-MM-DD"
+    const obtenerDiaSemana = (fechaStr) => {
+        const diasSemanaAbreviados = ['D', 'L', 'M', 'X', 'J', 'V', 'S'];
+        const [anio, mes, dia] = fechaStr.split("-").map(Number);
+        const fecha = new Date(anio, mes - 1, dia);
+        return diasSemanaAbreviados[fecha.getDay()];
+    };
+
+    horariosAux.forEach(evento => {
+        evento.day = obtenerDiaSemana(evento.starting_date);
+    });
+
 
     // Función que convierte colores en hexadecimal a RGB
     function hexToRgb(hex) {
@@ -149,6 +141,9 @@ const Calendario = () => {
                 name: e.name,
                 start: e.start,
                 end: e.end,
+                description: e.description,
+                place: e.place,
+                group_name: e.group_name,
                 height: ((minutosE - minutosS) * alturaPorMinuto).toString() + "vh",
                 width: numSolapes == 0 ? wCol : wCol / numSolapes,
                 top: ((hoursStart - firstHour + 1) * alturaPorHora + minutesStart * alturaPorMinuto).toString() + "vh",
@@ -353,8 +348,8 @@ const Calendario = () => {
                 isOpen={isOpen}
                 onOpenChange={onOpenChange}
                 title={modalData?.name}
-                date_start={modalData?.start_time}
-                date_finish={modalData?.end_time}
+                date_start={modalData?.start}
+                date_finish={modalData?.end}
                 place={modalData?.place || ""}
                 group={modalData?.group_name || null}
                 descripcion={modalData?.description}
@@ -365,7 +360,7 @@ const Calendario = () => {
             <ModalComponentcreate
                 isOpen={isModalOpen}
                 onOpenChange={closeModal}
-                listaCompletaEventos={horarios}
+                listaCompletaEventos={horariosAux}
             />
         </div>
 

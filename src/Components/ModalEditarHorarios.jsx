@@ -51,6 +51,7 @@ const ModalEditarHorarios = ({ isOpen, onOpenChange, listaCompletaEventos }) => 
                                             <h4 className="large-bold-title">Seleccionar asignatura</h4>
                                             <CheckboxGroup
                                                 label="Asignaturas"
+                                                style={{ marginTop: '15px', marginBottom: '10px' }}
                                                 value={selectedAsignatura ? [selectedAsignatura] : []}
                                                 onChange={(value) => {
                                                     setSelectedAsignatura(value[0]);
@@ -70,6 +71,7 @@ const ModalEditarHorarios = ({ isOpen, onOpenChange, listaCompletaEventos }) => 
                                             <h4 className="large-bold-title">Seleccionar grupo</h4>
                                             <CheckboxGroup
                                                 label="Grupos"
+                                                style={{ marginTop: '15px', marginBottom: '10px' }}
                                                 value={selectedGrupo ? [selectedGrupo] : []}
                                                 onChange={(value) => {
                                                     setSelectedGrupo(value[0]);
@@ -89,17 +91,21 @@ const ModalEditarHorarios = ({ isOpen, onOpenChange, listaCompletaEventos }) => 
                                                 label="Horarios"
                                                 value={selectedHorarios}
                                                 onChange={setSelectedHorarios}
+                                                style={{ marginTop: '15px', marginBottom: '10px' }}
                                             >
                                                 {filteredHorarios.map(horario => (
                                                     <Checkbox key={horario.id} value={horario.id}>
-                                                        {obtenerDiaSemana(horario.starting_date) + " " + horario.start_time.slice(0, 5) + " " + horario.end_time.slice(0, 5)}
+                                                        {obtenerDiaSemana(horario.starting_date) + " " + horario.start.slice(0, 5) + "-" + horario.end.slice(0, 5)}
                                                     </Checkbox>
                                                 ))}
                                             </CheckboxGroup>
                                         </div>
                                         <Button color="primary" onPress={() => {
+                                            // Lógica para enviar horarios deseados
                                             console.log("Horarios seleccionados:", selectedHorarios);
-                                        }}>
+                                        }}
+                                            style={{ marginTop: '10px', marginBottom: '10px' }}
+                                        >
                                             Añadir a calendario
                                         </Button>
                                     </Tab>
