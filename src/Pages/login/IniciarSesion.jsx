@@ -35,8 +35,8 @@ const IniciarSesion = () => {
     useEffect(() => {
         if (isAuthenticated) {
             if (type == constants.organizacion) navigate(constants.root + "OrganizacionMenu")
-            else if (type == constants.alumno) navigate(constants.root + "AlumnoMenu")
-            else if (type == constants.profesor) navigate(constants.root + "ProfesorMenu")
+            else if (type == constants.alumno) navigate(constants.root + "Calendario")
+            else if (type == constants.profesor) navigate(constants.root + "Calendario")
             else if (type == constants.curso) navigate(constants.root + "CursoMenu")
         }
     }, [type, isAuthenticated])

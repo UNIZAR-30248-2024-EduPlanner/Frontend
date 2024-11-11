@@ -4,8 +4,14 @@ import { FaRegArrowAltCircleLeft, FaRegArrowAltCircleRight } from "react-icons/f
 import { Button, Tooltip } from '@nextui-org/react'
 import { useEffect, useState } from 'react'
 import { calcularSolapes, convertirAHorasEnMinutos } from '../Components/Solape';
+import { useDisclosure } from "@nextui-org/react";
+import ModalComponent from "../Components/ModalHorario";
+import ModalComponentcreate from "../Components/ModalEditarHorarios";
 
 const Calendario = () => {
+    const { isOpen, onOpen, onOpenChange } = useDisclosure();
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [modalData, setModalData] = useState(null);
 
     const wFirstCol = 5;
     const wCol = 13.57;
@@ -16,6 +22,17 @@ const Calendario = () => {
     const alturaPorHora = 7; // Altura por hora en vh
     const alturaPorMinuto = 7 / 60; // Altura por minuto en vh
 
+    const listaCompletaEventos = [
+        { id: "horario1", name: "Matematicas I", starting_date: "2024-11-4", end_date: null, group_name: "Grupo A", periodicity: null, description: null, start_time: "10:00:00", end_time: "12:00:00", subject_id: "1", type: null, place: "Aula A.11" },
+        { id: "horario2", name: "Matematicas I", starting_date: "2024-11-5", end_date: null, group_name: "Grupo A", periodicity: null, description: null, start_time: "14:00:00", end_time: "16:00:00", subject_id: "1", type: null, place: "Aula A.11" },
+        { id: "horario3", name: "Matematicas I", starting_date: "2024-11-6", end_date: null, group_name: "Grupo A", periodicity: null, description: null, start_time: "09:00:00", end_time: "11:00:00", subject_id: "1", type: null, place: "Aula A.11" },
+        { id: "horario4", name: "Matematicas I", starting_date: "2024-11-4", end_date: null, group_name: "Grupo B", periodicity: null, description: null, start_time: "12:00:00", end_time: "14:00:00", subject_id: "1", type: null, place: "Aula A.11" },
+        { id: "horario5", name: "Matematicas I", starting_date: "2024-11-5", end_date: null, group_name: "Grupo B", periodicity: null, description: null, start_time: "16:00:00", end_time: "18:00:00", subject_id: "1", type: null, place: "Aula A.11" },
+        { id: "horario6", name: "Matematicas I", starting_date: "2024-11-6", end_date: null, group_name: "Grupo B", periodicity: null, description: null, start_time: "11:00:00", end_time: "13:00:00", subject_id: "1", type: null, place: "Aula A.11" },
+        { id: "horario7", name: "Fisica y electronica", starting_date: "2024-11-7", end_date: null, group_name: "Grupo C", periodicity: null, description: null, start_time: "09:00:00", end_time: "11:00:00", subject_id: "2", type: null, place: "Aula A.11" },
+        { id: "horario8", name: "Fisica y electronica", starting_date: "2024-11-7", end_date: null, group_name: "Grupo C", periodicity: null, description: null, start_time: "11:00:00", end_time: "13:00:00", subject_id: "2", type: null, place: "Aula A.11" },
+        { id: "horario9", name: "Fisica y electronica", starting_date: "2024-11-8", end_date: null, group_name: "Grupo C", periodicity: null, description: null, start_time: "10:00:00", end_time: "12:00:00", subject_id: "2", type: null, place: "Aula A.11" }
+    ];
     const horariosAux = [
         {
             start: "8:00", end: "10:00", day: "L",
@@ -58,7 +75,7 @@ const Calendario = () => {
             name: "Matemáticas II",
         },
     ]
-    
+
     // Función que convierte colores en hexadecimal a RGB
     function hexToRgb(hex) {
         // Eliminar el carácter '#' si está presente
@@ -68,18 +85,18 @@ const Calendario = () => {
         let r = (bigint >> 16) & 255;
         let g = (bigint >> 8) & 255;
         let b = bigint & 255;
-    
+
         return { r, g, b };
     }
-    
+
     // Devuelve 'black' o 'white' para usar como color del texto sobre un color
     // de fondo en hexadecimal <hex>
     function getContrastColor(hex) {
         const { r, g, b } = hexToRgb(hex);
-        
+
         // Calcular la luminancia relativa
         const luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b;
-        
+
         // Decidir el color del texto
         return luminance >= 128 ? 'black' : 'white';
     }
@@ -97,10 +114,10 @@ const Calendario = () => {
         } else {
             // Genera un color hexadecimal aleatorio
             const color = `#${Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0')}`;
-            
+
             // Añade el nuevo color al array `colores`
             colores.push({ name, color });
-            
+
             return color;
         }
     }
@@ -109,7 +126,7 @@ const Calendario = () => {
     // componentes que permite mostrarlos por pantalla
     const procesarHorarios = (h) => {
         const res = [];
-    
+
         h.map((e, idx) => {
             const [hoursStart, minutesStart] = e.start.split(":").map(part => parseInt(part, 10));
 
@@ -124,7 +141,7 @@ const Calendario = () => {
 
             // Color de la asignatura
             const color = getColor(e.name)
-    
+
             const minutosS = convertirAHorasEnMinutos(e.start)
             const minutosE = convertirAHorasEnMinutos(e.end)
 
@@ -140,7 +157,7 @@ const Calendario = () => {
                 textColor: getContrastColor(color)
             });
         });
-    
+
         return res;
     };
 
@@ -154,7 +171,7 @@ const Calendario = () => {
         }
         return hours;
     };
-    
+
     // Llamada para generar la lista de horas entre 8:00 y 21:00
     const hours = generateHours(8, 21);
 
@@ -182,17 +199,17 @@ const Calendario = () => {
         setMondayWeek(newMonday);
 
         // Extraemos el mes y año
-        setMonthYear(numberToMonth(newMonday.getMonth()) + " " + newMonday.getFullYear())        
+        setMonthYear(numberToMonth(newMonday.getMonth()) + " " + newMonday.getFullYear())
 
         // Array para almacenar solo los números de los días de la semana desde lunes a domingo
         const days = [];
 
         for (let i = 0; i < 7; i++) {
-          const nextDay = new Date(newMonday);
-          nextDay.setDate(newMonday.getDate() + i);
-          days.push(nameDays[i] + nextDay.getDate()); // Solo el número del día
+            const nextDay = new Date(newMonday);
+            nextDay.setDate(newMonday.getDate() + i);
+            days.push(nameDays[i] + nextDay.getDate()); // Solo el número del día
         }
-    
+
         setDiasSemana(days);
     }
 
@@ -201,18 +218,18 @@ const Calendario = () => {
         if (number < 0 || number > 11) {
             console.error("number debe ser un número entre 0 y 11");
         } else {
-            const month = 
+            const month =
                 number === 0 ? "Enero" :
-                number === 1 ? "Febrero" :
-                number === 2 ? "Marzo" :
-                number === 3 ? "Abril" :
-                number === 4 ? "Mayo" :
-                number === 5 ? "Junio" :
-                number === 6 ? "Julio" :
-                number === 7 ? "Agosto" :
-                number === 8 ? "Septiembre" :
-                number === 9 ? "Octubre" :
-                number === 10 ? "Noviembre" : "Diciembre";
+                    number === 1 ? "Febrero" :
+                        number === 2 ? "Marzo" :
+                            number === 3 ? "Abril" :
+                                number === 4 ? "Mayo" :
+                                    number === 5 ? "Junio" :
+                                        number === 6 ? "Julio" :
+                                            number === 7 ? "Agosto" :
+                                                number === 8 ? "Septiembre" :
+                                                    number === 9 ? "Octubre" :
+                                                        number === 10 ? "Noviembre" : "Diciembre";
             return month;
         }
     }
@@ -225,27 +242,43 @@ const Calendario = () => {
         const monday = new Date(today);
         monday.setDate(today.getDate() - (dayOfWeek === 0 ? 6 : dayOfWeek - 1));
         setMondayWeek(monday)
-        
+
         // Extraemos el mes y año
         setMonthYear(numberToMonth(monday.getMonth()) + " " + monday.getFullYear())
-    
+
         // Array para almacenar solo los números de los días de la semana desde lunes a domingo
         const days = [];
 
         for (let i = 0; i < 7; i++) {
-          const nextDay = new Date(monday);
-          nextDay.setDate(monday.getDate() + i);
-          days.push(nameDays[i] + nextDay.getDate()); // Solo el número del día
+            const nextDay = new Date(monday);
+            nextDay.setDate(monday.getDate() + i);
+            days.push(nameDays[i] + nextDay.getDate()); // Solo el número del día
         }
-    
+
         setDiasSemana(days);
-      }, []);
+    }, []);
+
+    // Función para abrir el modal
+    const openModal = () => {
+        setIsModalOpen(true);
+    };
+
+    // Función para cerrar el modal
+    const closeModal = () => {
+        setIsModalOpen(false);
+    };
+
+    // Función para manejar la apertura de un modal con datos específicos
+    const handleOpenModal = (data) => {
+        setModalData(data);
+        onOpen();
+    };
 
     return (
         <div className="calendario">
-            <FlechaVolver/>
+            <FlechaVolver />
             <div className="personalizar">
-                <Button color="primary">
+                <Button color="primary" onClick={openModal}>
                     + Personalizar calendario
                 </Button>
             </div>
@@ -257,21 +290,21 @@ const Calendario = () => {
                 <div className="flex bg-primary text-white text-[1.5rem] items-center font-bold">
                     <div className="first-col">
                         <Tooltip content="Anterior semana">
-                            <Button 
-                              className="text-[2rem] bg-primary text-white min-w-0" 
-                              size="sm"
-                              onClick={() => changeWeek(false)}
+                            <Button
+                                className="text-[2rem] bg-primary text-white min-w-0"
+                                size="sm"
+                                onClick={() => changeWeek(false)}
                             >
-                                <FaRegArrowAltCircleLeft/>
+                                <FaRegArrowAltCircleLeft />
                             </Button>
                         </Tooltip>
                         <Tooltip content="Siguiente semana">
-                            <Button 
-                              className="text-[2rem] bg-primary text-white min-w-0" 
-                              size="sm"
-                              onClick={() => changeWeek(true)}
+                            <Button
+                                className="text-[2rem] bg-primary text-white min-w-0"
+                                size="sm"
+                                onClick={() => changeWeek(true)}
                             >
-                                <FaRegArrowAltCircleRight/>
+                                <FaRegArrowAltCircleRight />
                             </Button>
                         </Tooltip>
                     </div>
@@ -280,7 +313,7 @@ const Calendario = () => {
                     ))}
 
                 </div>
-                
+
                 <div className="flex-col">
                     {hours.map((h, idx) => (
                         <div className="" key={idx}>
@@ -296,26 +329,47 @@ const Calendario = () => {
 
                 {horarios.map((h, idx) => (
                     <div style={{
-                            position: 'absolute',
-                            top: `${h.top}`,
-                            left: `${h.left}`,
-                            height: `${h.height}`,
-                            width: `${h.width}vw`,
-                            color: `${h.textColor}`,
-                            backgroundColor: `${h.color}`,
-                            borderWidth: "1px",
-                            borderColor: "black",
-                            overflow: "hidden"
-                        }} 
+                        position: 'absolute',
+                        top: `${h.top}`,
+                        left: `${h.left}`,
+                        height: `${h.height}`,
+                        width: `${h.width}vw`,
+                        color: `${h.textColor}`,
+                        backgroundColor: `${h.color}`,
+                        borderWidth: "1px",
+                        borderColor: "black",
+                        overflow: "hidden"
+                    }}
                         key={idx}
+                        //onClick={() => console.log(`Start: ${h.start}, End: ${h.end}, Name: ${h.name}`)}
+                        onClick={() => handleOpenModal(h)}
                     >
                         <p className="ml-[5px] font-bold"> {h.start} - {h.end} </p>
                         <p className="ml-[5px]"> {h.name} </p>
                     </div>
                 ))}
             </div>
+            <ModalComponent
+                isOpen={isOpen}
+                onOpenChange={onOpenChange}
+                title={modalData?.name}
+                date_start={modalData?.start_time}
+                date_finish={modalData?.end_time}
+                place={modalData?.place || ""}
+                group={modalData?.group_name || null}
+                descripcion={modalData?.description}
+                creador={modalData?.subject_id || modalData?.user_id}
+                onAccept={onOpenChange}
+            />
 
+            <ModalComponentcreate
+                isOpen={isModalOpen}
+                onOpenChange={closeModal}
+                listaCompletaEventos={horarios}
+            />
         </div>
+
+
     )
 }
 

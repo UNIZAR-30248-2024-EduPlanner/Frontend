@@ -33,8 +33,8 @@ const AppRoutes = () => {
         if (user && isAuthenticated) {
             if (type === constants.organizacion) navigate(constants.root + "OrganizacionMenu");
             else if (type === constants.curso) navigate(constants.root + "CursoMenu");
-            else if (type === constants.alumno) navigate(constants.root + "AlumnoMenu");
-            else if (type === constants.profesor) navigate(constants.root + "ProfesorMenu");
+            else if (type === constants.alumno) navigate(constants.root + "Calendario");
+            else if (type === constants.profesor) navigate(constants.root + "Calendario");
         }
     }, [user, type, isAuthenticated]);
 
@@ -63,7 +63,7 @@ const AppRoutes = () => {
 
                 {/* USUARIO ALUMNO */}
                 <Route element={<ProtectedUser userType={constants.alumno} />}>
-                    <Route path={constants.root + "AlumnoMenu"} element={<AlumnoMenu />} />
+                    <Route path={constants.root + "Calendario"} element={<Calendario />} />
                 </Route>
 
                 {/* USUARIO PROFESOR */}

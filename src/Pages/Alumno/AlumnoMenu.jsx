@@ -35,15 +35,15 @@ const AlumnoMenu = () => {
 
     // Lista completa de eventos
     const listaCompletaEventos = [
-        { id: "horario1", name: "Matematicas I", starting_date: "2024-11-4", end_date: null, group_name: "Grupo A", periodity: null, description: null, start_time: "10:00:00", end_time: "12:00:00", subject_id: "1", type: null, place: "Aula A.11" },
-        { id: "horario2", name: "Matematicas I", starting_date: "2024-11-5", end_date: null, group_name: "Grupo A", periodity: null, description: null, start_time: "14:00:00", end_time: "16:00:00", subject_id: "1", type: null, place: "Aula A.11" },
-        { id: "horario3", name: "Matematicas I", starting_date: "2024-11-6", end_date: null, group_name: "Grupo A", periodity: null, description: null, start_time: "09:00:00", end_time: "11:00:00", subject_id: "1", type: null, place: "Aula A.11" },
-        { id: "horario4", name: "Matematicas I", starting_date: "2024-11-4", end_date: null, group_name: "Grupo B", periodity: null, description: null, start_time: "12:00:00", end_time: "14:00:00", subject_id: "1", type: null, place: "Aula A.11" },
-        { id: "horario5", name: "Matematicas I", starting_date: "2024-11-5", end_date: null, group_name: "Grupo B", periodity: null, description: null, start_time: "16:00:00", end_time: "18:00:00", subject_id: "1", type: null, place: "Aula A.11" },
-        { id: "horario6", name: "Matematicas I", starting_date: "2024-11-6", end_date: null, group_name: "Grupo B", periodity: null, description: null, start_time: "11:00:00", end_time: "13:00:00", subject_id: "1", type: null, place: "Aula A.11" },
-        { id: "horario7", name: "Fisica y electronica", starting_date: "2024-11-7", end_date: null, group_name: "Grupo C", periodity: null, description: null, start_time: "09:00:00", end_time: "11:00:00", subject_id: "2", type: null, place: "Aula A.11" },
-        { id: "horario8", name: "Fisica y electronica", starting_date: "2024-11-7", end_date: null, group_name: "Grupo C", periodity: null, description: null, start_time: "11:00:00", end_time: "13:00:00", subject_id: "2", type: null, place: "Aula A.11" },
-        { id: "horario9", name: "Fisica y electronica", starting_date: "2024-11-8", end_date: null, group_name: "Grupo C", periodity: null, description: null, start_time: "10:00:00", end_time: "12:00:00", subject_id: "2", type: null, place: "Aula A.11" }
+        { id: "horario1", name: "Matematicas I", starting_date: "2024-11-4", end_date: null, group_name: "Grupo A", periodicity: null, description: null, start_time: "10:00:00", end_time: "12:00:00", subject_id: "1", type: null, place: "Aula A.11" },
+        { id: "horario2", name: "Matematicas I", starting_date: "2024-11-5", end_date: null, group_name: "Grupo A", periodicity: null, description: null, start_time: "14:00:00", end_time: "16:00:00", subject_id: "1", type: null, place: "Aula A.11" },
+        { id: "horario3", name: "Matematicas I", starting_date: "2024-11-6", end_date: null, group_name: "Grupo A", periodicity: null, description: null, start_time: "09:00:00", end_time: "11:00:00", subject_id: "1", type: null, place: "Aula A.11" },
+        { id: "horario4", name: "Matematicas I", starting_date: "2024-11-4", end_date: null, group_name: "Grupo B", periodicity: null, description: null, start_time: "12:00:00", end_time: "14:00:00", subject_id: "1", type: null, place: "Aula A.11" },
+        { id: "horario5", name: "Matematicas I", starting_date: "2024-11-5", end_date: null, group_name: "Grupo B", periodicity: null, description: null, start_time: "16:00:00", end_time: "18:00:00", subject_id: "1", type: null, place: "Aula A.11" },
+        { id: "horario6", name: "Matematicas I", starting_date: "2024-11-6", end_date: null, group_name: "Grupo B", periodicity: null, description: null, start_time: "11:00:00", end_time: "13:00:00", subject_id: "1", type: null, place: "Aula A.11" },
+        { id: "horario7", name: "Fisica y electronica", starting_date: "2024-11-7", end_date: null, group_name: "Grupo C", periodicity: null, description: null, start_time: "09:00:00", end_time: "11:00:00", subject_id: "2", type: null, place: "Aula A.11" },
+        { id: "horario8", name: "Fisica y electronica", starting_date: "2024-11-7", end_date: null, group_name: "Grupo C", periodicity: null, description: null, start_time: "11:00:00", end_time: "13:00:00", subject_id: "2", type: null, place: "Aula A.11" },
+        { id: "horario9", name: "Fisica y electronica", starting_date: "2024-11-8", end_date: null, group_name: "Grupo C", periodicity: null, description: null, start_time: "10:00:00", end_time: "12:00:00", subject_id: "2", type: null, place: "Aula A.11" }
     ];
 
     // Función para abrir el modal
