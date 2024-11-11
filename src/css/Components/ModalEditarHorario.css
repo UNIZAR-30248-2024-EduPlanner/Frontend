@@ -1,0 +1,11 @@
+.large-bold-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.select-bordered {
+    border: 2px solid #000;
+    border-radius: 5px;
+    padding: 5px;
+    width: 100%;
+}

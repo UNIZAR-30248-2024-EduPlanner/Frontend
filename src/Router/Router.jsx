@@ -8,6 +8,7 @@ import CursoModificar from "../Pages/Curso/CursoModificar"
 import OrganizacionCrear from "../Pages/Organizacion/OrganizacionCrear"
 import OrganizacionModificar from "../Pages/Organizacion/OrganizacionModificar"
 import CrearOrganizacion from "../Pages/login/CrearOrganizacion"
+import AlumnoMenu from "../Pages/Alumno/AlumnoMenu"
 import IniciarSesion from "../Pages/login/IniciarSesion"
 import { ProtectedRouter, ProtectedUser } from "./ProtectedRouter"
 import { AuthProvider, useAuth } from "../context/AuthContext"
@@ -62,6 +63,7 @@ const AppRoutes = () => {
 
                 {/* USUARIO ALUMNO */}
                 <Route element={<ProtectedUser userType={constants.alumno} />}>
+                    <Route path={constants.root + "AlumnoMenu"} element={<AlumnoMenu />} />
                 </Route>
 
                 {/* USUARIO PROFESOR */}

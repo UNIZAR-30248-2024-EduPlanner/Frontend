@@ -9,3 +9,4 @@ npm install -D vitest
 npm install bcrypt
 npm install -D @testing-library/react @testing-library/user-event
 npm install -D cypress
+npm install react-image-gallery
