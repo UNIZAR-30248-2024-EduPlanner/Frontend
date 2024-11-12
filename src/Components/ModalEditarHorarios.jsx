@@ -1,6 +1,7 @@
 import { Modal, ModalContent, ModalBody, Button } from "@nextui-org/react";
 import { useAuth } from "../context/AuthContext";
 import '../css/Components/ModalEditarHorario.css';
+import { createCustomEvent } from "../supabase/customEvent/customEvent";
 import { CheckboxGroup, Checkbox } from "@nextui-org/react";
 import { Tabs, Tab } from "@nextui-org/react";
 import { useState } from "react";
@@ -18,6 +19,9 @@ const ModalEditarHorarios = ({ isOpen, onOpenChange, listaCompletaEventos }) => 
     const [horaFin, setHoraFin] = useState("");
     const [espacioReservado, setEspacioReservado] = useState("");
     const [descripcion, setDescripcion] = useState("");
+    const [fecha, setFecha] = useState("");
+    const [error, setError] = useState("");
+
 
     const filteredGrupos = Array.from(new Set(
         listaCompletaEventos
@@ -34,6 +38,24 @@ const ModalEditarHorarios = ({ isOpen, onOpenChange, listaCompletaEventos }) => 
         const [anio, mes, dia] = fechaStr.split("-").map(Number);
         const fecha = new Date(anio, mes - 1, dia);
         return diasSemana[fecha.getDay()];
+    };
+
+    const handleSubmit = async () => {
+        if (nombreActividad && horaInicio && horaFin && fecha) {
+            console.log("Nombre de la actividad:", nombreActividad);
+            console.log("Hora de inicio:", horaInicio);
+            console.log("Hora de finalización:", horaFin);
+            console.log("Espacio reservado:", espacioReservado);
+            console.log("Descripción:", descripcion);
+            console.log("Fecha:", fecha);
+
+            // Llamada a la función para crear el evento
+            await createCustomEvent(nombreActividad, descripcion, "", fecha, horaInicio, horaFin, user.id);
+        } else {
+            setError("Por favor, complete todos los campos obligatorios (nombre, horas y fecha).");
+            window.scrollTo({ top: 0, behavior: "smooth" });
+            return;
+        }
     };
 
     return (
@@ -111,6 +133,12 @@ const ModalEditarHorarios = ({ isOpen, onOpenChange, listaCompletaEventos }) => 
                                     </Tab>
                                     <Tab className="text-center text-xl" key="Crear evento" title="Crear evento">
                                         <hr className="separator" />
+                                        {/* Mensaje de error en color secundario */}
+                                        {error && (
+                                            <p style={{ color: "var(--color-second)", textAlign: "center" }}>
+                                                {error}
+                                            </p>
+                                        )}
 
                                         <div className="mb-4">
                                             <h2 className="text-2xl font-bold">Nombre de la actividad:</h2>
@@ -124,9 +152,18 @@ const ModalEditarHorarios = ({ isOpen, onOpenChange, listaCompletaEventos }) => 
                                         </div>
 
                                         <div className="mb-4">
-                                            <h2 className="text-2xl font-bold">Hora</h2>
-                                            <div className="flex">
-                                                <div className="mr-2">
+                                            <h2 className="text-2xl font-bold">Fecha y Hora</h2>
+                                            <div>
+                                                <label className="block text-lg font-semibold">Fecha</label>
+                                                <input
+                                                    type="date"
+                                                    className="border p-2 mb-4"
+                                                    value={fecha}
+                                                    onChange={(e) => setFecha(e.target.value)}
+                                                />
+                                            </div>
+                                            <div className="flex space-x-4">
+                                                <div>
                                                     <label className="block text-lg font-semibold">Hora de inicio</label>
                                                     <input
                                                         type="time"
@@ -146,6 +183,7 @@ const ModalEditarHorarios = ({ isOpen, onOpenChange, listaCompletaEventos }) => 
                                                 </div>
                                             </div>
                                         </div>
+
 
                                         <div className="mb-4">
                                             <h2 className="text-2xl font-bold">Lugar</h2>
@@ -168,14 +206,7 @@ const ModalEditarHorarios = ({ isOpen, onOpenChange, listaCompletaEventos }) => 
                                             ></textarea>
                                         </div>
 
-                                        <Button color="primary" onPress={() => {
-                                            // Lógica para enviar horarios deseados
-                                            console.log("Nombre de la actividad:", nombreActividad);
-                                            console.log("Hora de inicio:", horaInicio);
-                                            console.log("Hora de finalización:", horaFin);
-                                            console.log("Espacio reservado:", espacioReservado);
-                                            console.log("Descripción:", descripcion);
-                                        }}>
+                                        <Button color="primary" onPress={handleSubmit}>
                                             Guardar en el calendario
                                         </Button>
                                     </Tab>

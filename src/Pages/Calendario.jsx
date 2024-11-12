@@ -7,11 +7,16 @@ import { calcularSolapes, convertirAHorasEnMinutos } from '../Components/Solape'
 import { useDisclosure } from "@nextui-org/react";
 import ModalComponent from "../Components/ModalHorario";
 import ModalComponentcreate from "../Components/ModalEditarHorarios";
+import { getAllEventsForUser } from '../supabase/event/event.js';
+import { useAuth } from "../context/AuthContext";
 
 const Calendario = () => {
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [modalData, setModalData] = useState(null);
+    const [horariosAux, sethorariosAux] = useState([]);
+    const { user } = useAuth();
+
 
     const wFirstCol = 5;
     const wCol = 13.57;
@@ -22,7 +27,13 @@ const Calendario = () => {
     const alturaPorHora = 7; // Altura por hora en vh
     const alturaPorMinuto = 7 / 60; // Altura por minuto en vh
 
-    const horariosAux = [
+    const getAllItems = async () => {
+        const horariosAux = await getAllEventsForUser(user.id)
+        if (horariosAux.error) sethorariosAux(horariosAux.data)
+        else sethorariosAux(horariosAux.data)
+    }
+
+    /*const horariosAux = [
         {
             id: "test1", name: "Matemáticas II", starting_date: "2024-11-4", end_date: null, group_name: "Grupo D", periodicity: null, description: "srvwwe", start: "8:00", end: "10:00", subject_id: "1", type: null, place: "Aula B.1",
         },
@@ -53,7 +64,7 @@ const Calendario = () => {
         {
             id: "test10", name: "Matemáticas II", starting_date: "2024-11-4", end_date: null, group_name: "Grupo D", periodicity: null, description: null, start: "13:00", end: "14:00", subject_id: "11", type: null, place: "Aula B.1",
         }
-    ];
+    ]; */
 
     // Función que obtiene el día de la semana a partir de una fecha en formato "YYYY-MM-DD"
     const obtenerDiaSemana = (fechaStr) => {
@@ -64,7 +75,14 @@ const Calendario = () => {
     };
 
     horariosAux.forEach(evento => {
-        evento.day = obtenerDiaSemana(evento.starting_date);
+        const fecha = evento.starting_date || evento.date;
+        if (fecha) {
+            evento.day = obtenerDiaSemana(fecha);
+        }
+
+        // Renombrar start_time y end_time a start y end, tomando solo los primeros 5 caracteres
+        evento.start = evento.start_time ? evento.start_time.slice(0, 5) : null;
+        evento.end = evento.end_time ? evento.end_time.slice(0, 5) : null
     });
 
 
@@ -120,6 +138,7 @@ const Calendario = () => {
         const res = [];
 
         h.map((e, idx) => {
+            console.log(e)
             const [hoursStart, minutesStart] = e.start.split(":").map(part => parseInt(part, 10));
 
             // Imprimir el índice encontrado para depuración
@@ -144,6 +163,7 @@ const Calendario = () => {
                 description: e.description,
                 place: e.place,
                 group_name: e.group_name,
+                user_id: e.user_id,
                 height: ((minutosE - minutosS) * alturaPorMinuto).toString() + "vh",
                 width: numSolapes == 0 ? wCol : wCol / numSolapes,
                 top: ((hoursStart - firstHour + 1) * alturaPorHora + minutesStart * alturaPorMinuto).toString() + "vh",
@@ -230,6 +250,7 @@ const Calendario = () => {
     }
 
     useEffect(() => {
+        getAllItems();
         const today = new Date();
         const dayOfWeek = today.getDay(); // 0 (Domingo) - 6 (Sábado)
 
@@ -353,7 +374,7 @@ const Calendario = () => {
                 place={modalData?.place || ""}
                 group={modalData?.group_name || null}
                 descripcion={modalData?.description}
-                creador={modalData?.subject_id || modalData?.user_id}
+                creador={modalData?.user_id}
                 onAccept={onOpenChange}
             />
 

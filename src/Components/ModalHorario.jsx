@@ -10,6 +10,8 @@ const ModalHorario = ({ isOpen, onOpenChange, title, date_start, date_finish, pl
     const { user } = useAuth();
     const [isEditModalOpen, setEditModalOpen] = useState(false);
     const [isConfirmModalOpen, setConfirmModalOpen] = useState(false); // Estado para el modal de confirmación
+    console.log(user.id);
+    console.log(creador);
 
     const eliminarEvento = () => {
         // Lógica para eliminar el evento de la base de datos
