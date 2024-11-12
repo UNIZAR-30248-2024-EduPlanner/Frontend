@@ -28,6 +28,7 @@ const Calendario = () => {
     const alturaPorMinuto = 7 / 60; // Altura por minuto en vh
 
     const getAllItems = async () => {
+        console.log(user)
         const horariosAux = await getAllEventsForUser(user.id)
         if (horariosAux.error) sethorariosAux(horariosAux.data)
         else sethorariosAux(horariosAux.data)
@@ -250,7 +251,7 @@ const Calendario = () => {
     }
 
     useEffect(() => {
-        getAllItems();
+        getAllItems()
         const today = new Date();
         const dayOfWeek = today.getDay(); // 0 (Domingo) - 6 (Sábado)
 
@@ -272,7 +273,7 @@ const Calendario = () => {
         }
 
         setDiasSemana(days);
-    }, []);
+    }, [user]);
 
     // Función para abrir el modal
     const openModal = () => {
