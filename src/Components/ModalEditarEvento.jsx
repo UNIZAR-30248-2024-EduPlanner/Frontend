@@ -12,7 +12,8 @@ const ModalEditarEvento = ({ isOpen, onOpenChange, title, date_start, date_finis
     const [espacioReservado, setEspacioReservado] = useState("");
     const [descripcion, setDescripcion] = useState("");
     const [fecha, setFecha] = useState("");
-    const [isConfirmModalOpen, setConfirmModalOpen] = useState(false); // Estado para el modal de confirmación
+    const [isConfirmModalOpen, setConfirmModalOpen] = useState(false);
+    const [error, setError] = useState("");
 
     useEffect(() => {
         if (isOpen) {
@@ -26,18 +27,24 @@ const ModalEditarEvento = ({ isOpen, onOpenChange, title, date_start, date_finis
     }, [isOpen, title, date_start, date_finish, place, description]);
 
     const modificarEvento = async () => {
-        console.log("Nombre de la actividad:", nombreActividad);
-        console.log("Hora de inicio:", horaInicio);
-        console.log("Hora de finalización:", horaFin);
-        console.log("Espacio reservado:", espacioReservado);
-        console.log("Descripción:", descripcion);
-        console.log("ID del evento:", id);
-        console.log("Fecha:", fecha);
-        const updates = { name: nombreActividad.toString(), start_time: horaInicio, end_time: horaFin, place: espacioReservado.toString(), description: descripcion.toString(), date: fecha };
-        // Lógica para modificar el evento
-        await editCustomEvent(id, updates);
-        setConfirmModalOpen(false); // Cierra el modal de confirmación
-        onOpenChange(false); // Cierra el modal de edición
+        if (nombreActividad && horaInicio && horaFin && fecha) {
+            console.log("Nombre de la actividad:", nombreActividad);
+            console.log("Hora de inicio:", horaInicio);
+            console.log("Hora de finalización:", horaFin);
+            console.log("Espacio reservado:", espacioReservado);
+            console.log("Descripción:", descripcion);
+            console.log("ID del evento:", id);
+            console.log("Fecha:", fecha);
+            const updates = { name: nombreActividad.toString(), start_time: horaInicio, end_time: horaFin, place: espacioReservado.toString(), description: descripcion.toString(), date: fecha };
+            // Lógica para modificar el evento
+            await editCustomEvent(id, updates);
+            setConfirmModalOpen(false); // Cierra el modal de confirmación
+            onOpenChange(false); // Cierra el modal de edición 
+        } else {
+            setError("Por favor, complete todos los campos obligatorios (nombre, horas y fecha).");
+            window.scrollTo({ top: 0, behavior: "smooth" });
+            return;
+        }
     };
 
     return (
@@ -51,6 +58,12 @@ const ModalEditarEvento = ({ isOpen, onOpenChange, title, date_start, date_finis
                             </ModalHeader>
                             <hr className="separator" />
                             <ModalBody>
+                                {/* Mensaje de error en color secundario */}
+                                {error && (
+                                    <p style={{ color: "var(--color-second)", textAlign: "center" }}>
+                                        {error}
+                                    </p>
+                                )}
                                 <div className="mb-4">
                                     <h2 className="text-2xl font-bold">Nombre de la actividad:</h2>
                                     <input
