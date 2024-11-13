@@ -5,16 +5,18 @@ import { useAuth } from "../context/AuthContext";
 import { useState } from "react";
 import ModalEditarEvento from './ModalEditarEvento';
 import ModalComponent from './ModalComponent'; // Importa el modal de confirmación
+import { deleteCustomEvent } from '../supabase/customEvent/customEvent';
 
-const ModalHorario = ({ isOpen, onOpenChange, title, date_start, date_finish, place, group, descripcion, creador }) => {
+const ModalHorario = ({ isOpen, onOpenChange, title, date_start, date_finish, place, group, descripcion, creador, id, date }) => {
     const { user } = useAuth();
     const [isEditModalOpen, setEditModalOpen] = useState(false);
     const [isConfirmModalOpen, setConfirmModalOpen] = useState(false); // Estado para el modal de confirmación
 
 
-    const eliminarEvento = () => {
+    const eliminarEvento = async () => {
         // Lógica para eliminar el evento de la base de datos
         console.log("Evento eliminado");
+        await deleteCustomEvent(id);
         setConfirmModalOpen(false);
         onOpenChange(false);
     };
@@ -74,6 +76,8 @@ const ModalHorario = ({ isOpen, onOpenChange, title, date_start, date_finish, pl
                 date_finish={date_finish}
                 place={place}
                 description={descripcion}
+                date={date}
+                id={id}
             />
 
             <ModalComponent
