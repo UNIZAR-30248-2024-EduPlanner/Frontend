@@ -33,7 +33,7 @@ const ModalEditarEvento = ({ isOpen, onOpenChange, title, date_start, date_finis
         console.log("Descripción:", descripcion);
         console.log("ID del evento:", id);
         console.log("Fecha:", fecha);
-        const updates = { name: nombreActividad.toString(), start_time: horaInicio, end_time: horaFin, /*place: espacioReservado.toString(),*/ description: descripcion.toString(), date: fecha };
+        const updates = { name: nombreActividad.toString(), start_time: horaInicio, end_time: horaFin, place: espacioReservado.toString(), description: descripcion.toString(), date: fecha };
         // Lógica para modificar el evento
         await editCustomEvent(id, updates);
         setConfirmModalOpen(false); // Cierra el modal de confirmación

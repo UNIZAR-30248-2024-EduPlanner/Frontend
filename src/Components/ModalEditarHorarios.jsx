@@ -50,7 +50,7 @@ const ModalEditarHorarios = ({ isOpen, onOpenChange, listaCompletaEventos }) => 
             console.log("Fecha:", fecha);
 
             // Llamada a la función para crear el evento
-            await createCustomEvent(nombreActividad, descripcion, "", fecha, horaInicio, horaFin, user.id);
+            await createCustomEvent(nombreActividad, descripcion, espacioReservado, fecha, horaInicio, horaFin, user.id);
         } else {
             setError("Por favor, complete todos los campos obligatorios (nombre, horas y fecha).");
             window.scrollTo({ top: 0, behavior: "smooth" });
