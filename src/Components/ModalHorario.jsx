@@ -19,6 +19,7 @@ const ModalHorario = ({ isOpen, onOpenChange, title, date_start, date_finish, pl
         await deleteCustomEvent(id);
         setConfirmModalOpen(false);
         onOpenChange(false);
+        window.location.reload();
     };
 
     return (

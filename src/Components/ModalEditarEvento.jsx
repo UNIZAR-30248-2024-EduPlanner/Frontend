@@ -40,6 +40,7 @@ const ModalEditarEvento = ({ isOpen, onOpenChange, title, date_start, date_finis
             await editCustomEvent(id, updates);
             setConfirmModalOpen(false); // Cierra el modal de confirmación
             onOpenChange(false); // Cierra el modal de edición 
+            window.location.reload();
         } else {
             setError("Por favor, complete todos los campos obligatorios (nombre, horas y fecha).");
             window.scrollTo({ top: 0, behavior: "smooth" });
