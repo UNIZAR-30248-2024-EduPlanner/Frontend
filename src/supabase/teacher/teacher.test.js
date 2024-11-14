@@ -115,6 +115,10 @@ describe('Teacher API Tests', () => {
 
   // Prueba para asignar múltiples asignaturas a un profesor
   it('should assign multiple subjects to a teacher', async () => {
+    await supabase
+      .from('teachings')
+      .delete()
+      .eq('teacher_id', testArrayTeachers[2].nip);
     const result = await f.assingArraySubjectsToTeacher(testArrayTeachers[2].nip, [99995, 99996]);
     expect(result.error).toBeNull(); // Verifica que no haya error
 

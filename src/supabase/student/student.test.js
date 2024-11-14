@@ -95,6 +95,10 @@ describe('Student API Tests', () => {
 
   // Matricular un estudiante en una asignatura
   it('should matriculate a student in a subject', async () => {
+    await supabase
+      .from('enrollments')
+      .delete()
+      .eq('user_id', testArrayStudents[0].nip);
     const result = await f.matriculateStudent(testArrayStudents[0].nip, 99995);
     expect(result.error).toBeNull(); // Verifica que no haya error
 
@@ -113,6 +117,10 @@ describe('Student API Tests', () => {
 
   // Matricular un estudiante en múltiples asignaturas
   it('should matriculate a student in multiple subjects', async () => {
+    await supabase
+      .from('enrollments')
+      .delete()
+      .eq('user_id', testArrayStudents[1].nip);
     const result = await f.matriculateStudentOnMultipleSubjects(testArrayStudents[1].nip, [99995, 99996]);
     expect(result.error).toBeNull(); // Verifica que no haya error
 
