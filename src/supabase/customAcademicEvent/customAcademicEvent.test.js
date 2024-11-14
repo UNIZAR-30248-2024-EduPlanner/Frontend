@@ -6,14 +6,18 @@ import * as ae from '../academicEvent/academicEvent.js';
 let userId;
 let academicEvent;
 let academicEvent2;
+let academicEvent3;
+let academicEvent4;
 let subject_id;
 
 describe('Custom Academic Event API Tests', () => {
   beforeAll(async () => {
     userId = 43;
     subject_id = 12;
-    academicEvent = await ae.createAcademicEvent('Evento Académico 1', '2021-12-01', '2021-12-01', 'Grupo A', 1, 'Descripción 1', 'Académico', 'Clase A', '10:00:00', '12:00:00', subject_id);
-    academicEvent2 = await ae.createAcademicEvent('Evento Académico 2', '2021-12-01', '2021-12-01', 'Grupo B', 1, 'Descripción 1', 'Académico', 'Clase A', '14:00:00', '16:00:00', subject_id);
+    academicEvent = await ae.createAcademicEvent('Evento Académico 1', '2021-12-01', '2021-12-01', 'Grupo A', 1, 'Descripción 1', 'Clase Magistral', 'Clase A', '10:00:00', '12:00:00', subject_id);
+    academicEvent2 = await ae.createAcademicEvent('Evento Académico 2', '2021-12-01', '2021-12-01', 'Grupo B', 1, 'Descripción 1', 'Problemas', 'Clase A', '14:00:00', '16:00:00', subject_id);
+    academicEvent3 = await ae.createAcademicEvent('Evento Académico 3', '2021-12-01', '2021-12-01', 'Grupo C', 1, 'Descripción 1', 'Clase Magistral', 'Clase A', '10:00:00', '12:00:00', subject_id);
+    academicEvent4 = await ae.createAcademicEvent('Evento Académico 4', '2021-12-01', '2021-12-01', 'Grupo D', 1, 'Descripción 1', 'Problemas', 'Clase A', '14:00:00', '16:00:00', subject_id);
   });
 
   it('should create a custom academic event', async () => {
@@ -64,12 +68,53 @@ describe('Custom Academic Event API Tests', () => {
     expect(result.error).toBeNull(); // Verificar que no haya error
     expect(result.data).not.toBeNull(); // Debe haber
   });
-  
+
+  it('should create non visible academic events for user', async () => {
+    const result = await f.createCustomAcademicEvent(userId, academicEvent3.data[0].id);
+    await f.editCustomAcademicEventVisibility(userId, academicEvent3.data[0].id, false);
+    await f.createCustomAcademicEvent(userId, academicEvent4.data[0].id);
+    await f.editCustomAcademicEventVisibility(userId, academicEvent4.data[0].id, false);
+    expect(result.error).toBeNull(); // Verificar que no haya error
+    expect(result.data).not.toBeNull(); // Debe haber
+  });
+
+  it('should get non visible academic events for user', async () => {
+    const result = await f.getNonVisibleAcademicEventsForUser(userId);
+    console.log("Eventos academicos no visibles: ", result);
+    expect(result.error).toBeNull(); // Verificar que no haya error
+    expect(result.data).toHaveLength(2); // Debe haber
+  });
+
+  it('should get all info for non visible academic events for user', async () => {
+    const result = await f.getFullNonVisibleAcademicEventsForUser(userId);
+    console.log("Eventos academicos no visibles: ", result);
+    expect(result.error).toBeNull(); // Verificar que no haya error
+    expect(result.data).not.toBeNull(); // Debe haber
+  });
+
+  it('should get all info for visible academic events for user by type', async () => {
+    const result = await f.getFullVisibleAcademicEventsForUserByType(userId, 'Clase Magistral');
+    console.log("Eventos academicos visibles por tipo: ", result);
+    expect(result.error).toBeNull(); // Verificar que no haya error
+    expect(result.data).not.toBeNull(); // Debe haber
+  });
+
+  it('should get all info for non visible academic events for user by type', async () => {
+    const result = await f.getFullNonVisibleAcademicEventsForUserByType(userId, 'Problemas');
+    console.log("Eventos academicos no visibles por tipo: ", result);
+    expect(result.error).toBeNull(); // Verificar que no haya error
+    expect(result.data).not.toBeNull(); // Debe haber
+  });
+
   afterAll(async () => {
     await f.deleteCustomAcademicEvent(userId, academicEvent.data[0].id);
     await ae.deleteAcademicEvent(academicEvent.data[0].id);
     await f.deleteCustomAcademicEvent(userId, academicEvent2.data[0].id);
     await ae.deleteAcademicEvent(academicEvent2.data[0].id);
+    await f.deleteCustomAcademicEvent(userId, academicEvent3.data[0].id);
+    await ae.deleteAcademicEvent(academicEvent3.data[0].id);
+    await f.deleteCustomAcademicEvent(userId, academicEvent4.data[0].id);
+    await ae.deleteAcademicEvent(academicEvent4.data[0].id);
   });
 }
 );

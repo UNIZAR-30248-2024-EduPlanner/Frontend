@@ -83,3 +83,124 @@ export const getVisibleAcademicEventsForUser = async (userId) => {
     console.log(data);
     return { data, error };
 };
+
+// Obtener todos los eventos academicos NO visibles para un usuario
+export const getNonVisibleAcademicEventsForUser = async (userId) => {
+    const { data, error } = await supabase
+        .from('custom_academic_event')
+        .select('event_id')
+        .eq('user_id', userId)
+        .eq('visible', false);
+    console.log(data);
+    return { data, error };
+}
+
+// Obtener todos los datos de los eventos academicos NO visibles para un usuario
+export const getFullNonVisibleAcademicEventsForUser = async (userId) => {
+    try {
+        // 1. Obtener la lista de event_id no visibles en custom_academic_event para el userId dado
+        const { data: customEvents, error: customEventError } = await supabase
+            .from('custom_academic_event')
+            .select('event_id')
+            .eq('user_id', userId)
+            .eq('visible', false);
+
+        if (customEventError) {
+            return { data: null, error: customEventError };
+        }
+
+        // Verificar si hay eventos no visibles
+        if (!customEvents || customEvents.length === 0) {
+            return { data: [], error: null };
+        }
+
+        // Extraer los event_id de los resultados
+        const eventIds = customEvents.map(event => event.event_id);
+
+        // 2. Obtener la información completa de cada evento en academic_event
+        const { data: academicEvents, error: academicEventError } = await supabase
+            .from('academic_event')
+            .select('*')
+            .in('id', eventIds);
+
+        if (academicEventError) {
+            return { data: null, error: academicEventError };
+        }
+
+        // Devolver la lista de eventos
+        return { data: academicEvents, error: null };
+
+    } catch (error) {
+        return { data: null };
+    }
+};
+
+// Obtener todos los eventos academicos visibles para un usuario segun un tipo
+export const getFullVisibleAcademicEventsForUserByType = async (userId, type) => {
+    const { data, error } = await supabase
+        .from('custom_academic_event')
+        .select('event_id')
+        .eq('user_id', userId)
+        .eq('visible', true);
+
+    if (error) {
+        return { data: null, error };
+    }
+
+    // Verificar si hay eventos visibles
+    if (!data || data.length === 0) {
+        return { data: [], error: null };
+    }
+
+    // Extraer los event_id de los resultados
+    const eventIds = data.map(event => event.event_id);
+
+    // 2. Obtener la información completa de cada evento en academic_event
+    const { data: academicEvents, error: academicEventError } = await supabase
+        .from('academic_event')
+        .select('*')
+        .in('id', eventIds)
+        .eq('type', type);
+
+    if (academicEventError) {
+        return { data: null, error: academicEventError };
+    }
+
+    // Devolver la lista de eventos
+    return { data: academicEvents, error: null };
+};
+
+// Obtener todos los eventos academicos NO visibles para un usuario segun un tipo
+export const getFullNonVisibleAcademicEventsForUserByType = async (userId, type) => {
+    const { data, error } = await supabase
+        .from('custom_academic_event')
+        .select('event_id')
+        .eq('user_id', userId)
+        .eq('visible', false);
+
+    if (error) {
+        return { data: null, error };
+    }
+
+    // Verificar si hay eventos no visibles
+    if (!data || data.length === 0) {
+        return { data: [], error: null };
+    }
+
+    // Extraer los event_id de los resultados
+    const eventIds = data.map(event => event.event_id);
+
+    // 2. Obtener la información completa de cada evento en academic_event
+    const { data: academicEvents, error: academicEventError } = await supabase
+        .from('academic_event')
+        .select('*')
+        .in('id', eventIds)
+        .eq('type', type);
+
+    if (academicEventError) {
+        return { data: null, error: academicEventError };
+    }
+
+    // Devolver la lista de eventos
+    return { data: academicEvents, error: null };
+};
