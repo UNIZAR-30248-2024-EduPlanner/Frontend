@@ -3,7 +3,7 @@ import FlechaVolver from "../Components/FlechaVolver"
 import { FaRegArrowAltCircleLeft, FaRegArrowAltCircleRight } from "react-icons/fa";
 import { Button, Tooltip } from '@nextui-org/react'
 import { useEffect, useState } from 'react'
-import { calcularSolapes, convertirAHorasEnMinutos } from '../Components/Solape';
+import { calcularSolapes, convertirAHorasEnMinutos, getContrastColor, isInWeek, numberToMonth } from '../Components/CalendarioFunctions.jsx';
 import { useDisclosure } from "@nextui-org/react";
 import ModalComponent from "../Components/ModalHorario";
 import ModalComponentcreate from "../Components/ModalEditarHorarios";
@@ -11,12 +11,29 @@ import { getAllEventsForUser } from '../supabase/event/event.js';
 import { useAuth } from "../context/AuthContext";
 
 const Calendario = () => {
+    const { user } = useAuth();
+
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [modalData, setModalData] = useState(null);
-    const [horariosAux, sethorariosAux] = useState([]);
-    const { user } = useAuth();
 
+    // HorariosBD son todos los horarios recuperados de la BD
+    const [horariosBD, setHorariosBD] = useState([]);
+
+    // Horarios son los horarios procesados para la actual semana
+    const [horarios, setHorarios] = useState([]);
+
+    // Dias de la semana requerida
+    const [diasSemana, setDiasSemana] = useState([])
+
+    // Primer día de la semana actual
+    const [mondayWeek, setMondayWeek] = useState(null)
+
+    // Mes y año actual: <mes> <año>
+    const [monthYear, setMonthYear] = useState(null)    
+
+    // Contiene una lista de {name: <name>, color: #XXXXXX}
+    const [colores, setColores] = useState([]);
 
     const wFirstCol = 5;
     const wCol = 13.57;
@@ -27,11 +44,102 @@ const Calendario = () => {
     const alturaPorHora = 7; // Altura por hora en vh
     const alturaPorMinuto = 7 / 60; // Altura por minuto en vh
 
-    const getAllItems = async () => {
-        console.log(user)
-        const horariosAux = await getAllEventsForUser(user.id)
-        if (horariosAux.error) sethorariosAux(horariosAux.data)
-        else sethorariosAux(horariosAux.data)
+    // const getAllItems = async () => {
+    //     console.log(user)
+    //     const horariosAux = await getAllEventsForUser(user.id)
+    //     if (horariosAux.error) sethorariosAux(horariosAux.data)
+    //     else sethorariosAux(horariosAux.data)
+    // }
+
+    // Devuelve el color de la asignatura <name> y si no está genera un color aleatorio
+    // para esa asignatura y lo guarda en el vector colores
+    
+    const getColor = (name) => {
+        const elem = colores.find((e) => e.name == name);
+
+        if (elem) {
+            return elem.color;
+        } else {
+            // Genera un color hexadecimal aleatorio
+            const color = `#${Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0')}`;
+
+            // Añade el nuevo color al array `colores`
+            setColores((prev) => [...prev, {name, color}]);
+
+            return color;
+        }
+    }
+
+    // Da formato a los horarios de la semana. Establece el estilo de los 
+    // componentes que permite mostrarlos por pantalla
+    const procesarHorarios = (h) => {
+        const res = [];
+
+        h.map((e, idx) => {
+            // console.log(e);
+
+            if (isInWeek(e, mondayWeek, monthYear)) {
+                const [hoursStart, minutesStart] = e.start.split(":").map(part => parseInt(part, 10));
+
+                // Imprimir el índice encontrado para depuración
+                const dayIndex = nameDays.findIndex((v) => v === e.day);
+    
+                // Calcula los solapes del horario con otros horarios
+                // <numSolapes> contiene el número de solapes de <e> con otros horarios
+                // en su franja horaria
+                // <position> indica la posición horizontal en caso de que exista solape
+                const [numSolapes, position] = calcularSolapes(h, idx);
+    
+                // Color de la asignatura
+                const color = getColor(e.name)
+    
+                const minutosS = convertirAHorasEnMinutos(e.start)
+                const minutosE = convertirAHorasEnMinutos(e.end)
+        
+                res.push({
+                    name: e.name,
+                    start: e.start,
+                    end: e.end,
+                    description: e.description,
+                    place: e.place,
+                    group_name: e.group_name,
+                    user_id: e.user_id,
+                    id: e.id,
+                    date: e.date,
+                    height: ((minutosE - minutosS) * alturaPorMinuto).toString() + "vh",
+                    width: numSolapes == 0 ? wCol : wCol / numSolapes,
+                    top: ((hoursStart - firstHour + 1) * alturaPorHora + minutesStart * alturaPorMinuto).toString() + "vh",
+                    left: (wFirstCol + (dayIndex * wCol) + (numSolapes == 0 ? 0 : position * (wCol / numSolapes))).toString() + "vw",
+                    color: color,
+                    textColor: getContrastColor(color)
+                });
+    
+            }
+        });
+
+        return res;
+    };
+    
+    const getHorarios = async () => {
+
+        // Se piden los horarios a la BD
+        const horariosRes = await getAllEventsForUser(user.id);
+        if (horariosRes.error) return console.error("ERROR: recuperando los horarios");
+
+        setHorariosBD(horariosRes.data);
+
+        horariosRes.data.forEach(evento => {
+            const fecha = evento.starting_date || evento.date;
+            if (fecha) {
+                evento.day = obtenerDiaSemana(fecha);
+            }
+    
+            // Renombrar start_time y end_time a start y end, tomando solo los primeros 5 caracteres
+            evento.start = evento.start_time ? evento.start_time.slice(0, 5) : null;
+            evento.end = evento.end_time ? evento.end_time.slice(0, 5) : null
+        });
+    
+        setHorarios(procesarHorarios(horariosRes.data));
     }
 
     /*const horariosAux = [
@@ -75,112 +183,6 @@ const Calendario = () => {
         return diasSemanaAbreviados[fecha.getDay()];
     };
 
-    horariosAux.forEach(evento => {
-        const fecha = evento.starting_date || evento.date;
-        if (fecha) {
-            evento.day = obtenerDiaSemana(fecha);
-        }
-
-        // Renombrar start_time y end_time a start y end, tomando solo los primeros 5 caracteres
-        evento.start = evento.start_time ? evento.start_time.slice(0, 5) : null;
-        evento.end = evento.end_time ? evento.end_time.slice(0, 5) : null
-    });
-
-
-    // Función que convierte colores en hexadecimal a RGB
-    function hexToRgb(hex) {
-        // Eliminar el carácter '#' si está presente
-        hex = hex.replace(/^#/, '');
-        // Convertir los valores hexadecimales a números RGB
-        let bigint = parseInt(hex, 16);
-        let r = (bigint >> 16) & 255;
-        let g = (bigint >> 8) & 255;
-        let b = bigint & 255;
-
-        return { r, g, b };
-    }
-
-    // Devuelve 'black' o 'white' para usar como color del texto sobre un color
-    // de fondo en hexadecimal <hex>
-    function getContrastColor(hex) {
-        const { r, g, b } = hexToRgb(hex);
-
-        // Calcular la luminancia relativa
-        const luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b;
-
-        // Decidir el color del texto
-        return luminance >= 128 ? 'black' : 'white';
-    }
-
-    // Contiene una lista de {name: <name>, color: #XXXXXX}
-    const colores = [];
-
-    // Devuelve el color de la asignatura <name> y si no está genera un color aleatorio
-    // para esa asignatura y lo guarda en el vector colores
-    const getColor = (name) => {
-        const elem = colores.find((e) => e.name === name);
-
-        if (elem) {
-            return elem.color;
-        } else {
-            // Genera un color hexadecimal aleatorio
-            const color = `#${Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0')}`;
-
-            // Añade el nuevo color al array `colores`
-            colores.push({ name, color });
-
-            return color;
-        }
-    }
-
-    // Da formato a los horarios de la semana. Establece el estilo de los 
-    // componentes que permite mostrarlos por pantalla
-    const procesarHorarios = (h) => {
-        const res = [];
-
-        h.map((e, idx) => {
-            console.log(e)
-            const [hoursStart, minutesStart] = e.start.split(":").map(part => parseInt(part, 10));
-
-            // Imprimir el índice encontrado para depuración
-            const dayIndex = nameDays.findIndex((v) => v === e.day);
-
-            // Calcula los solapes del horario con otros horarios
-            // <numSolapes> contiene el número de solapes de <e> con otros horarios
-            // en su franja horaria
-            // <position> indica la posición horizontal en caso de que exista solape
-            const [numSolapes, position] = calcularSolapes(h, idx);
-
-            // Color de la asignatura
-            const color = getColor(e.name)
-
-            const minutosS = convertirAHorasEnMinutos(e.start)
-            const minutosE = convertirAHorasEnMinutos(e.end)
-
-            res.push({
-                name: e.name,
-                start: e.start,
-                end: e.end,
-                description: e.description,
-                place: e.place,
-                group_name: e.group_name,
-                user_id: e.user_id,
-                id: e.id,
-                date: e.date,
-                height: ((minutosE - minutosS) * alturaPorMinuto).toString() + "vh",
-                width: numSolapes == 0 ? wCol : wCol / numSolapes,
-                top: ((hoursStart - firstHour + 1) * alturaPorHora + minutesStart * alturaPorMinuto).toString() + "vh",
-                left: (wFirstCol + (dayIndex * wCol) + (numSolapes == 0 ? 0 : position * (wCol / numSolapes))).toString() + "vw",
-                color: color,
-                textColor: getContrastColor(color)
-            });
-        });
-
-        return res;
-    };
-
-    const horarios = procesarHorarios(horariosAux)
-
     // Horas visibles en el calendario
     const generateHours = (start, end) => {
         const hours = [];
@@ -191,17 +193,7 @@ const Calendario = () => {
     };
 
     // Llamada para generar la lista de horas entre 8:00 y 21:00
-    const hours = generateHours(8, 21);
-
-
-    // Dias de la semana requerida
-    const [diasSemana, setDiasSemana] = useState([])
-
-    // Primer día de la semana actual
-    const [mondayWeek, setMondayWeek] = useState(null)
-
-    // Mes actual
-    const [monthYear, setMonthYear] = useState(null)
+    const hours = generateHours(firstHour, lastHour);
 
     // Cambia todo lo neceario relacionado con una semana al avanzar o retroceder
     // en el calendario una semana.
@@ -214,6 +206,8 @@ const Calendario = () => {
         } else {
             newMonday.setDate(newMonday.getDate() - 7);
         }
+        newMonday.setHours(0, 0, 0, 0); // Establece la hora en 00:00:00
+
         setMondayWeek(newMonday);
 
         // Extraemos el mes y año
@@ -231,35 +225,15 @@ const Calendario = () => {
         setDiasSemana(days);
     }
 
-    // Si 0 <= number <= 11, convierte number en un string acorde al mes 
-    const numberToMonth = (number) => {
-        if (number < 0 || number > 11) {
-            console.error("number debe ser un número entre 0 y 11");
-        } else {
-            const month =
-                number === 0 ? "Enero" :
-                    number === 1 ? "Febrero" :
-                        number === 2 ? "Marzo" :
-                            number === 3 ? "Abril" :
-                                number === 4 ? "Mayo" :
-                                    number === 5 ? "Junio" :
-                                        number === 6 ? "Julio" :
-                                            number === 7 ? "Agosto" :
-                                                number === 8 ? "Septiembre" :
-                                                    number === 9 ? "Octubre" :
-                                                        number === 10 ? "Noviembre" : "Diciembre";
-            return month;
-        }
-    }
-
-    useEffect(() => {
-        getAllItems()
+    const getDiasSemana = () => {
         const today = new Date();
         const dayOfWeek = today.getDay(); // 0 (Domingo) - 6 (Sábado)
 
         // Calcular el lunes de esta semana
         const monday = new Date(today);
         monday.setDate(today.getDate() - (dayOfWeek === 0 ? 6 : dayOfWeek - 1));
+        monday.setHours(0, 0, 0, 0); // Establece la hora en 00:00:00
+
         setMondayWeek(monday)
 
         // Extraemos el mes y año
@@ -275,7 +249,19 @@ const Calendario = () => {
         }
 
         setDiasSemana(days);
+    }
+
+    useEffect(() => {
+        if (user && user.id) {
+            getDiasSemana();
+
+            getHorarios();    
+        }
     }, [user]);
+
+    useEffect(() => {
+        if (mondayWeek != null) setHorarios(procesarHorarios(horariosBD));
+    }, [mondayWeek])
 
     // Función para abrir el modal
     const openModal = () => {
@@ -386,7 +372,7 @@ const Calendario = () => {
             <ModalComponentcreate
                 isOpen={isModalOpen}
                 onOpenChange={closeModal}
-                listaCompletaEventos={horariosAux}
+                listaCompletaEventos={horarios}
             />
         </div>
 
