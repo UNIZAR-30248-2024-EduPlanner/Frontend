@@ -63,6 +63,13 @@ describe('Custom Event API Tests', () => {
         expect(eventResult.data[0].name).toBe('Evento 1');  // Verificar que el evento obtenido sea correcto
     });
 
+    it('should not create a custom event if end time is before start time', async () => {
+        // Crear un evento con hora de fin antes de la hora de inicio
+        const result = await f.createCustomEvent('Evento Test', 'Descripción del evento', 'Casa', '2021-12-02', '12:00:00', '10:00:00', userId);
+        expect(result.error).not.toBeNull();  // Asegúrate de que haya un error
+        expect(result.data).toBeNull();  // Asegúrate de que no haya datos
+    });
+
 
     afterAll(async () => {
         // Verificar que events.data esté definido y tenga al menos un evento

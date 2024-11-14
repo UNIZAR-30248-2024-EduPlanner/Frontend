@@ -98,6 +98,11 @@ describe('Academic Event API Tests', () => {
     expect(result.error).not.toBeNull();
   });
 
+  it('should not create an academic event if end time is before starting time', async () => {
+    const result = await f.createAcademicEvent('EventoTest', '2021-12-01', '2021-12-01', 'Grupo A', 7, 'Descripción 1', 'Clase Magistral', 'Clase A', '12:00:00', '7:00:00', subject_id);
+    expect(result.error).not.toBeNull();
+  });
+
   afterAll(async () => {
     await f.deleteAcademicEvent(academicEventPublished.data[0].id);
     await f.deleteAcademicEvent(academicEventTest.data[0].id);
