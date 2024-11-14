@@ -7,7 +7,7 @@ export const createCustomEvent = async (name, description, groupName, date, star
         .insert([{
             name,
             description,
-            group_name: groupName,
+            place: groupName,
             date: date,
             start_time: startTime,
             end_time: endTime,
