@@ -33,7 +33,7 @@ export const getAllEventsForUser = async (userId) => {
     const baseCustomEventFields = {
         name: null,
         description: null,
-        group_name: null,
+        place: null,
         start_time: null,
         end_time: null,
         user_id: null,
