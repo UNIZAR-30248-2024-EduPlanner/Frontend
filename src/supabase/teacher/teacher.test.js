@@ -49,9 +49,9 @@ describe('Teacher API Tests', () => {
     const result = await f.registerArrayTeachers(testArrayTeachers, organizationId);
     expect(result.error).toBeNull(); // Verifica que no haya error
 
-    academicEventPublished = await createAcademicEventAndPublish('Evento Académico 2', '2021-12-01', '2021-12-01', 'Grupo A', 1, 'Descripción 2', 'Clase Magistral', 'Clase A', '9:00:00', '12:15:00', subject_id);
+    academicEventPublished = await createAcademicEventAndPublish('Evento Académico 2', '2021-12-04', '2021-12-04', 'Grupo A', 1, 'Descripción 2', 'Clase Magistral', 'Clase A', '9:00:00', '12:15:00', subject_id);
     expect(academicEventPublished.error).toBeNull(); // Verificar que no haya error
-    academicEventPublished2 = await createAcademicEventAndPublish('Evento Académico 1', '2021-12-01', '2021-12-01', 'Grupo A', 1, 'Descripción 1', 'Clase Magistral', 'Clase A', '8:30:00', '19:00:00', subject_id);
+    academicEventPublished2 = await createAcademicEventAndPublish('Evento Académico 1', '2021-12-04', '2021-12-04', 'Grupo A', 1, 'Descripción 1', 'Clase Magistral', 'Clase A', '8:30:00', '19:00:00', subject_id);
     expect(academicEventPublished2.error).toBeNull(); // Verificar que no haya error
   });
 
@@ -93,6 +93,10 @@ describe('Teacher API Tests', () => {
 
   // Prueba para asignar una asignatura a un profesor
   it('should assign a subject to a teacher', async () => {
+    await supabase
+      .from('teachings')
+      .delete()
+      .eq('teacher_id', testArrayTeachers[1].nip);
     const result = await f.assignSubjectToTeacher(testArrayTeachers[1].nip, 99995);
     expect(result.error).toBeNull(); // Verifica que no haya error
 
@@ -166,6 +170,10 @@ describe('Teacher API Tests', () => {
   });
 
   afterAll(async () => {
+    await supabase
+      .from('custom_academic_event')
+      .delete()
+      .eq('user_id', testArrayTeachers[0].nip);
     await deleteAcademicEvent(academicEventPublished.data[0].id);
     await deleteAcademicEvent(academicEventPublished2.data[0].id);
     await supabase

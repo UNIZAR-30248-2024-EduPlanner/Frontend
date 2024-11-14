@@ -14,10 +14,10 @@ describe('Custom Academic Event API Tests', () => {
   beforeAll(async () => {
     userId = 2346;
     subject_id = 323;
-    academicEvent = await ae.createAcademicEvent('Evento Académico 1', '2021-12-01', '2021-12-01', 'Grupo A', 1, 'Descripción 1', 'Clase Magistral', 'Clase A', '10:00:00', '12:00:00', subject_id);
-    academicEvent2 = await ae.createAcademicEvent('Evento Académico 2', '2021-12-01', '2021-12-01', 'Grupo B', 1, 'Descripción 1', 'Problemas', 'Clase A', '14:00:00', '16:00:00', subject_id);
-    academicEvent3 = await ae.createAcademicEvent('Evento Académico 3', '2021-12-01', '2021-12-01', 'Grupo C', 1, 'Descripción 1', 'Clase Magistral', 'Clase A', '10:00:00', '12:00:00', subject_id);
-    academicEvent4 = await ae.createAcademicEvent('Evento Académico 4', '2021-12-01', '2021-12-01', 'Grupo D', 1, 'Descripción 1', 'Problemas', 'Clase A', '14:00:00', '16:00:00', subject_id);
+    academicEvent = await ae.createAcademicEvent('Evento Académico 1', '2021-12-02', '2021-12-02', 'Grupo A', 1, 'Descripción 1', 'Clase Magistral', 'Clase A', '10:00:00', '12:00:00', subject_id);
+    academicEvent2 = await ae.createAcademicEvent('Evento Académico 2', '2021-12-02', '2021-12-02', 'Grupo B', 1, 'Descripción 1', 'Problemas', 'Clase A', '14:00:00', '16:00:00', subject_id);
+    academicEvent3 = await ae.createAcademicEvent('Evento Académico 3', '2021-12-02', '2021-12-02', 'Grupo C', 1, 'Descripción 1', 'Clase Magistral', 'Clase A', '10:00:00', '12:00:00', subject_id);
+    academicEvent4 = await ae.createAcademicEvent('Evento Académico 4', '2021-12-02', '2021-12-02', 'Grupo D', 1, 'Descripción 1', 'Problemas', 'Clase A', '14:00:00', '16:00:00', subject_id);
   });
 
   it('should create a custom academic event', async () => {
@@ -123,6 +123,12 @@ describe('Custom Academic Event API Tests', () => {
       .from('academic_event')
       .delete()
       .eq('id', academicEvent4.data[0].id);
+
+    await supabase
+      .from('custom_academic_event')
+      .delete()
+      .eq('user_id', userId);
+
   });
 }
 );

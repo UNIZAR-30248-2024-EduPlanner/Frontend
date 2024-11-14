@@ -49,9 +49,9 @@ describe('Student API Tests', () => {
     expect(result.error).toBeNull(); // Verifica que no haya error
 
     //Creamos dos eventos academicos y los publicamos, pero no hay nadie matriculado
-    academicEventPublished = await createAcademicEventAndPublish('Evento Académico 2', '2021-12-01', '2021-12-01', 'Grupo A', 1, 'Descripción 2', 'Clase Magistral', 'Clase A', '11:00:00', '12:00:00', subject_id);
+    academicEventPublished = await createAcademicEventAndPublish('Evento Académico 2', '2021-12-03', '2021-12-03', 'Grupo A', 1, 'Descripción 2', 'Clase Magistral', 'Clase A', '11:00:00', '12:00:00', subject_id);
     expect(academicEventPublished.error).toBeNull(); // Verificar que no haya error
-    academicEventPublished2 = await createAcademicEventAndPublish('Evento Académico 1', '2021-12-01', '2021-12-01', 'Grupo A', 1, 'Descripción 1', 'Clase Magistral', 'Clase A', '10:30:00', '12:00:00', subject_id);
+    academicEventPublished2 = await createAcademicEventAndPublish('Evento Académico 1', '2021-12-03', '2021-12-03', 'Grupo A', 1, 'Descripción 1', 'Clase Magistral', 'Clase A', '10:30:00', '12:00:00', subject_id);
     expect(academicEventPublished2.error).toBeNull(); // Verificar que no haya error
   });
 
@@ -167,6 +167,11 @@ describe('Student API Tests', () => {
   // Limpiar datos después de las pruebas
   afterAll(async () => {
 
+    await supabase
+      .from('custom_academic_event')
+      .delete()
+      .eq('user_id', testArrayStudents[0].nip);
+
     await deleteAcademicEvent(academicEventPublished.data[0].id);
     await deleteAcademicEvent(academicEventPublished2.data[0].id);
 
@@ -199,5 +204,7 @@ describe('Student API Tests', () => {
       .from('users')
       .delete()
       .eq('nip', 66666);
+
+
   });
 });

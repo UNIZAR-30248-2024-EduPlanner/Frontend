@@ -14,8 +14,8 @@ let academicEvent;
 describe('Event API Tests', () => {
   beforeAll(async () => {
     await matriculateStudent(userNIP, subject_code);
-    customEvent = await ce.createCustomEvent('Evento 1', 'Descripción 1', 'Grupo A', '2021-12-02', '10:00:00', '12:00:00', userId);
-    academicEvent = await ae.createAcademicEventAndPublish('Evento Académico 1', '2021-12-01', '2021-12-01', 'Grupo A', 1, 'Descripción 1', 'Clase Magistral', 'Clase 1', '10:00:00', '12:00:00', subject_id);
+    customEvent = await ce.createCustomEvent('Evento 1', 'Descripción 1', 'Grupo A', '2021-12-08', '10:00:00', '12:00:00', userId);
+    academicEvent = await ae.createAcademicEventAndPublish('Evento Académico 1', '2021-12-11', '2021-12-11', 'Grupo A', 1, 'Descripción 1', 'Clase Magistral', 'Clase 1', '10:00:00', '12:00:00', subject_id);
   });
 
   it('should retrieve all events for a user', async () => {
