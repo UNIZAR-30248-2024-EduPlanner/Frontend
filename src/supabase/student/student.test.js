@@ -23,7 +23,7 @@ const testArrayStudents = [
 ];
 
 let organizationId = 1;
-let subject_id = 12;
+let subject_id = 323;
 let academicEventPublished;
 let academicEventPublished2;
 
@@ -49,9 +49,9 @@ describe('Student API Tests', () => {
     expect(result.error).toBeNull(); // Verifica que no haya error
 
     //Creamos dos eventos academicos y los publicamos, pero no hay nadie matriculado
-    academicEventPublished = await createAcademicEventAndPublish('Evento Académico 2', '2021-12-01', '2021-12-01', 'Grupo A', 1, 'Descripción 2', 'Académico', 'Clase A', '10:00:00', '12:00:00', subject_id);
+    academicEventPublished = await createAcademicEventAndPublish('Evento Académico 2', '2021-12-01', '2021-12-01', 'Grupo A', 1, 'Descripción 2', 'Clase Magistral', 'Clase A', '10:00:00', '12:00:00', subject_id);
     expect(academicEventPublished.error).toBeNull(); // Verificar que no haya error
-    academicEventPublished2 = await createAcademicEventAndPublish('Evento Académico 1', '2021-12-01', '2021-12-01', 'Grupo A', 1, 'Descripción 1', 'Académico', 'Clase A', '10:30:00', '12:00:00', subject_id);
+    academicEventPublished2 = await createAcademicEventAndPublish('Evento Académico 1', '2021-12-01', '2021-12-01', 'Grupo A', 1, 'Descripción 1', 'Clase Magistral', 'Clase A', '10:30:00', '12:00:00', subject_id);
     expect(academicEventPublished2.error).toBeNull(); // Verificar que no haya error
   });
 
@@ -95,7 +95,7 @@ describe('Student API Tests', () => {
 
   // Matricular un estudiante en una asignatura
   it('should matriculate a student in a subject', async () => {
-    const result = await f.matriculateStudent(testArrayStudents[0].nip, 20001);
+    const result = await f.matriculateStudent(testArrayStudents[0].nip, 99995);
     expect(result.error).toBeNull(); // Verifica que no haya error
 
     const userId = await f.getStudentIdByNip(testArrayStudents[0].nip);
@@ -114,7 +114,7 @@ describe('Student API Tests', () => {
 
   // Matricular un estudiante en múltiples asignaturas
   it('should matriculate a student in multiple subjects', async () => {
-    const result = await f.matriculateStudentOnMultipleSubjects(testArrayStudents[1].nip, [20001, 20002]);
+    const result = await f.matriculateStudentOnMultipleSubjects(testArrayStudents[1].nip, [99995, 99996]);
     expect(result.error).toBeNull(); // Verifica que no haya error
 
     const userId = await f.getStudentIdByNip(testArrayStudents[1].nip);
@@ -130,7 +130,7 @@ describe('Student API Tests', () => {
   });
 
   it('should unenroll an student from a subject', async () => {
-    const result = await f.unenrollStudent(testArrayStudents[0].nip, 20001);
+    const result = await f.unenrollStudent(testArrayStudents[0].nip, 99995);
     expect(result.error).toBeNull(); // Verifica que no haya error
 
     const userId = await f.getStudentIdByNip(testArrayStudents[0].nip);
@@ -145,7 +145,7 @@ describe('Student API Tests', () => {
   });
 
   it('should unenroll an student from multiple subjects', async () => {
-    const result = await f.unenrollStudentFromMultipleSubjects(testArrayStudents[1].nip, [20001, 20002]);
+    const result = await f.unenrollStudentFromMultipleSubjects(testArrayStudents[1].nip, [99995, 99996]);
     expect(result.error).toBeNull(); // Verifica que no haya error
 
     const userId = await f.getStudentIdByNip(testArrayStudents[1].nip);
