@@ -81,11 +81,21 @@ describe('Academic Event API Tests', () => {
     expect(deletedEvent).toHaveLength(0);
   });
 
-  it('should create an academic event whi startingDate = endData with periodicity = 1', async () => {
+  it('should create an academic event with startingDate = endDate with periodicity = 1', async () => {
     academicEventTest = await f.createAcademicEvent('EventoTest', '2021-12-01', '2021-12-01', 'Grupo A', null, 'Descripción 1', 'Clase Magistral', 'Clase A', '7:00:00', '12:00:00', subject_id);
     expect(academicEventTest.error).toBeNull(); // Verificar que no haya error
     expect(academicEventTest.data).not.toBeNull(); // Debe haber un evento creado
     expect(academicEventTest.data[0].periodicity).toBe(1) // Debe haber un evento creado
+  });
+
+  it('should not create an academic event if periodicity is not multiple of 7', async () => {
+    const result = await f.createAcademicEvent('EventoTest', '2021-12-01', '2021-12-01', 'Grupo A', 2, 'Descripción 1', 'Clase Magistral', 'Clase A', '7:00:00', '12:00:00', subject_id);
+    expect(result.error).not.toBeNull();
+  });
+
+  it('should not create an academic event if end date is before starting date', async () => {
+    const result = await f.createAcademicEvent('EventoTest', '2021-12-02', '2021-12-01', 'Grupo A', 7, 'Descripción 1', 'Clase Magistral', 'Clase A', '7:00:00', '12:00:00', subject_id);
+    expect(result.error).not.toBeNull();
   });
 
   afterAll(async () => {
