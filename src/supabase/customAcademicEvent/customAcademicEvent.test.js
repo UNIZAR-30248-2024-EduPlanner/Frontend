@@ -12,8 +12,8 @@ let subject_id;
 
 describe('Custom Academic Event API Tests', () => {
   beforeAll(async () => {
-    userId = 43;
-    subject_id = 12;
+    userId = 2346;
+    subject_id = 323;
     academicEvent = await ae.createAcademicEvent('Evento Académico 1', '2021-12-01', '2021-12-01', 'Grupo A', 1, 'Descripción 1', 'Clase Magistral', 'Clase A', '10:00:00', '12:00:00', subject_id);
     academicEvent2 = await ae.createAcademicEvent('Evento Académico 2', '2021-12-01', '2021-12-01', 'Grupo B', 1, 'Descripción 1', 'Problemas', 'Clase A', '14:00:00', '16:00:00', subject_id);
     academicEvent3 = await ae.createAcademicEvent('Evento Académico 3', '2021-12-01', '2021-12-01', 'Grupo C', 1, 'Descripción 1', 'Clase Magistral', 'Clase A', '10:00:00', '12:00:00', subject_id);
