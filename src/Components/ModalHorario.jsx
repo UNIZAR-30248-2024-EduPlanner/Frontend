@@ -6,6 +6,7 @@ import { useState } from "react";
 import ModalEditarEvento from './ModalEditarEvento';
 import ModalComponent from './ModalComponent'; // Importa el modal de confirmación
 import { deleteCustomEvent } from '../supabase/customEvent/customEvent';
+import { editCustomAcademicEventVisibility } from '../supabase/customAcademicEvent/customAcademicEvent';
 
 const ModalHorario = ({ isOpen, onOpenChange, title, date_start, date_finish, place, group, descripcion, creador, id, date }) => {
     const { user } = useAuth();
@@ -16,7 +17,11 @@ const ModalHorario = ({ isOpen, onOpenChange, title, date_start, date_finish, pl
     const eliminarEvento = async () => {
         // Lógica para eliminar el evento de la base de datos
         console.log("Evento eliminado");
-        await deleteCustomEvent(id);
+        if (creador !== user.id) {
+            await editCustomAcademicEventVisibility(user.id, id, false);
+        } else {
+            await deleteCustomEvent(id);
+        }
         setConfirmModalOpen(false);
         onOpenChange(false);
         window.location.reload();
