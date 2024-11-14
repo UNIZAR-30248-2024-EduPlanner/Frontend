@@ -26,7 +26,7 @@ const testArrayTeachers = [
 let organizationId = 1;
 let academicEventPublished;
 let academicEventPublished2;
-let subject_id = 12;
+let subject_id = 323;
 
 describe('Teacher API Tests', () => {
   // Configuración inicial
@@ -49,9 +49,9 @@ describe('Teacher API Tests', () => {
     const result = await f.registerArrayTeachers(testArrayTeachers, organizationId);
     expect(result.error).toBeNull(); // Verifica que no haya error
 
-    academicEventPublished = await createAcademicEventAndPublish('Evento Académico 2', '2021-12-01', '2021-12-01', 'Grupo A', 1, 'Descripción 2', 'Académico', 'Clase A', '10:00:00', '12:00:00', subject_id);
+    academicEventPublished = await createAcademicEventAndPublish('Evento Académico 2', '2021-12-01', '2021-12-01', 'Grupo A', 1, 'Descripción 2', 'Clase Magistral', 'Clase A', '10:00:00', '12:00:00', subject_id);
     expect(academicEventPublished.error).toBeNull(); // Verificar que no haya error
-    academicEventPublished2 = await createAcademicEventAndPublish('Evento Académico 1', '2021-12-01', '2021-12-01', 'Grupo A', 1, 'Descripción 1', 'Académico', 'Clase A', '10:30:00', '12:00:00', subject_id);
+    academicEventPublished2 = await createAcademicEventAndPublish('Evento Académico 1', '2021-12-01', '2021-12-01', 'Grupo A', 1, 'Descripción 1', 'Clase Magistral', 'Clase A', '10:30:00', '12:00:00', subject_id);
     expect(academicEventPublished2.error).toBeNull(); // Verificar que no haya error
   });
 
@@ -93,7 +93,7 @@ describe('Teacher API Tests', () => {
 
   // Prueba para asignar una asignatura a un profesor
   it('should assign a subject to a teacher', async () => {
-    const result = await f.assignSubjectToTeacher(testArrayTeachers[1].nip, 20001);
+    const result = await f.assignSubjectToTeacher(testArrayTeachers[1].nip, 99995);
     expect(result.error).toBeNull(); // Verifica que no haya error
 
     const userId = await f.getTeacherIdByNip(testArrayTeachers[1].nip);
@@ -112,7 +112,7 @@ describe('Teacher API Tests', () => {
 
   // Prueba para asignar múltiples asignaturas a un profesor
   it('should assign multiple subjects to a teacher', async () => {
-    const result = await f.assingArraySubjectsToTeacher(testArrayTeachers[2].nip, [20001, 20002]);
+    const result = await f.assingArraySubjectsToTeacher(testArrayTeachers[2].nip, [99995, 99996]);
     expect(result.error).toBeNull(); // Verifica que no haya error
 
     const userId = await f.getTeacherIdByNip(testArrayTeachers[2].nip);
@@ -129,7 +129,7 @@ describe('Teacher API Tests', () => {
   });
 
   it('should unassign a subject from a teacher', async () => {
-    const result = await f.unassignSubjectFromTeacher(testArrayTeachers[1].nip, 20001);
+    const result = await f.unassignSubjectFromTeacher(testArrayTeachers[1].nip, 99995);
     expect(result.error).toBeNull(); // Verifica que no haya error
 
     const userId = await f.getTeacherIdByNip(testArrayTeachers[1].nip);
@@ -144,7 +144,7 @@ describe('Teacher API Tests', () => {
   });
 
   it('should unassign multiple subjects from a teacher', async () => {
-    const result = await f.unassignArraySubjectsFromTeacher(testArrayTeachers[2].nip, [20001, 20002]);
+    const result = await f.unassignArraySubjectsFromTeacher(testArrayTeachers[2].nip, [99995, 99996]);
     expect(result.error).toBeNull(); // Verifica que no haya error
 
     const userId = await f.getTeacherIdByNip(testArrayTeachers[1].nip);
