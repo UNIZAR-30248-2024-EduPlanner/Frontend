@@ -4,30 +4,24 @@ import { matriculateStudent, unenrollStudent } from '../student/student.js';
 import { supabase } from '../supabaseClient.js';
 import { describe, beforeAll, afterAll, it, expect } from 'vitest';
 
-let userId;
-let nip;
-let userId2;
-let nip2;
 let academicEvent;
-let subject_id;
-let subject_code;
 let academicEventUpdated;
 let academicEventPublished;
 let academicEventTest;
+let userId = 2346;
+let userId2 = 2347;
+let user1_nip = 111111;
+let user2_nip = 222222;
+let subject_id = 323;
+let subject_code = 99995;
+
 
 describe('Academic Event API Tests', () => {
 
   beforeAll(async () => {
-    //TODOS ESTOS VALORES DEBEN EXISTIR EN LA BASE DE DATOS Y SER VÁLIDOS
-    userId = 43;
-    userId2 = 44;
-    nip2 = 819304;
-    nip = 839899;
-    subject_id = 12;
-    subject_code = 20001;
     //Matriculamos al estudiante en la materia
-    await matriculateStudent(nip, subject_code);
-    await matriculateStudent(nip2, subject_code);
+    await matriculateStudent(user1_nip, subject_code);
+    await matriculateStudent(user2_nip, subject_code);
   });
 
   it('should create an academic event', async () => {
@@ -88,7 +82,7 @@ describe('Academic Event API Tests', () => {
   });
 
   it('should create an academic event whi startingDate = endData with periodicity = 1', async () => {
-    academicEventTest = await f.createAcademicEvent('EventoTest', '2021-12-01', '2021-12-01', 'Grupo A',null, 'Descripción 1', 'Clase Magistral', 'Clase A', '7:00:00', '12:00:00', subject_id);
+    academicEventTest = await f.createAcademicEvent('EventoTest', '2021-12-01', '2021-12-01', 'Grupo A', null, 'Descripción 1', 'Clase Magistral', 'Clase A', '7:00:00', '12:00:00', subject_id);
     expect(academicEventTest.error).toBeNull(); // Verificar que no haya error
     expect(academicEventTest.data).not.toBeNull(); // Debe haber un evento creado
     expect(academicEventTest.data[0].periodicity).toBe(1) // Debe haber un evento creado
@@ -97,7 +91,7 @@ describe('Academic Event API Tests', () => {
   afterAll(async () => {
     await f.deleteAcademicEvent(academicEventPublished.data[0].id);
     await f.deleteAcademicEvent(academicEventTest.data[0].id);
-    await unenrollStudent(nip, subject_code);
-    await unenrollStudent(nip2, subject_code);
+    await unenrollStudent(user1_nip, subject_code);
+    await unenrollStudent(user2_nip, subject_code);
   });
 });
