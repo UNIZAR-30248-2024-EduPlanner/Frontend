@@ -13,6 +13,7 @@ let subject_id;
 let subject_code;
 let academicEventUpdated;
 let academicEventPublished;
+let academicEventTest;
 
 describe('Academic Event API Tests', () => {
 
@@ -87,15 +88,15 @@ describe('Academic Event API Tests', () => {
   });
 
   it('should create an academic event whi startingDate = endData with periodicity = 1', async () => {
-    academicEventTest = await f.createAcademicEvent('EventoTest', '2021-12-01', '2021-12-01', 'Grupo A', 'Descripción 1', 'Clase Magistral', 'Clase A', '7:00:00', '12:00:00', subject_id);
+    academicEventTest = await f.createAcademicEvent('EventoTest', '2021-12-01', '2021-12-01', 'Grupo A',null, 'Descripción 1', 'Clase Magistral', 'Clase A', '7:00:00', '12:00:00', subject_id);
     expect(academicEventTest.error).toBeNull(); // Verificar que no haya error
     expect(academicEventTest.data).not.toBeNull(); // Debe haber un evento creado
     expect(academicEventTest.data[0].periodicity).toBe(1) // Debe haber un evento creado
   });
 
-
   afterAll(async () => {
     await f.deleteAcademicEvent(academicEventPublished.data[0].id);
+    await f.deleteAcademicEvent(academicEventTest.data[0].id);
     await unenrollStudent(nip, subject_code);
     await unenrollStudent(nip2, subject_code);
   });
