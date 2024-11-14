@@ -112,3 +112,16 @@ export const getAcademicEventsBySubject = async (subjectId) => {
 
     return { data, error };
 };
+
+// Obtener todos los eventos académicos según el tipo
+export const getAcademicEventsByType = async (type) => {
+    const { data, error } = await supabase
+        .from('academic_event')
+        .select('*')
+        .eq('type', type);
+
+    console.log(data);
+
+    return { data, error };
+};
+
