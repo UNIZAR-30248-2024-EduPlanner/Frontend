@@ -107,14 +107,22 @@ describe('Custom Academic Event API Tests', () => {
   });
 
   afterAll(async () => {
-    await f.deleteCustomAcademicEvent(userId, academicEvent.data[0].id);
-    await ae.deleteAcademicEvent(academicEvent.data[0].id);
-    await f.deleteCustomAcademicEvent(userId, academicEvent2.data[0].id);
-    await ae.deleteAcademicEvent(academicEvent2.data[0].id);
-    await f.deleteCustomAcademicEvent(userId, academicEvent3.data[0].id);
-    await ae.deleteAcademicEvent(academicEvent3.data[0].id);
-    await f.deleteCustomAcademicEvent(userId, academicEvent4.data[0].id);
-    await ae.deleteAcademicEvent(academicEvent4.data[0].id);
+    await supabase
+      .from('academic_event')
+      .delete()
+      .eq('id', academicEvent.data[0].id);
+    await supabase
+      .from('academic_event')
+      .delete()
+      .eq('id', academicEvent2.data[0].id);
+    await supabase
+      .from('academic_event')
+      .delete()
+      .eq('id', academicEvent3.data[0].id);
+    await supabase
+      .from('academic_event')
+      .delete()
+      .eq('id', academicEvent4.data[0].id);
   });
 }
 );

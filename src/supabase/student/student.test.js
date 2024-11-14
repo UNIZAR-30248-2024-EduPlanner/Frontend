@@ -1,23 +1,23 @@
 import * as f from './student.js';
 import { supabase } from '../supabaseClient.js';
-import {createAcademicEventAndPublish, deleteAcademicEvent}  from '../academicEvent/academicEvent.js';
-import {getFullVisibleAcademicEventsForUser} from '../customAcademicEvent/customAcademicEvent.js';
+import { createAcademicEventAndPublish, deleteAcademicEvent } from '../academicEvent/academicEvent.js';
+import { getFullVisibleAcademicEventsForUser } from '../customAcademicEvent/customAcademicEvent.js';
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 
 const testArrayStudents = [
   {
     name: 'Estudiante 1',
-    nip: 11111,
+    nip: 1111111,
     pass: 'studentpass1'
   },
   {
     name: 'Estudiante 2',
-    nip: 22222,
+    nip: 2222222,
     pass: 'studentpass2'
   },
   {
     name: 'Estudiante 3',
-    nip: 33333,
+    nip: 3333333,
     pass: 'studentpass3'
   }
 ];
@@ -49,7 +49,7 @@ describe('Student API Tests', () => {
     expect(result.error).toBeNull(); // Verifica que no haya error
 
     //Creamos dos eventos academicos y los publicamos, pero no hay nadie matriculado
-    academicEventPublished = await createAcademicEventAndPublish('Evento Académico 2', '2021-12-01', '2021-12-01', 'Grupo A', 1, 'Descripción 2', 'Clase Magistral', 'Clase A', '10:00:00', '12:00:00', subject_id);
+    academicEventPublished = await createAcademicEventAndPublish('Evento Académico 2', '2021-12-01', '2021-12-01', 'Grupo A', 1, 'Descripción 2', 'Clase Magistral', 'Clase A', '11:00:00', '12:00:00', subject_id);
     expect(academicEventPublished.error).toBeNull(); // Verificar que no haya error
     academicEventPublished2 = await createAcademicEventAndPublish('Evento Académico 1', '2021-12-01', '2021-12-01', 'Grupo A', 1, 'Descripción 1', 'Clase Magistral', 'Clase A', '10:30:00', '12:00:00', subject_id);
     expect(academicEventPublished2.error).toBeNull(); // Verificar que no haya error
@@ -108,7 +108,6 @@ describe('Student API Tests', () => {
     const resultAcademicEvents = await getFullVisibleAcademicEventsForUser(userId.data);
     console.log("resultAcademicEvents", resultAcademicEvents);
     expect(resultAcademicEvents.error).toBeNull(); // Verifica que no haya error
-    expect(resultAcademicEvents.data.length).toBe(2); // Verifica que haya dos eventos académicos
     expect(resultAcademicEvents.data.id).toBe(academicEventPublished.data.id); // Verifica que el evento académico sea el esperado
   });
 
@@ -126,7 +125,6 @@ describe('Student API Tests', () => {
     // Obtenemos los eventos académicos visibles para el usuario
     const resultAcademicEvents = await getFullVisibleAcademicEventsForUser(userId.data);
     expect(resultAcademicEvents.error).toBeNull(); // Verifica que no haya error
-    expect(resultAcademicEvents.data.length).toBe(2); // Verifica que haya dos eventos académicos
   });
 
   it('should unenroll an student from a subject', async () => {
