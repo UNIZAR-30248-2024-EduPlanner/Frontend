@@ -10,6 +10,7 @@ import ModalComponentcreate from "../Components/ModalEditarHorarios";
 import { getAllEventsForUser } from '../supabase/event/event.js';
 import { useAuth } from "../context/AuthContext";
 import { getFullNonVisibleAcademicEventsForUser } from '../supabase/customAcademicEvent/customAcademicEvent.js';
+import Logout from '../Components/Logout.jsx';
 
 const Calendario = () => {
     const { user } = useAuth();
@@ -150,7 +151,7 @@ const Calendario = () => {
             evento.end_time = evento.end_time ? evento.end_time.slice(0, 5) : null
         });
 
-        setHorarios(procesarHorarios(horariosRes.data));
+        // setHorarios(procesarHorarios(horariosRes.data));
         setHorariosrecu(horariosRecuperar.data);
     }
 
@@ -269,11 +270,11 @@ const Calendario = () => {
 
             getHorarios();
         }
-    }, [user]);
+    }, [user, ]);
 
     useEffect(() => {
-        if (mondayWeek != null) setHorarios(procesarHorarios(horariosBD));
-    }, [mondayWeek])
+        if (mondayWeek && horariosBD) setHorarios(procesarHorarios(horariosBD));
+    }, [mondayWeek, horariosBD])
 
     // Función para abrir el modal
     const openModal = () => {
@@ -293,7 +294,7 @@ const Calendario = () => {
 
     return (
         <div className="calendario">
-            <FlechaVolver />
+            <Logout />
             <div className="personalizar">
                 <Button color="primary" onClick={openModal}>
                     + Personalizar calendario
