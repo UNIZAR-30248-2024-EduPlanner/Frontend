@@ -12,7 +12,7 @@ const FlechaVolver = () => {
   const handleClick = () => {
     if (location.pathname === constants.root + "Calendario") {
       logout();
-      navigate(constants.root + "IniciarSesion");
+      navigate(constants.root);
     } else {
       navigate(-1);
     }
