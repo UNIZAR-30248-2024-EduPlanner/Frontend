@@ -5,7 +5,7 @@ import { createCustomEvent } from "../supabase/customEvent/customEvent";
 import { CheckboxGroup, Checkbox } from "@nextui-org/react";
 import { Tabs, Tab } from "@nextui-org/react";
 import { useState } from "react";
-
+import { editCustomAcademicEventVisibility } from '../supabase/customAcademicEvent/customAcademicEvent';
 
 const ModalEditarHorarios = ({ isOpen, onOpenChange, listaCompletaEventos }) => {
     const { user } = useAuth();
@@ -21,6 +21,7 @@ const ModalEditarHorarios = ({ isOpen, onOpenChange, listaCompletaEventos }) => 
     const [descripcion, setDescripcion] = useState("");
     const [fecha, setFecha] = useState("");
     const [error, setError] = useState("");
+    console.log(listaCompletaEventos);
 
 
     const filteredGrupos = Array.from(new Set(
@@ -54,6 +55,26 @@ const ModalEditarHorarios = ({ isOpen, onOpenChange, listaCompletaEventos }) => 
             window.location.reload();
         } else {
             setError("Por favor, complete todos los campos obligatorios (nombre, horas y fecha).");
+            window.scrollTo({ top: 0, behavior: "smooth" });
+            return;
+        }
+    };
+
+    const handleSubmitadd = async () => {
+        if (selectedHorarios.length > 0) {
+            console.log("Horarios seleccionados:", selectedHorarios);
+            // Lógica para enviar horarios deseados
+            for (const evento of selectedHorarios) {
+                try {
+                    console.log(user.id, evento);
+                    await editCustomAcademicEventVisibility(user.id, evento, true);
+                } catch (error) {
+                    console.error(`Error al editar visibilidad para el evento ${evento.id}:`, error);
+                }
+            }
+            window.location.reload();
+        } else {
+            setError("Por favor, seleccione al menos un horario.");
             window.scrollTo({ top: 0, behavior: "smooth" });
             return;
         }
@@ -118,15 +139,15 @@ const ModalEditarHorarios = ({ isOpen, onOpenChange, listaCompletaEventos }) => 
                                             >
                                                 {filteredHorarios.map(horario => (
                                                     <Checkbox key={horario.id} value={horario.id}>
-                                                        {obtenerDiaSemana(horario.starting_date) + " " + horario.start.slice(0, 5) + "-" + horario.end.slice(0, 5)}
+                                                        {obtenerDiaSemana(horario.starting_date) + " " + horario.start_time.slice(0, 5) + "-" + horario.end_time.slice(0, 5)}
                                                     </Checkbox>
                                                 ))}
                                             </CheckboxGroup>
                                         </div>
-                                        <Button color="primary" onPress={() => {
+                                        <Button color="primary" onPress={handleSubmitadd}/*onPress={() => {
                                             // Lógica para enviar horarios deseados
                                             console.log("Horarios seleccionados:", selectedHorarios);
-                                        }}
+                                        }} */
                                             style={{ marginTop: '10px', marginBottom: '10px' }}
                                         >
                                             Añadir a calendario

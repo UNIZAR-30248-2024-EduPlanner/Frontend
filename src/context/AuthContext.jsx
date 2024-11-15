@@ -41,10 +41,10 @@ export const AuthProvider = ({ children }) => {
     const login = async (nip, pass, userType, organizationId) => {
         var res, role;
 
-        role = userType == constants.alumno ? 'student' 
-             : userType == constants.profesor ? 'teacher'
-             : userType == constants.curso ? 'course' 
-             : '';
+        role = userType == constants.alumno ? 'student'
+            : userType == constants.profesor ? 'teacher'
+                : userType == constants.curso ? 'course'
+                    : '';
 
         console.log(nip, pass, role, organizationId)
         // Llamada a la API para loguear
@@ -52,7 +52,7 @@ export const AuthProvider = ({ children }) => {
         if (userType == constants.organizacion) {
             res = await loginOrganization(organizationId, nip, pass) // login
             console.log(res)
-            if (res == false) return res
+            if (res.data == null) return res
 
             // Llamada a la API para conseguir la info del usuario logueado
             res = await getOrganizationById(organizationId)
@@ -61,13 +61,13 @@ export const AuthProvider = ({ children }) => {
         } else {
             res = await loginUser(nip, pass, role, organizationId) // login
             console.log(res)
-            if (res == false) return res
-    
+            if (res.data == null) return res
+
             // Llamada a la API para conseguir la info del usuario logueado
             res = await getUserInfoByNIP(nip, organizationId)
             console.log(res)
-            if (res.error) return res  
-            console.log("heyy ", res.data)  
+            if (res.error) return res
+            console.log("heyy ", res.data)
         }
 
         console.log("Guardo el id en lS: ", res.data.id)
@@ -83,6 +83,7 @@ export const AuthProvider = ({ children }) => {
     const logout = () => {
         localStorage.removeItem("user")
         localStorage.removeItem("type")
+        localStorage.removeItem("isAuthenticated")
         setUser(null)
         setIsAuthenticated(false)
         setType(null)
