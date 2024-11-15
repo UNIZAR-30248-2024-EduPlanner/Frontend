@@ -75,46 +75,46 @@ const Calendario = () => {
     const procesarHorarios = (h) => {
         const res = [];
 
-        h.map((e, idx) => {
-            // console.log(e);
+        const aux = h.filter((v) => isInWeek(v, mondayWeek, monthYear));
 
-            if (isInWeek(e, mondayWeek, monthYear)) {
-                const [hoursStart, minutesStart] = e.start.split(":").map(part => parseInt(part, 10));
+        aux.map((e, idx) => {
 
-                // Imprimir el índice encontrado para depuración
-                const dayIndex = nameDays.findIndex((v) => v === e.day);
+            const [hoursStart, minutesStart] = e.start.split(":").map(part => parseInt(part, 10));
+
+            // Imprimir el índice encontrado para depuración
+            const dayIndex = nameDays.findIndex((v) => v === e.day);
+
+            // Calcula los solapes del horario con otros horarios
+            // <numSolapes> contiene el número de solapes de <e> con otros horarios
+            // en su franja horaria
+            // <position> indica la posición horizontal en caso de que exista solape
+            const [numSolapes, position] = calcularSolapes(aux, idx);
+
+            // Color de la asignatura
+            const color = getColor(e.name)
+
+            const minutosS = convertirAHorasEnMinutos(e.start)
+            const minutosE = convertirAHorasEnMinutos(e.end)
     
-                // Calcula los solapes del horario con otros horarios
-                // <numSolapes> contiene el número de solapes de <e> con otros horarios
-                // en su franja horaria
-                // <position> indica la posición horizontal en caso de que exista solape
-                const [numSolapes, position] = calcularSolapes(h, idx);
+            res.push({
+                name: e.name,
+                start: e.start,
+                end: e.end,
+                description: e.description,
+                place: e.place,
+                group_name: e.group_name,
+                user_id: e.user_id,
+                id: e.id,
+                date: e.date,
+                height: ((minutosE - minutosS) * alturaPorMinuto).toString() + "vh",
+                width: numSolapes == 0 ? wCol : wCol / numSolapes,
+                top: ((hoursStart - firstHour + 1) * alturaPorHora + minutesStart * alturaPorMinuto).toString() + "vh",
+                left: (wFirstCol + (dayIndex * wCol) + (numSolapes == 0 ? 0 : position * (wCol / numSolapes))).toString() + "vw",
+                color: color,
+                textColor: getContrastColor(color)
+            });
     
-                // Color de la asignatura
-                const color = getColor(e.name)
-    
-                const minutosS = convertirAHorasEnMinutos(e.start)
-                const minutosE = convertirAHorasEnMinutos(e.end)
-        
-                res.push({
-                    name: e.name,
-                    start: e.start,
-                    end: e.end,
-                    description: e.description,
-                    place: e.place,
-                    group_name: e.group_name,
-                    user_id: e.user_id,
-                    id: e.id,
-                    date: e.date,
-                    height: ((minutosE - minutosS) * alturaPorMinuto).toString() + "vh",
-                    width: numSolapes == 0 ? wCol : wCol / numSolapes,
-                    top: ((hoursStart - firstHour + 1) * alturaPorHora + minutesStart * alturaPorMinuto).toString() + "vh",
-                    left: (wFirstCol + (dayIndex * wCol) + (numSolapes == 0 ? 0 : position * (wCol / numSolapes))).toString() + "vw",
-                    color: color,
-                    textColor: getContrastColor(color)
-                });
-    
-            }
+            // }
         });
 
         return res;
