@@ -9,6 +9,7 @@ import ModalComponent from "../Components/ModalHorario";
 import ModalComponentcreate from "../Components/ModalEditarHorarios";
 import { getAllEventsForUser } from '../supabase/event/event.js';
 import { useAuth } from "../context/AuthContext";
+import { getFullNonVisibleAcademicEventsForUser } from '../supabase/customAcademicEvent/customAcademicEvent.js';
 
 const Calendario = () => {
     const { user } = useAuth();
@@ -23,6 +24,9 @@ const Calendario = () => {
     // Horarios son los horarios procesados para la actual semana
     const [horarios, setHorarios] = useState([]);
 
+    // Horarios son los horarios a recuperar
+    const [horariosrecu, setHorariosrecu] = useState([]);
+
     // Dias de la semana requerida
     const [diasSemana, setDiasSemana] = useState([])
 
@@ -30,7 +34,7 @@ const Calendario = () => {
     const [mondayWeek, setMondayWeek] = useState(null)
 
     // Mes y año actual: <mes> <año>
-    const [monthYear, setMonthYear] = useState(null)    
+    const [monthYear, setMonthYear] = useState(null)
 
     // Contiene una lista de {name: <name>, color: #XXXXXX}
     const [colores, setColores] = useState([]);
@@ -53,7 +57,7 @@ const Calendario = () => {
 
     // Devuelve el color de la asignatura <name> y si no está genera un color aleatorio
     // para esa asignatura y lo guarda en el vector colores
-    
+
     const getColor = (name) => {
         const elem = colores.find((e) => e.name == name);
 
@@ -64,7 +68,7 @@ const Calendario = () => {
             const color = `#${Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0')}`;
 
             // Añade el nuevo color al array `colores`
-            setColores((prev) => [...prev, {name, color}]);
+            setColores((prev) => [...prev, { name, color }]);
 
             return color;
         }
@@ -83,19 +87,19 @@ const Calendario = () => {
 
                 // Imprimir el índice encontrado para depuración
                 const dayIndex = nameDays.findIndex((v) => v === e.day);
-    
+
                 // Calcula los solapes del horario con otros horarios
                 // <numSolapes> contiene el número de solapes de <e> con otros horarios
                 // en su franja horaria
                 // <position> indica la posición horizontal en caso de que exista solape
                 const [numSolapes, position] = calcularSolapes(h, idx);
-    
+
                 // Color de la asignatura
                 const color = getColor(e.name)
-    
+
                 const minutosS = convertirAHorasEnMinutos(e.start)
                 const minutosE = convertirAHorasEnMinutos(e.end)
-        
+
                 res.push({
                     name: e.name,
                     start: e.start,
@@ -113,17 +117,18 @@ const Calendario = () => {
                     color: color,
                     textColor: getContrastColor(color)
                 });
-    
+
             }
         });
 
         return res;
     };
-    
+
     const getHorarios = async () => {
 
         // Se piden los horarios a la BD
         const horariosRes = await getAllEventsForUser(user.id);
+        const horariosRecuperar = await getFullNonVisibleAcademicEventsForUser(user.id);
         if (horariosRes.error) return console.error("ERROR: recuperando los horarios");
 
         setHorariosBD(horariosRes.data);
@@ -133,13 +138,20 @@ const Calendario = () => {
             if (fecha) {
                 evento.day = obtenerDiaSemana(fecha);
             }
-    
+
             // Renombrar start_time y end_time a start y end, tomando solo los primeros 5 caracteres
             evento.start = evento.start_time ? evento.start_time.slice(0, 5) : null;
             evento.end = evento.end_time ? evento.end_time.slice(0, 5) : null
         });
-    
+
+        horariosRecuperar.data.forEach(evento => {
+            // Renombrar start_time y end_time a start y end, tomando solo los primeros 5 caracteres
+            evento.start_time = evento.start_time ? evento.start_time.slice(0, 5) : null;
+            evento.end_time = evento.end_time ? evento.end_time.slice(0, 5) : null
+        });
+
         setHorarios(procesarHorarios(horariosRes.data));
+        setHorariosrecu(horariosRecuperar.data);
     }
 
     /*const horariosAux = [
@@ -255,7 +267,7 @@ const Calendario = () => {
         if (user && user.id) {
             getDiasSemana();
 
-            getHorarios();    
+            getHorarios();
         }
     }, [user]);
 
@@ -372,7 +384,7 @@ const Calendario = () => {
             <ModalComponentcreate
                 isOpen={isModalOpen}
                 onOpenChange={closeModal}
-                listaCompletaEventos={horarios}
+                listaCompletaEventos={horariosrecu}
             />
         </div>
 
