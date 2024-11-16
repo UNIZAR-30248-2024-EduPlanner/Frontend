@@ -1,4 +1,3 @@
-.logout {
     .logout-container {
         background-color: transparent;
         position: fixed;
@@ -15,5 +14,5 @@
     .logout:hover {
         opacity: 0.75;
     }    
-}
+
 

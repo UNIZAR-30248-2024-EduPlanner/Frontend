@@ -1,4 +1,3 @@
-.flecha {
     .flecha-volver-container {
         background-color: transparent;
         position: fixed;
@@ -15,5 +14,3 @@
     .flecha-volver:hover {
         opacity: 0.75;
     }    
-}
-

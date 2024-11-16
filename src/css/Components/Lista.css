@@ -1,23 +1,35 @@
 .busqueda {
-    @media (min-width: 900px) {
-        width: 60vw;
-    }
-    @media (max-width: 900px) {
-        width: 75vw;
-    }
     margin-top: 5vh;
     display: flex;
     align-items: center;
 }
 
+@media (min-width: 900px) {
+    .busqueda {
+        width: 60vw;
+    }
+}
+
+@media (max-width: 900px) {
+    .busqueda {
+        width: 75vw;
+    }
+}
+
 .create-button {
     position: fixed;
-    @media (min-width: 900px) {
+}
+
+@media (min-width: 900px) {
+    .create-button {
         bottom: 4vh;
         right: 4vw;    
         font-size: 7rem;
     }
-    @media (max-width: 900px) {
+}
+
+@media (max-width: 900px) {
+    .create-button {
         bottom: 1vh;
         right: 1vw;
         font-size: 12vw;
@@ -37,18 +49,22 @@
     align-items: center;
     justify-content: space-between;
     list-style: none;
-
     background-color: var(--color-primary);
     color: white;
     border-radius: 40px;
     padding: 20px;
     margin-top: 2vh;
     font-weight: bold;
+}
 
-    @media (min-width: 900px) {
+@media (min-width: 900px) {
+    .lista-item {
         width: 60vw;
     }
-    @media (max-width: 900px) {
+}
+
+@media (max-width: 900px) {
+    .lista-item {
         width: 75vw;
     }
 }
@@ -61,21 +77,19 @@
 
 .lista-iconos {
     display: flex;
-    /* justify-content: space-between; */
+    width: -moz-fit-content;
     width: fit-content;
     font-size: 1.75rem;
-    /* margin-right: 1vw; */
-
-    .trash {
-        font-size: 1.75rem;
-        color: var(--color-second);
-        background-color: transparent;
-    }
-
-    .edit {
-        font-size: 1.75rem;
-        color: white;
-        background-color: transparent;
-    }
 }
 
+.trash {
+    font-size: 1.75rem;
+    color: var(--color-second);
+    background-color: transparent;
+}
+
+.edit {
+    font-size: 1.75rem;
+    color: white;
+    background-color: transparent;
+}
