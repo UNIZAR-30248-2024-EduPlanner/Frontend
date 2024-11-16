@@ -1,4 +1,4 @@
-    .logout-container {
+.logout .logout-container {
         background-color: transparent;
         position: fixed;
         top: 1vh;
@@ -7,12 +7,11 @@
         color: var(--color-primary);
     }
     
-    .logout {
+    .logout .logout {
         font-size: 60rem;
     }
     
-    .logout:hover {
+    .logout .logout:hover {
         opacity: 0.75;
     }    
-
 
