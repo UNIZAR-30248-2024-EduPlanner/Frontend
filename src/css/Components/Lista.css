@@ -82,13 +82,13 @@
     font-size: 1.75rem;
 }
 
-.trash {
+.lista-iconos .trash {
     font-size: 1.75rem;
     color: var(--color-second);
     background-color: transparent;
 }
 
-.edit {
+.lista-iconos .edit {
     font-size: 1.75rem;
     color: white;
     background-color: transparent;
