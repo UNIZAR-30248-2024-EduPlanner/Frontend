@@ -82,11 +82,10 @@ const ModalEditarHorarios = ({ isOpen, onOpenChange, listaCompletaEventos }) => 
 
     return (
         <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
-            <ModalContent>
+            <ModalContent style={{ transform: "scale(0.95)", overflow: "hidden" }}>
                 {(onClose) => (
                     <>
-                        <hr className="separator" />
-                        <ModalBody>
+                        <ModalBody style={{ transform: "scale(0.9)", maxHeight: "100vh", overflow: "auto" }}>
                             <div className="tabs-org">
                                 <Tabs color="primary" variant="underlined" defaultSelectedKey="Asignatura">
                                     <Tab className="text-center text-xl" key="Asignatura" title="Asignatura">
@@ -144,10 +143,7 @@ const ModalEditarHorarios = ({ isOpen, onOpenChange, listaCompletaEventos }) => 
                                                 ))}
                                             </CheckboxGroup>
                                         </div>
-                                        <Button color="primary" onPress={handleSubmitadd}/*onPress={() => {
-                                            // Lógica para enviar horarios deseados
-                                            console.log("Horarios seleccionados:", selectedHorarios);
-                                        }} */
+                                        <Button color="primary" onPress={handleSubmitadd}
                                             style={{ marginTop: '10px', marginBottom: '10px' }}
                                         >
                                             Añadir a calendario
