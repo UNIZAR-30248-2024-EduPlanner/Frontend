@@ -19,5 +19,8 @@
     text-align: center;
 }
 
-.uno {
+.botones {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }

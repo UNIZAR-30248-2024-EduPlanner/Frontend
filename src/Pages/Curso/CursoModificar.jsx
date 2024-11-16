@@ -17,7 +17,6 @@ const CursoModificar = () => {
     const navigate = useNavigate()
     const { nombreViejo } = useParams()
     const { nipViejo } = useParams()
-    console.log(nipViejo)
 
     // Variables que contienen el contenido de los input
     const [nombre, setNombre] = useState(nombreViejo)
@@ -55,7 +54,7 @@ const CursoModificar = () => {
     }
 
     const calendar = () => {
-        navigate(`${location.pathname}/calendario/`)
+        navigate(`${location.pathname}/calendario/${id}`)
     }
     
     return (

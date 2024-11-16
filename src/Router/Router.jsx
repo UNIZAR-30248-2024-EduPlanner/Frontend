@@ -59,6 +59,7 @@ const AppRoutes = () => {
                 <Route element={<ProtectedUser userType={constants.curso} />}>
                     <Route path={constants.root + "CursoMenu"} element={<CursoMenu />} />
                     <Route path={constants.root + "CursoCrear/:type/"} element={<CursoCrear />} />
+                    <Route path={constants.root + "CursoCrear/:type/calendario"} element={<CalendarioAsignatura />} />
                     <Route path={constants.root + "CursoModificar/:type/:id/:nombreViejo/:nipViejo"} element={<CursoModificar />} />
                     <Route path={constants.root + "CursoModificar/:type/:id/:nombreViejo/:nipViejo/calendario"} element={<CalendarioAsignatura />} />
                 </Route>

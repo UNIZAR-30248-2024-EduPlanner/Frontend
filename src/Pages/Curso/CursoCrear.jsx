@@ -54,6 +54,10 @@ const CursoCrear = () => {
         navigate(-1)
     }
 
+    const calendar = () => {
+        navigate(`${location.pathname}/calendario/`)
+    }
+
     return (
         <>
             <FlechaVolver />
@@ -98,9 +102,14 @@ const CursoCrear = () => {
                             value={nip}
                             onChange={(e) => setNip(e.target.value)}
                         />
-                        <Button size="lg" color="primary" onClick={create}>
-                            Crear
-                        </Button>
+                        <div className="botones">
+                            <Button size="lg" color="primary" onClick={calendar}>
+                                Establecer calendario
+                            </Button>
+                            <Button size="lg" color="primary" onClick={create}>
+                                Crear
+                            </Button>
+                        </div>
                     </div>
                 </div>
                 <div className="fich">
