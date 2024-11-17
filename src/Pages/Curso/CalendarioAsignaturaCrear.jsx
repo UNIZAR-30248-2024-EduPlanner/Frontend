@@ -3,7 +3,6 @@ import { FaArrowLeft, FaRegArrowAltCircleLeft, FaRegArrowAltCircleRight } from "
 import { Button, Tooltip } from '@nextui-org/react'
 import { useEffect, useState } from 'react'
 import { calcularSolapes, convertirAHorasEnMinutos, hexToRgb, getContrastColor, isInWeek, numberToMonth } from '../../Components/CalendarioFunctions.jsx';
-import { useDisclosure } from "@nextui-org/react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import ModalHorarioCrearEditar from '../../Components/ModalHorarioCrearEditar.jsx';
@@ -260,7 +259,7 @@ const CalendarioAsignaturaCrear = () => {
     };
 
     const handleDeleteHorario = (id) => {
-        const updatedHorarios = horarios.filter((h) => h.id !== id);
+        const updatedHorarios = horariosRecu.filter((h) => h.id !== id);
         setHorariosRecu(updatedHorarios);
         setIsModalOpen(false);
     };

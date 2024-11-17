@@ -5,6 +5,7 @@ import "../../css/Curso/CursoCrear.css"
 import SubidaFichero from "../../Components/SubidaFichero";
 import FlechaVolver from "../../Components/FlechaVolver";
 import { createSubject } from "../../supabase/course/course";
+import { createAcademicEvent } from "../../supabase/academicEvent/academicEvent";
 import { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
@@ -50,9 +51,10 @@ const CursoCrear = () => {
             return;
         }
 
-        const subject_id = res.data[0].id;
+        // Se obtiene el ID de la asignatura creada
+        const subject_id = res.data[0].subject_code;
 
-        // Asignar los valores de la asignatura a los horarios
+        // Crear los horarios de la asignatura
         calendario.forEach(async (horario) => {
             horario.codigo = nip;
             res = await createAcademicEvent(
