@@ -15,6 +15,8 @@ const CursoModificar = () => {
     const [error, setError] = useState("");
     const location = useLocation();
     const navigate = useNavigate()
+    const calendario = useState(location.state?.horarios || []);
+
     const { nombreViejo } = useParams()
     const { nipViejo } = useParams()
 
@@ -23,8 +25,6 @@ const CursoModificar = () => {
     const [nip, setNip] = useState(nipViejo)
 
     const update = async () => {
-        // TODO: dependiendo el tipo a crear, crear uno u otro
-        // llamada a funcion crear
         setError(""); // Limpiar cualquier mensaje de error anterior
 
         if (
@@ -41,9 +41,10 @@ const CursoModificar = () => {
             window.scrollTo({ top: 0, behavior: "smooth" });
             return;
         }
-        // Si llega aquí, se ejecuta la petición para crear
+
         const updates = { name: nombre, subject_code: nip };
 
+        // Añadir la modificacion de horarios en el update de la asignatura
         const res = await editSubject(id, updates)
         if (res.error) {
             setError("Hubo un error en el registro: " + res.error.message);
@@ -54,7 +55,7 @@ const CursoModificar = () => {
     }
 
     const calendar = () => {
-        navigate(`${location.pathname}/calendario/${id}`)
+        navigate(`${location.pathname}/Calendario`)
     }
     
     return (

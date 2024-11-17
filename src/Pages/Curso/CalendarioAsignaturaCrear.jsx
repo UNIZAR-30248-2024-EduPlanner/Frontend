@@ -1,44 +1,29 @@
-import '../css/Calendario.css'
-import FlechaVolver from "../Components/FlechaVolver"
-import { FaRegArrowAltCircleLeft, FaRegArrowAltCircleRight } from "react-icons/fa";
+import '../../css/Curso/CalendarioAsignaturaCrear.css';
+import { FaArrowLeft, FaRegArrowAltCircleLeft, FaRegArrowAltCircleRight } from "react-icons/fa";
 import { Button, Tooltip } from '@nextui-org/react'
 import { useEffect, useState } from 'react'
-import { calcularSolapes, convertirAHorasEnMinutos, getContrastColor, isInWeek, numberToMonth } from '../Components/CalendarioFunctions.jsx';
+import { calcularSolapes, convertirAHorasEnMinutos, hexToRgb, getContrastColor, isInWeek, numberToMonth } from '../../Components/CalendarioFunctions.jsx';
 import { useDisclosure } from "@nextui-org/react";
-import ModalComponent from "../Components/ModalHorario";
-import ModalComponentcreate from "../Components/ModalEditarHorarios";
-import { getAllEventsForUser } from '../supabase/event/event.js';
-import { useAuth } from "../context/AuthContext";
-import { getFullNonVisibleAcademicEventsForUser } from '../supabase/customAcademicEvent/customAcademicEvent.js';
-import Logout from '../Components/Logout.jsx';
+import { useNavigate, useLocation } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
+import ModalHorarioCrearEditar from '../../Components/ModalHorarioCrearEditar.jsx';
+import constants from '../../constants/constants.jsx';
 
-const Calendario = () => {
+const CalendarioAsignaturaCrear = () => {
     const { user } = useAuth();
-
+    const name = "Nueva asignatura";
+    const navigate = useNavigate();
+    const location = useLocation();
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [modalData, setModalData] = useState(null);
-
-    // HorariosBD son todos los horarios recuperados de la BD
-    const [horariosBD, setHorariosBD] = useState([]);
-
-    // Horarios son los horarios procesados para la actual semana
     const [horarios, setHorarios] = useState([]);
-
-    // Horarios son los horarios a recuperar
-    const [horariosrecu, setHorariosrecu] = useState([]);
-
-    // Dias de la semana requerida
+    const [horariosRecu, setHorariosRecu] = useState(location.state?.calendario || []);
     const [diasSemana, setDiasSemana] = useState([])
-
-    // Primer día de la semana actual
     const [mondayWeek, setMondayWeek] = useState(null)
-
-    // Mes y año actual: <mes> <año>
     const [monthYear, setMonthYear] = useState(null)
-
-    // Contiene una lista de {name: <name>, color: #XXXXXX}
-    const [colores, setColores] = useState([]);
+    const [color, setColor] = useState('#4051B5');  // En caso de fallo en el set, el color por defecto será el principal 
+    const [idCounter, setIdCounter] = useState(location.state?.calendario?.length+1 || 1);    // Contador para los ids virtuales
 
     const wFirstCol = 5;
     const wCol = 13.57;
@@ -49,31 +34,24 @@ const Calendario = () => {
     const alturaPorHora = 7; // Altura por hora en vh
     const alturaPorMinuto = 7 / 60; // Altura por minuto en vh
 
-    // const getAllItems = async () => {
-    //     console.log(user)
-    //     const horariosAux = await getAllEventsForUser(user.id)
-    //     if (horariosAux.error) sethorariosAux(horariosAux.data)
-    //     else sethorariosAux(horariosAux.data)
-    // }
+    const generateRandomColor = () => {
+        let color;
+        do {
+            color = '#' + Math.floor(Math.random() * 16777215).toString(16);
+        } while (isColorTooLight(color) || isColorSimilarToWhite(color));
+        return color;
+    };
 
-    // Devuelve el color de la asignatura <name> y si no está genera un color aleatorio
-    // para esa asignatura y lo guarda en el vector colores
+    const isColorTooLight = (hex) => {
+        const { r, g, b } = hexToRgb(hex);
+        const luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+        return luminance > 200;
+    };
 
-    const getColor = (name) => {
-        const elem = colores.find((e) => e.name == name);
-
-        if (elem) {
-            return elem.color;
-        } else {
-            // Genera un color hexadecimal aleatorio
-            const color = `#${Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0')}`;
-
-            // Añade el nuevo color al array `colores`
-            setColores((prev) => [...prev, { name, color }]);
-
-            return color;
-        }
-    }
+    const isColorSimilarToWhite = (hex) => {
+        const { r, g, b } = hexToRgb(hex);
+        return r > 240 && g > 240 && b > 240;
+    };
 
     // Da formato a los horarios de la semana. Establece el estilo de los 
     // componentes que permite mostrarlos por pantalla
@@ -83,21 +61,9 @@ const Calendario = () => {
         const aux = h.filter((v) => isInWeek(v, mondayWeek, monthYear));
 
         aux.map((e, idx) => {
-
             const [hoursStart, minutesStart] = e.start.split(":").map(part => parseInt(part, 10));
-
-            // Imprimir el índice encontrado para depuración
             const dayIndex = nameDays.findIndex((v) => v === e.day);
-
-            // Calcula los solapes del horario con otros horarios
-            // <numSolapes> contiene el número de solapes de <e> con otros horarios
-            // en su franja horaria
-            // <position> indica la posición horizontal en caso de que exista solape
             const [numSolapes, position] = calcularSolapes(aux, idx);
-
-            // Color de la asignatura
-            const color = getColor(e.name)
-
             const minutosS = convertirAHorasEnMinutos(e.start)
             const minutosE = convertirAHorasEnMinutos(e.end)
     
@@ -106,8 +72,12 @@ const Calendario = () => {
                 start: e.start,
                 end: e.end,
                 description: e.description,
+                starting_date: e.starting_date,
+                end_date: e.end_date,
                 place: e.place,
                 group_name: e.group_name,
+                type: e.type,
+                periodicity: e.periodicity,
                 user_id: e.user_id,
                 id: e.id,
                 date: e.date,
@@ -119,72 +89,8 @@ const Calendario = () => {
                 textColor: getContrastColor(color)
             });
         });
-
         return res;
     };
-
-    const getHorarios = async () => {
-
-        // Se piden los horarios a la BD
-        const horariosRes = await getAllEventsForUser(user.id);
-        const horariosRecuperar = await getFullNonVisibleAcademicEventsForUser(user.id);
-        if (horariosRes.error) return console.error("ERROR: recuperando los horarios");
-
-        setHorariosBD(horariosRes.data);
-
-        horariosRes.data.forEach(evento => {
-            const fecha = evento.starting_date || evento.date;
-            if (fecha) {
-                evento.day = obtenerDiaSemana(fecha);
-            }
-
-            // Renombrar start_time y end_time a start y end, tomando solo los primeros 5 caracteres
-            evento.start = evento.start_time ? evento.start_time.slice(0, 5) : null;
-            evento.end = evento.end_time ? evento.end_time.slice(0, 5) : null
-        });
-
-        horariosRecuperar.data.forEach(evento => {
-            // Renombrar start_time y end_time a start y end, tomando solo los primeros 5 caracteres
-            evento.start_time = evento.start_time ? evento.start_time.slice(0, 5) : null;
-            evento.end_time = evento.end_time ? evento.end_time.slice(0, 5) : null
-        });
-
-        // setHorarios(procesarHorarios(horariosRes.data));
-        setHorariosrecu(horariosRecuperar.data);
-    }
-
-    /*const horariosAux = [
-        {
-            id: "test1", name: "Matemáticas II", starting_date: "2024-11-4", end_date: null, group_name: "Grupo D", periodicity: null, description: "srvwwe", start: "8:00", end: "10:00", subject_id: "1", type: null, place: "Aula B.1",
-        },
-        {
-            id: "test2", name: "Matemáticas I", starting_date: "2024-11-4", end_date: null, group_name: "Grupo A", periodicity: null, description: "srvwwe", start: "8:00", end: "10:00", subject_id: "2", type: null, place: "Aula A.11",
-        },
-        {
-            id: "test3", name: "Programación I", starting_date: "2024-11-4", end_date: null, group_name: "Grupo E", periodicity: null, description: "srvwwe", start: "8:00", end: "10:00", subject_id: "3", type: null, place: "Laboratorio C.3",
-        },
-        {
-            id: "test4", name: "Programación I", starting_date: "2024-11-4", end_date: null, group_name: "Grupo E", periodicity: null, description: "srvwwe", start: "8:00", end: "10:00", subject_id: "4", type: null, place: "Laboratorio C.3",
-        },
-        {
-            id: "test5", name: "FAE", starting_date: "2024-11-4", end_date: null, group_name: "Grupo F", periodicity: null, description: null, start: "10:00", end: "12:00", subject_id: "5", type: null, place: "Aula D.4",
-        },
-        {
-            id: "test6", name: "IC", starting_date: "2024-11-4", end_date: null, group_name: "Grupo G", periodicity: null, description: null, start: "10:00", end: "12:00", subject_id: "6", type: null, place: "Aula E.5",
-        },
-        {
-            id: "test7", name: "Matemáticas II", starting_date: "2024-11-4", end_date: null, group_name: "Grupo D", periodicity: null, description: null, start: "10:00", end: "12:00", subject_id: "37", type: null, place: "Aula B.1",
-        },
-        {
-            id: "test8", name: "Matemáticas I", starting_date: "2024-11-4", end_date: null, group_name: "Grupo A", periodicity: null, description: null, start: "10:00", end: "12:00", subject_id: "8", type: null, place: "Aula A.11",
-        },
-        {
-            id: "test9", name: "Matemáticas II", starting_date: "2024-11-4", end_date: null, group_name: "Grupo D", periodicity: null, description: null, start: "12:00", end: "13:00", subject_id: "9", type: null, place: "Aula B.1",
-        },
-        {
-            id: "test10", name: "Matemáticas II", starting_date: "2024-11-4", end_date: null, group_name: "Grupo D", periodicity: null, description: null, start: "13:00", end: "14:00", subject_id: "11", type: null, place: "Aula B.1",
-        }
-    ]; */
 
     // Función que obtiene el día de la semana a partir de una fecha en formato "YYYY-MM-DD"
     const obtenerDiaSemana = (fechaStr) => {
@@ -265,17 +171,18 @@ const Calendario = () => {
     useEffect(() => {
         if (user && user.id) {
             getDiasSemana();
-
-            getHorarios();
+            setColor(generateRandomColor());
         }
-    }, [user, ]);
+    }, [user.id]);
 
     useEffect(() => {
-        if (mondayWeek && horariosBD) setHorarios(procesarHorarios(horariosBD));
-    }, [mondayWeek, horariosBD])
+        horariosRecu.forEach((h) => h.day = obtenerDiaSemana(h.date));
+        if (mondayWeek && horariosRecu) setHorarios(procesarHorarios(horariosRecu));
+    }, [mondayWeek, horariosRecu]);
 
     // Función para abrir el modal
-    const openModal = () => {
+    const openModal = (data) => {
+        setModalData(data);
         setIsModalOpen(true);
     };
 
@@ -284,24 +191,76 @@ const Calendario = () => {
         setIsModalOpen(false);
     };
 
-    // Función para manejar la apertura de un modal con datos específicos
-    const handleOpenModal = (data) => {
-        setModalData(data);
-        onOpen();
+    const handleSave = () => {
+        const calendario = [];
+        horarios.forEach((h) => {
+            calendario.push({
+                name: h.name,
+                start: h.start,
+                end: h.end,
+                description: h.description,
+                starting_date: h.starting_date,
+                date: h.date,
+                end_date: h.end_date,
+                place: h.place,
+                group_name: h.group_name,
+                type: h.type,
+                periodicity: h.periodicity,
+                subject_id: h.subject_id,
+            });
+        });
+
+        navigate(constants.root + "CursoCrear/asignaturas", { state: { calendario: calendario } });
+    }; 
+
+    const handleSaveHorario = (horario) => {
+        if (!horario.id) {
+            horario.id = idCounter;
+            setIdCounter(idCounter + 1);
+        }
+
+        const updatedHorarios = horarios.map((h) => 
+            h.id === horario.id ? { ...h, ...horario } : h
+        );
+
+        if (!updatedHorarios.some((h) => h.id === horario.id)) {
+            updatedHorarios.push(horario);
+        }
+        setHorariosRecu(updatedHorarios);
+        setIsModalOpen(false);
+    };
+
+    const handleDeleteHorario = (id) => {
+        const updatedHorarios = horarios.filter((h) => h.id !== id);
+        setHorariosRecu(updatedHorarios);
+        setIsModalOpen(false);
     };
 
     return (
         <div className="calendario">
-            <Logout />
-            <div className="personalizar">
-                <Button color="primary" onClick={openModal}>
-                    + Personalizar calendario
-                </Button>
+            <div className="header">
+                <div className="flecha">
+                <Tooltip content="Atrás">
+                    <Button
+                    className="flecha-volver-container"
+                    onClick={handleSave}
+                    size="lg"
+                    >
+                    <FaArrowLeft className="flecha-volver"/>
+                    </Button>
+                </Tooltip>
+                </div>
+                <div className="mes-tit flex">
+                    <h1 className="mes-tit"> {monthYear} </h1>
+                </div>
+                <div className="personalizar">
+                    <Button 
+                        className="bg-secondary text-primary"
+                        onClick={openModal}>
+                        + Añadir horario
+                    </Button>
+                </div>
             </div>
-            <div className="mes-tit flex">
-                <h1 className="mes-tit"> {monthYear} </h1>
-            </div>
-
             <div className="relative">
                 <div className="flex bg-primary text-white text-[1.5rem] items-center font-bold">
                     <div className="first-col">
@@ -346,6 +305,7 @@ const Calendario = () => {
                 {horarios.map((h, idx) => (
                     <div style={{
                         position: 'absolute',
+                        cursor: 'pointer',
                         top: `${h.top}`,
                         left: `${h.left}`,
                         height: `${h.height}`,
@@ -357,33 +317,22 @@ const Calendario = () => {
                         overflow: "hidden"
                     }}
                         key={idx}
-                        //onClick={() => console.log(`Start: ${h.start}, End: ${h.end}, Name: ${h.name}`)}
-                        onClick={() => handleOpenModal(h)}
+                        onClick={() => openModal(h) }
                     >
                         <p className="ml-[5px] font-bold"> {h.start} - {h.end} </p>
                         <p className="ml-[5px]"> {h.name} </p>
                     </div>
                 ))}
             </div>
-            <ModalComponent
-                isOpen={isOpen}
-                onOpenChange={onOpenChange}
-                title={modalData?.name}
-                date_start={modalData?.start}
-                date_finish={modalData?.end}
-                place={modalData?.place || ""}
-                group={modalData?.group_name || null}
-                descripcion={modalData?.description}
-                creador={modalData?.user_id}
-                id={modalData?.id}
-                date={modalData?.date}
-                onAccept={onOpenChange}
-            />
-
-            <ModalComponentcreate
+            <ModalHorarioCrearEditar
                 isOpen={isModalOpen}
                 onOpenChange={closeModal}
-                listaCompletaEventos={horariosrecu}
+                title={modalData ? "Editar horario" : "Crear horario"}
+                initialData={modalData}
+                gruposExistentes={horarios.map((h) => h.group_name)}
+                tiposExistentes={["Clase", "Examen", "Prácticas", "Otro"]}
+                onSubmit={handleSaveHorario}
+                onDelete={handleDeleteHorario}
             />
         </div>
 
@@ -391,4 +340,4 @@ const Calendario = () => {
     )
 }
 
-export default Calendario
+export default CalendarioAsignaturaCrear;

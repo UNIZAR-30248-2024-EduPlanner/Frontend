@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom"
+import { useParams, useLocation } from "react-router-dom"
 import { Input } from "@nextui-org/input";
 import { Button } from "@nextui-org/react";
 import "../../css/Curso/CursoCrear.css"
@@ -18,11 +18,13 @@ const CursoCrear = () => {
     const [error, setError] = useState("");
     const typeSingular = type.slice(0, -1)
     const { user } = useAuth();
-    const navigate = useNavigate()
+    const location = useLocation();
+    const navigate = useNavigate();
+    const calendario = location.state?.calendario || [];
 
+    console.log(calendario)
 
     const create = async () => {
-        // TODO:  llamada a funcion crear
         setError(""); // Limpiar cualquier mensaje de error anterior
 
         if (
@@ -40,10 +42,7 @@ const CursoCrear = () => {
             return;
         }
 
-        // Si llega aquí, se ejecuta la petición para crear
-
-        console.log(user)
-        // Llamada a la API para crear un profesor
+        // Llamada a la API para crear una asignatura
         const res = await createSubject(nombre, nip, user.id)
         if (res.error) {
             setError("Hubo un error en el registro: " + res.error.message);
@@ -51,11 +50,35 @@ const CursoCrear = () => {
             return;
         }
 
+        const subject_id = res.data[0].id;
+
+        // Asignar los valores de la asignatura a los horarios
+        calendario.forEach(async (horario) => {
+            horario.codigo = nip;
+            res = await createAcademicEvent(
+                nombre, 
+                horario.starting_date, 
+                horario.end_date, 
+                horario.group_name, 
+                horario.periodicity, 
+                horario.description, 
+                horario.type, 
+                horario.place, 
+                horario.start, 
+                horario.end, 
+                subject_id);
+            if (res.error) {
+                setError("Hubo un error en el registro: " + res.error.message);
+                window.scrollTo({ top: 0, behavior: "smooth" });
+                return;
+            }
+        });
+
         navigate(-1)
     }
 
     const calendar = () => {
-        navigate(`${location.pathname}/calendario/`)
+        navigate(`${location.pathname}/Calendario/`, { state: { calendario: calendario } });
     }
 
     return (

@@ -1,12 +1,13 @@
 import '../../css/Curso/CalendarioAsignatura.css'
-import FlechaVolver from "../../Components/FlechaVolver"
 import { FaRegArrowAltCircleLeft, FaRegArrowAltCircleRight } from "react-icons/fa";
-import { Button, Tooltip } from '@nextui-org/react'
+import { Button, Tooltip } from "@nextui-org/react";
+import { FaArrowLeft } from "react-icons/fa";
 import { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 
 
 const CalendarioAsignatura = () => {
+    const navigate = useNavigate();
 
     const { id } = useParams()
     const { nombre } = useParams()
@@ -226,18 +227,33 @@ const CalendarioAsignatura = () => {
         setDiasSemana(days);
       }, []);
 
+    const handleSave = () => {
+        navigate(constants.root + "CursoModificar", { state: { horarios: filteredHorariosAux } });
+    };
+
     return (
         <div className="calendario">
-            <FlechaVolver/>
-            <div className="personalizar">
-                <Button className="bg-secondary text-primary">
-                    + Añadir horario
-                </Button>
+            <div className="header">
+                <div className="flecha">
+                <Tooltip content="Atrás">
+                    <Button
+                    className="flecha-volver-container"
+                    onClick={handleSave}
+                    size="lg"
+                    >
+                    <FaArrowLeft className="flecha-volver"/>
+                    </Button>
+                </Tooltip>
+                </div>
+                <div className="mes-tit flex">
+                    <h1 className="mes-tit"> {monthYear} </h1>
+                </div>
+                <div className="personalizar">
+                    <Button className="bg-secondary text-primary">
+                        + Añadir horario
+                    </Button>
+                </div>
             </div>
-            <div className="mes-tit flex">
-                <h1 className="mes-tit"> {monthYear} </h1>
-            </div>
-
             <div className="relative">
                 <div className="flex bg-primary text-white text-[1.5rem] items-center font-bold">
                     <div className="first-col">
