@@ -45,8 +45,8 @@ const ModalHorarioCrearEditar = ({
     useEffect(() => {
         if (initialData) {
             setId(initialData.id || "");
-            setStartingDate(initialData.starting_date ? initialData.starting_date.split('T')[0] : "");
-            setEndDate(initialData.end_date ? initialData.end_date.split('T')[0] : "");
+            setStartingDate(initialData.starting_date);
+            setEndDate(initialData.end_date);
             setStart(initialData.start || "");
             setDate(initialData.date || "");
             setEnd(initialData.end || "");
@@ -56,6 +56,8 @@ const ModalHorarioCrearEditar = ({
             setType(initialData.type || "");
             setName(initialData.name || "");
             setSubjectId(initialData.subjectId || "");
+        } else {
+            title = "Crear horario";
         }
     }, [initialData]);
 
@@ -80,6 +82,7 @@ const ModalHorarioCrearEditar = ({
             name: name,
             starting_date: date,
             end_date: date,
+            day: date,
             date: date,
             start: start,
             end: end,

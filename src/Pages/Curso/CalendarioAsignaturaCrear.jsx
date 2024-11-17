@@ -11,15 +11,14 @@ import constants from '../../constants/constants.jsx';
 
 const CalendarioAsignaturaCrear = () => {
     const { user } = useAuth();
-    const name = "Nueva asignatura";
     const navigate = useNavigate();
     const location = useLocation();
-    const { isOpen, onOpen, onOpenChange } = useDisclosure();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [modalData, setModalData] = useState(null);
     const [horarios, setHorarios] = useState([]);
     const [horariosRecu, setHorariosRecu] = useState(location.state?.calendario || []);
     const [diasSemana, setDiasSemana] = useState([])
+    const [gruposExistentes, setGruposExistentes] = useState([]);
     const [mondayWeek, setMondayWeek] = useState(null)
     const [monthYear, setMonthYear] = useState(null)
     const [color, setColor] = useState('#4051B5');  // En caso de fallo en el set, el color por defecto será el principal 
@@ -58,6 +57,9 @@ const CalendarioAsignaturaCrear = () => {
     const procesarHorarios = (h) => {
         const res = [];
 
+        // Guardar en una lista todas las semanas que se han visitado (mondayWeeks)
+        // Para cada semana revisada, se filtran los horarios que pertenecen a esa semana
+        // y se procesan para mostrarlos en el calendario
         const aux = h.filter((v) => isInWeek(v, mondayWeek, monthYear));
 
         aux.map((e, idx) => {
@@ -74,12 +76,14 @@ const CalendarioAsignaturaCrear = () => {
                 description: e.description,
                 starting_date: e.starting_date,
                 end_date: e.end_date,
+                monday: e.monday,
                 place: e.place,
                 group_name: e.group_name,
                 type: e.type,
                 periodicity: e.periodicity,
                 user_id: e.user_id,
                 id: e.id,
+                day: e.day,
                 date: e.date,
                 height: ((minutosE - minutosS) * alturaPorMinuto).toString() + "vh",
                 width: numSolapes == 0 ? wCol : wCol / numSolapes,
@@ -142,6 +146,19 @@ const CalendarioAsignaturaCrear = () => {
         setDiasSemana(days);
     }
 
+    const calculateMondayWeekOfDate = (fechaStr) => {
+        const [anio, mes, dia] = fechaStr.split("-").map(Number);
+        const fecha = new Date(anio, mes - 1, dia);
+        const dayOfWeek = fecha.getDay(); // 0 (Domingo) - 6 (Sábado)
+
+        // Calcular el lunes de la semana de la fecha
+        const monday = new Date(fecha);
+        monday.setDate(fecha.getDate() - (dayOfWeek === 0 ? 6 : dayOfWeek - 1));
+        monday.setHours(0, 0, 0, 0);
+        return monday;
+    }
+
+
     const getDiasSemana = () => {
         const today = new Date();
         const dayOfWeek = today.getDay(); // 0 (Domingo) - 6 (Sábado)
@@ -178,6 +195,8 @@ const CalendarioAsignaturaCrear = () => {
     useEffect(() => {
         horariosRecu.forEach((h) => h.day = obtenerDiaSemana(h.date));
         if (mondayWeek && horariosRecu) setHorarios(procesarHorarios(horariosRecu));
+        console.log("horarios: ", horarios);
+        console.log("horariosRecu: ", horariosRecu);
     }, [mondayWeek, horariosRecu]);
 
     // Función para abrir el modal
@@ -193,13 +212,14 @@ const CalendarioAsignaturaCrear = () => {
 
     const handleSave = () => {
         const calendario = [];
-        horarios.forEach((h) => {
+        horariosRecu.forEach((h) => {
             calendario.push({
                 name: h.name,
                 start: h.start,
                 end: h.end,
                 description: h.description,
                 starting_date: h.starting_date,
+                day: h.day,
                 date: h.date,
                 end_date: h.end_date,
                 place: h.place,
@@ -219,13 +239,22 @@ const CalendarioAsignaturaCrear = () => {
             setIdCounter(idCounter + 1);
         }
 
-        const updatedHorarios = horarios.map((h) => 
+        // Calcula el lunes de la semana de la fecha del horario
+        horario.monday = calculateMondayWeekOfDate(horario.date);
+
+        const updatedHorarios = horariosRecu.map((h) => 
             h.id === horario.id ? { ...h, ...horario } : h
         );
 
         if (!updatedHorarios.some((h) => h.id === horario.id)) {
             updatedHorarios.push(horario);
         }
+
+        // Actualiza los grupos existentes
+        if (!gruposExistentes.includes(horario.group_name) && horario.group_name !== "") {
+            setGruposExistentes([...gruposExistentes, horario.group_name]);
+        }
+
         setHorariosRecu(updatedHorarios);
         setIsModalOpen(false);
     };
@@ -317,8 +346,9 @@ const CalendarioAsignaturaCrear = () => {
                         overflow: "hidden"
                     }}
                         key={idx}
-                        onClick={() => openModal(h) }
-                    >
+                        onClick={() => {
+                            openModal(h);
+                        }}>
                         <p className="ml-[5px] font-bold"> {h.start} - {h.end} </p>
                         <p className="ml-[5px]"> {h.name} </p>
                     </div>
@@ -327,9 +357,9 @@ const CalendarioAsignaturaCrear = () => {
             <ModalHorarioCrearEditar
                 isOpen={isModalOpen}
                 onOpenChange={closeModal}
-                title={modalData ? "Editar horario" : "Crear horario"}
+                title={"Editar horario"}
                 initialData={modalData}
-                gruposExistentes={horarios.map((h) => h.group_name)}
+                gruposExistentes={gruposExistentes}
                 tiposExistentes={["Clase", "Examen", "Prácticas", "Otro"]}
                 onSubmit={handleSaveHorario}
                 onDelete={handleDeleteHorario}
