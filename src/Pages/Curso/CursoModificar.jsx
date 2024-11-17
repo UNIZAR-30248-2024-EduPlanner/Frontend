@@ -55,7 +55,14 @@ const CursoModificar = () => {
     }
 
     const calendar = () => {
-        navigate(`${location.pathname}/Calendario`)
+        navigate(
+            `${location.pathname}/Calendario`, 
+            { state: { 
+                nombre: nombreViejo,
+                codigo: nipViejo,
+                subject_id: id
+            } 
+        });
     }
     
     return (

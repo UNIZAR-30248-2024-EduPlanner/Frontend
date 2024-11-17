@@ -194,8 +194,6 @@ const CalendarioAsignaturaCrear = () => {
     useEffect(() => {
         horariosRecu.forEach((h) => h.day = obtenerDiaSemana(h.date));
         if (mondayWeek && horariosRecu) setHorarios(procesarHorarios(horariosRecu));
-        console.log("horarios: ", horarios);
-        console.log("horariosRecu: ", horariosRecu);
     }, [mondayWeek, horariosRecu]);
 
     // Función para abrir el modal

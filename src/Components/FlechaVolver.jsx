@@ -13,10 +13,10 @@ const FlechaVolver = () => {
     if (location.pathname === constants.root + "Calendario") {
       logout();
       navigate(constants.root);
-    } else if (location.pathname === constants.root + "CursoCrear/asignaturas") {
-      navigate(constants.root + "CursoMenu");
+    } else if (location.pathname.includes("CursoCrear") || location.pathname.includes("CursoModificar")) {
+        navigate(constants.root + "CursoMenu");
     } else {
-      navigate(-1);
+        navigate(-1);
     }
   };
   return (

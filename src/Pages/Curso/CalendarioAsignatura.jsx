@@ -1,41 +1,28 @@
-import '../../css/Curso/CalendarioAsignatura.css'
-import { FaRegArrowAltCircleLeft, FaRegArrowAltCircleRight } from "react-icons/fa";
-import { Button, Tooltip } from "@nextui-org/react";
-import { FaArrowLeft } from "react-icons/fa";
+import '../../css/Curso/CalendarioAsignaturaCrear.css';
+import { FaArrowLeft, FaRegArrowAltCircleLeft, FaRegArrowAltCircleRight } from "react-icons/fa";
+import { Button, Tooltip } from '@nextui-org/react'
 import { useEffect, useState } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
-
+import { calcularSolapes, convertirAHorasEnMinutos, hexToRgb, getContrastColor, isInWeek, numberToMonth } from '../../Components/CalendarioFunctions.jsx';
+import { useNavigate, useLocation } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
+import ModalHorarioCrearEditar from '../../Components/ModalHorarioCrearEditar.jsx';
+import { getAcademicEventsBySubject, createAcademicEvent, editAcademicEvent, deleteAcademicEvent } from '../../supabase/academicEvent/academicEvent.js';
+import constants from '../../constants/constants.jsx';
 
 const CalendarioAsignatura = () => {
+    const { user } = useAuth();
     const navigate = useNavigate();
-
-    const { id } = useParams()
-    const { nombre } = useParams()
-    const { nip } = useParams()    
-
+    const location = useLocation();
+    const {nombre, subject_id, codigo } = location.state || {};
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [modalData, setModalData] = useState(null);
+    const [horarios, setHorarios] = useState([]);
+    const [horariosRecu, setHorariosRecu] = useState([]);
+    const [diasSemana, setDiasSemana] = useState([])
+    const [gruposExistentes, setGruposExistentes] = useState([]);
+    const [mondayWeek, setMondayWeek] = useState(null)
+    const [monthYear, setMonthYear] = useState(null)
     const [color, setColor] = useState('#4051B5');  // En caso de fallo en el set, el color por defecto será el principal 
-    useEffect(() => {
-        const generateRandomColor = () => {
-            let color;
-            do {
-                color = '#' + Math.floor(Math.random() * 16777215).toString(16);
-            } while (isColorTooLight(color) || isColorSimilarToWhite(color));
-            return color;
-        };
-
-        const isColorTooLight = (hex) => {
-            const { r, g, b } = hexToRgb(hex);
-            const luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b;
-            return luminance > 200;
-        };
-
-        const isColorSimilarToWhite = (hex) => {
-            const { r, g, b } = hexToRgb(hex);
-            return r > 240 && g > 240 && b > 240;
-        };
-
-        setColor(generateRandomColor());
-    }, []);
 
     const wFirstCol = 5;
     const wCol = 13.57;
@@ -45,97 +32,97 @@ const CalendarioAsignatura = () => {
     const nameDays = ["L", "M", "X", "J", "V", "S", "D"];
     const alturaPorHora = 7; // Altura por hora en vh
     const alturaPorMinuto = 7 / 60; // Altura por minuto en vh
-    
 
-    function hexToRgb(hex) {
-        // Eliminar el carácter '#' si está presente
-        hex = hex.replace(/^#/, '');
-        // Convertir los valores hexadecimales a números RGB
-        let bigint = parseInt(hex, 16);
-        let r = (bigint >> 16) & 255;
-        let g = (bigint >> 8) & 255;
-        let b = bigint & 255;
-    
-        return { r, g, b };
+    const getHorarios = async () => {
+        const response = await getAcademicEventsBySubject(subject_id);
+        if (response.error) return console.error(response.error);
+
+        response.data.forEach(evento => {
+            const fecha = evento.starting_date || evento.date;
+            if (fecha) {
+                evento.day = obtenerDiaSemana(fecha);
+            }
+            // Renombrar start_time y end_time a start y end, tomando solo los primeros 5 caracteres
+            evento.start = evento.start_time ? evento.start_time.slice(0, 5) : null;
+            evento.end = evento.end_time ? evento.end_time.slice(0, 5) : null;
+        });
+
+
+        console.log("Horarios obtenidos: ", response.data);
+
+        setHorariosRecu(response.data);
     }
-    
-    function getContrastColor(hex) {
+
+    const generateRandomColor = () => {
+        let color;
+        do {
+            color = '#' + Math.floor(Math.random() * 16777215).toString(16);
+        } while (isColorTooLight(color) || isColorSimilarToWhite(color));
+        return color;
+    };
+
+    const isColorTooLight = (hex) => {
         const { r, g, b } = hexToRgb(hex);
-        
-        // Calcular la luminancia relativa
         const luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b;
-        
-        // Decidir el color del texto
-        return luminance >= 128 ? 'black' : 'white';
-    }
+        return luminance > 200;
+    };
 
-    // Horarios de la semana actual
+    const isColorSimilarToWhite = (hex) => {
+        const { r, g, b } = hexToRgb(hex);
+        return r > 240 && g > 240 && b > 240;
+    };
+
+    // Da formato a los horarios de la semana. Establece el estilo de los 
+    // componentes que permite mostrarlos por pantalla
     const procesarHorarios = (h) => {
         const res = [];
-    
-        h.map((e) => {
+
+        // Guardar en una lista todas las semanas que se han visitado (mondayWeeks)
+        // Para cada semana revisada, se filtran los horarios que pertenecen a esa semana
+        // y se procesan para mostrarlos en el calendario
+        const aux = h.filter((v) => isInWeek(v, mondayWeek, monthYear));
+
+        aux.map((e, idx) => {
             const [hoursStart, minutesStart] = e.start.split(":").map(part => parseInt(part, 10));
-            const [hoursEnd, minutesEnd] = e.end.split(":").map(part => parseInt(part, 10));
-            const acc = minutesStart > minutesEnd ? 1 : 0;
-    
-            // Imprimir el índice encontrado para depuración
             const dayIndex = nameDays.findIndex((v) => v === e.day);
+            const [numSolapes, position] = calcularSolapes(aux, idx);
+            const minutosS = convertirAHorasEnMinutos(e.start)
+            const minutosE = convertirAHorasEnMinutos(e.end)
     
             res.push({
                 name: e.name,
                 start: e.start,
                 end: e.end,
-                height: ((hoursEnd - hoursStart - acc) * alturaPorHora + Math.abs(minutesEnd - minutesStart) * alturaPorMinuto).toString() + "vh",
+                description: e.description,
+                starting_date: e.starting_date,
+                end_date: e.end_date,
+                monday: e.monday,
+                place: e.place,
+                group_name: e.group_name,
+                type: e.type,
+                periodicity: e.periodicity,
+                user_id: e.user_id,
+                id: e.id,
+                day: e.day,
+                date: e.date,
+                height: ((minutosE - minutosS) * alturaPorMinuto).toString() + "vh",
+                width: numSolapes == 0 ? wCol : wCol / numSolapes,
                 top: ((hoursStart - firstHour + 1) * alturaPorHora + minutesStart * alturaPorMinuto).toString() + "vh",
-                left: (wFirstCol + (dayIndex * wCol)).toString() + "vw",
-                color: e.color,
-                textColor: getContrastColor(e.color)
+                left: (wFirstCol + (dayIndex * wCol) + (numSolapes == 0 ? 0 : position * (wCol / numSolapes))).toString() + "vw",
+                color: color,
+                textColor: getContrastColor(color)
             });
         });
-    
         return res;
     };
-    
-    const horariosAux = [
-        {
-            start: "9:30",
-            end: "11:00",
-            day: "V",
-            name: nombre,
-            color: color
-        },
-        {
-            start: "12:30",
-            end: "13:30",
-            day: "M",
-            name: nombre,
-            color: color
-        },
-        {
-            start: "15:00",
-            end: "16:30",
-            day: "X",
-            name: nombre,
-            color: color
-        }
-    ]
 
-    // Convierte tiempo en formato HH:MM a minutos
-    const timeToMinutes = (time) => {
-        const [hours, minutes] = time.split(':').map(Number);
-        return hours * 60 + minutes;
+    // Función que obtiene el día de la semana a partir de una fecha en formato "YYYY-MM-DD"
+    const obtenerDiaSemana = (fechaStr) => {
+        const diasSemanaAbreviados = ['D', 'L', 'M', 'X', 'J', 'V', 'S'];
+        const [anio, mes, dia] = fechaStr.split("-").map(Number);
+        const fecha = new Date(anio, mes - 1, dia);
+        return diasSemanaAbreviados[fecha.getDay()];
     };
-
-    // Filtrar horarios para incluir solo aquellos con días válidos y horas dentro del rango permitido
-    const filteredHorariosAux = horariosAux.filter(horario => {
-        const startHour = firstHour * 60;
-        const endHour = lastHour * 60;
-        const startMinutes = timeToMinutes(horario.start);
-        const endMinutes = timeToMinutes(horario.end);
-        return nameDays.includes(horario.day) && startMinutes >= startHour && endMinutes <= endHour;
-    });
-
-    const horarios = procesarHorarios(filteredHorariosAux);
 
     // Horas visibles en el calendario
     const generateHours = (start, end) => {
@@ -145,20 +132,14 @@ const CalendarioAsignatura = () => {
         }
         return hours;
     };
-    
+
     // Llamada para generar la lista de horas entre 8:00 y 21:00
-    const hours = generateHours(8, 21);
+    const hours = generateHours(firstHour, lastHour);
 
-
-    // Dias de la semana requerida
-    const [diasSemana, setDiasSemana] = useState([])
-
-    // Primer día de la semana actual
-    const [mondayWeek, setMondayWeek] = useState(null)
-
-    // Mes actual
-    const [monthYear, setMonthYear] = useState(null)
-
+    // Cambia todo lo neceario relacionado con una semana al avanzar o retroceder
+    // en el calendario una semana.
+    // Si <next> = true avanza una semana
+    // Si <next> = false retrocede una semana 
     const changeWeek = (next) => {
         const newMonday = new Date(mondayWeek)
         if (next) {
@@ -166,69 +147,163 @@ const CalendarioAsignatura = () => {
         } else {
             newMonday.setDate(newMonday.getDate() - 7);
         }
+        newMonday.setHours(0, 0, 0, 0); // Establece la hora en 00:00:00
+
         setMondayWeek(newMonday);
 
         // Extraemos el mes y año
-        setMonthYear(numberToMonth(newMonday.getMonth()) + " " + newMonday.getFullYear())        
+        setMonthYear(numberToMonth(newMonday.getMonth()) + " " + newMonday.getFullYear())
 
         // Array para almacenar solo los números de los días de la semana desde lunes a domingo
         const days = [];
 
         for (let i = 0; i < 7; i++) {
-          const nextDay = new Date(newMonday);
-          nextDay.setDate(newMonday.getDate() + i);
-          days.push(nameDays[i] + nextDay.getDate()); // Solo el número del día
+            const nextDay = new Date(newMonday);
+            nextDay.setDate(newMonday.getDate() + i);
+            days.push(nameDays[i] + nextDay.getDate()); // Solo el número del día
         }
-    
+
         setDiasSemana(days);
     }
 
-    const numberToMonth = (number) => {
-        if (number < 0 || number > 11) {
-            console.error("number debe ser un número entre 0 y 11");
-        } else {
-            const month = 
-                number === 0 ? "Enero" :
-                number === 1 ? "Febrero" :
-                number === 2 ? "Marzo" :
-                number === 3 ? "Abril" :
-                number === 4 ? "Mayo" :
-                number === 5 ? "Junio" :
-                number === 6 ? "Julio" :
-                number === 7 ? "Agosto" :
-                number === 8 ? "Septiembre" :
-                number === 9 ? "Octubre" :
-                number === 10 ? "Noviembre" : "Diciembre";
-            return month;
-        }
+    const calculateMondayWeekOfDate = (fechaStr) => {
+        const [anio, mes, dia] = fechaStr.split("-").map(Number);
+        const fecha = new Date(anio, mes - 1, dia);
+        const dayOfWeek = fecha.getDay(); // 0 (Domingo) - 6 (Sábado)
+
+        // Calcular el lunes de la semana de la fecha
+        const monday = new Date(fecha);
+        monday.setDate(fecha.getDate() - (dayOfWeek === 0 ? 6 : dayOfWeek - 1));
+        monday.setHours(0, 0, 0, 0);
+        return monday;
     }
 
-    useEffect(() => {
+
+    const getDiasSemana = () => {
         const today = new Date();
         const dayOfWeek = today.getDay(); // 0 (Domingo) - 6 (Sábado)
 
         // Calcular el lunes de esta semana
         const monday = new Date(today);
         monday.setDate(today.getDate() - (dayOfWeek === 0 ? 6 : dayOfWeek - 1));
+        monday.setHours(0, 0, 0, 0); // Establece la hora en 00:00:00
+
         setMondayWeek(monday)
-        
+
         // Extraemos el mes y año
         setMonthYear(numberToMonth(monday.getMonth()) + " " + monday.getFullYear())
-    
+
         // Array para almacenar solo los números de los días de la semana desde lunes a domingo
         const days = [];
 
         for (let i = 0; i < 7; i++) {
-          const nextDay = new Date(monday);
-          nextDay.setDate(monday.getDate() + i);
-          days.push(nameDays[i] + nextDay.getDate()); // Solo el número del día
+            const nextDay = new Date(monday);
+            nextDay.setDate(monday.getDate() + i);
+            days.push(nameDays[i] + nextDay.getDate()); // Solo el número del día
         }
-    
+
         setDiasSemana(days);
-      }, []);
+    }
+
+    useEffect(() => {
+        if (user && user.id) {
+            getDiasSemana();
+            getHorarios();
+            setColor(generateRandomColor());
+        }
+    }, [user.id]);
+
+    useEffect(() => {
+        horariosRecu.forEach((h) => h.day = obtenerDiaSemana(h.date));
+        if (mondayWeek && horariosRecu) setHorarios(procesarHorarios(horariosRecu));
+    }, [mondayWeek, horariosRecu]);
+
+    // Función para abrir el modal
+    const openModal = (data) => {
+        setModalData(data);
+        setIsModalOpen(true);
+    };
+
+    // Función para cerrar el modal
+    const closeModal = () => {
+        setIsModalOpen(false);
+    };
 
     const handleSave = () => {
-        navigate(constants.root + "CursoModificar", { state: { horarios: filteredHorariosAux } });
+        const calendario = [];
+        horariosRecu.forEach((h) => {
+            calendario.push({
+                name: h.name,
+                start: h.start,
+                end: h.end,
+                description: h.description,
+                starting_date: h.starting_date,
+                day: h.day,
+                date: h.date,
+                end_date: h.end_date,
+                place: h.place,
+                group_name: h.group_name,
+                type: h.type,
+                periodicity: h.periodicity,
+                subject_id: h.subject_id,
+            });
+        });
+
+        navigate(`${constants.root}CursoModificar/asignaturas/${subject_id}/${nombre}/${codigo}`, { state: { calendario: calendario } });
+    }; 
+
+    const handleSaveHorario = async (horario) => {
+        // Crear o editar un horario directamente en esta función
+        let response;
+        if (horario.id) {
+            // Editar horario
+            response = await editAcademicEvent(horario.id, horario);
+            if (response.error) return console.error(response.error);
+        } else {
+            // Crear horario
+            response = await createAcademicEvent(
+                horario.name, 
+                horario.starting_date, 
+                horario.end_date, 
+                horario.group_name, 
+                horario.periodicity ? horario.periodicity : "", 
+                horario.description, 
+                horario.type, 
+                horario.place, 
+                horario.start, 
+                horario.end, 
+                subject_id);
+            if (response.error) return console.error(response.error);
+        }
+        // Calcula el lunes de la semana de la fecha del horario
+        horario.monday = calculateMondayWeekOfDate(horario.date);
+
+        const updatedHorarios = horariosRecu.map((h) => 
+            h.id === horario.id ? { ...h, ...horario } : h
+        );
+
+        if (!updatedHorarios.some((h) => h.id === horario.id)) {
+            updatedHorarios.push(horario);
+        }
+
+        // Actualiza los grupos existentes
+        if (!gruposExistentes.includes(horario.group_name) && horario.group_name !== "") {
+            setGruposExistentes([...gruposExistentes, horario.group_name]);
+        }
+
+        setHorariosRecu(updatedHorarios);
+        setIsModalOpen(false);
+    };
+
+    const handleDeleteHorario = async (id) => {
+        // Elimnar un horario directamente en esta función
+        const response = await deleteAcademicEvent(id);
+        if (response.error) return console.error(response.error);
+
+        // Actualiza los horarios en la vista
+        const updatedHorarios = horariosRecu.filter((h) => h.id !== id);
+        setHorariosRecu(updatedHorarios);
+        setIsModalOpen(false);
     };
 
     return (
@@ -249,7 +324,9 @@ const CalendarioAsignatura = () => {
                     <h1 className="mes-tit"> {monthYear} </h1>
                 </div>
                 <div className="personalizar">
-                    <Button className="bg-secondary text-primary">
+                    <Button 
+                        className="bg-secondary text-primary"
+                        onClick={openModal}>
                         + Añadir horario
                     </Button>
                 </div>
@@ -258,21 +335,21 @@ const CalendarioAsignatura = () => {
                 <div className="flex bg-primary text-white text-[1.5rem] items-center font-bold">
                     <div className="first-col">
                         <Tooltip content="Anterior semana">
-                            <Button 
-                              className="text-[2rem] bg-primary text-white min-w-0" 
-                              size="sm"
-                              onClick={() => changeWeek(false)}
+                            <Button
+                                className="text-[2rem] bg-primary text-white min-w-0"
+                                size="sm"
+                                onClick={() => changeWeek(false)}
                             >
-                                <FaRegArrowAltCircleLeft/>
+                                <FaRegArrowAltCircleLeft />
                             </Button>
                         </Tooltip>
                         <Tooltip content="Siguiente semana">
-                            <Button 
-                              className="text-[2rem] bg-primary text-white min-w-0" 
-                              size="sm"
-                              onClick={() => changeWeek(true)}
+                            <Button
+                                className="text-[2rem] bg-primary text-white min-w-0"
+                                size="sm"
+                                onClick={() => changeWeek(true)}
                             >
-                                <FaRegArrowAltCircleRight/>
+                                <FaRegArrowAltCircleRight />
                             </Button>
                         </Tooltip>
                     </div>
@@ -281,7 +358,7 @@ const CalendarioAsignatura = () => {
                     ))}
 
                 </div>
-                
+
                 <div className="flex-col">
                     {hours.map((h, idx) => (
                         <div className="" key={idx}>
@@ -297,29 +374,41 @@ const CalendarioAsignatura = () => {
 
                 {horarios.map((h, idx) => (
                     <div style={{
-                            position: 'absolute',
-                            top: `${h.top}`,
-                            left: `${h.left}`,
-                            height: `${h.height}`,
-                            width: `${wCol}vw`,
-                            color: `${h.textColor}`,
-                            backgroundColor: `${h.color}`,
-                            borderWidth: "1px",
-                            borderColor: "black",
-                            overflow: "hidden",
-                            cursor: "pointer"
-                        }} 
+                        position: 'absolute',
+                        cursor: 'pointer',
+                        top: `${h.top}`,
+                        left: `${h.left}`,
+                        height: `${h.height}`,
+                        width: `${h.width}vw`,
+                        color: `${h.textColor}`,
+                        backgroundColor: `${h.color}`,
+                        borderWidth: "1px",
+                        borderColor: "black",
+                        overflow: "hidden"
+                    }}
                         key={idx}
-                        onClick={() => console.log(h)}
-                    >
+                        onClick={() => {
+                            openModal(h);
+                        }}>
                         <p className="ml-[5px] font-bold"> {h.start} - {h.end} </p>
                         <p className="ml-[5px]"> {h.name} </p>
                     </div>
                 ))}
             </div>
-
+            <ModalHorarioCrearEditar
+                isOpen={isModalOpen}
+                onOpenChange={closeModal}
+                title={"Editar horario"}
+                initialData={modalData}
+                gruposExistentes={gruposExistentes}
+                tiposExistentes={["Clase", "Examen", "Prácticas", "Otro"]}
+                onSubmit={handleSaveHorario}
+                onDelete={handleDeleteHorario}
+            />
         </div>
+
+
     )
 }
 
-export default CalendarioAsignatura
+export default CalendarioAsignatura;
