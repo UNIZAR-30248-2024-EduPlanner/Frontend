@@ -1,4 +1,4 @@
-import { Modal, ModalContent, ModalBody, ModalHeader, Button } from "@nextui-org/react";
+import { Modal, ModalContent, ModalBody, ModalHeader, Button, Checkbox } from "@nextui-org/react";
 import { useState, useEffect } from "react";
 
 const ModalHorarioCrearEditar = ({ 
@@ -25,6 +25,8 @@ const ModalHorarioCrearEditar = ({
     const [name, setName] = useState("");
     const [subjectId, setSubjectId] = useState("");
     const [newGroup, setNewGroup] = useState(false);
+    const [isPeriodic, setIsPeriodic] = useState(false);
+    const [periodicity, setPeriodicity] = useState("");
 
     const clearData = () => {
         setId("");
@@ -40,13 +42,14 @@ const ModalHorarioCrearEditar = ({
         setNewGroup(false);
         setName("");
         setSubjectId("");
+        setIsPeriodic(false);
     };
 
     useEffect(() => {
         if (initialData) {
             setId(initialData.id || "");
-            setStartingDate(initialData.starting_date);
-            setEndDate(initialData.end_date);
+            setStartingDate(initialData.starting_date || "");
+            setEndDate(initialData.end_date || "");
             setStart(initialData.start || "");
             setDate(initialData.date || "");
             setEnd(initialData.end || "");
@@ -56,6 +59,8 @@ const ModalHorarioCrearEditar = ({
             setType(initialData.type || "");
             setName(initialData.name || "");
             setSubjectId(initialData.subjectId || "");
+            setIsPeriodic(!!initialData.starting_date && !!initialData.end_date);
+            setPeriodicity(initialData.periodicity || "");
         } else {
             title = "Crear horario";
         }
@@ -77,20 +82,36 @@ const ModalHorarioCrearEditar = ({
     };
 
     const handleSubmit = () => {
+
+        // Validaciones
+        if (start > end) {
+            alert("La hora de inicio debe ser igual o anterior a la hora de finalización");
+            return;
+        }
+        if (isPeriodic && starting_date >= end_date) {
+            alert("La fecha de inicio debe ser anterior a la fecha de finalización");
+            return;
+        }
+        if (!isPeriodic && periodicity % 7 !== 0) {
+            alert("La periodicidad debe ser un múltiplo de 7");
+            return;
+        }
+
         const horario = {
             id: id,
             name: name,
-            starting_date: date,
-            end_date: date,
+            starting_date: starting_date !== "" ? starting_date : date,
+            end_date: end_date !== "" ? end_date : date,
             day: date,
             date: date,
             start: start,
             end: end,
-            type: type,
+            type: type === "click" ? "Clase Magistral" : type,
             place: place,
             description: description,
             group_name: group_name,
-            subject_id: subjectId
+            subject_id: subjectId,
+            periodicity: periodicity
         };
         onSubmit(horario);
         clearData();
@@ -113,17 +134,56 @@ const ModalHorarioCrearEditar = ({
                         <ModalBody>
                         <div className="mb-4">
                             <h2 className="text-xl font-bold mb-4">Fecha y Hora</h2>
-                            <div className="flex space-x-4">
-                                <div>
-                                    <label className="block text-md font-semibold">Fecha</label>
-                                    <input
-                                        type="date"
-                                        className="border p-2 mb-4 mr-2"
-                                        value={date}
-                                        onChange={(e) => setDate(e.target.value)}
-                                    />
-                                </div>
-                            </div>
+                            <Checkbox
+                                isSelected={isPeriodic}
+                                onChange={() => setIsPeriodic(!isPeriodic)}
+                                className="mb-4"
+                            >Horario periódico</Checkbox>
+                            {isPeriodic ? (
+                                <>
+                                    <div className="flex space-x-4">
+                                        <div>
+                                            <label className="block text-md font-semibold">Fecha de inicio</label>
+                                            <input
+                                                type="date"
+                                                className="border p-2 mb-4 mr-2"
+                                                value={starting_date}
+                                                onChange={(e) => setStartingDate(e.target.value)}
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-md font-semibold">Fecha de finalización</label>
+                                            <input
+                                                type="date"
+                                                className="border p-2 mb-4"
+                                                value={end_date}
+                                                onChange={(e) => setEndDate(e.target.value)}
+                                            />
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label className="block text-md font-semibold">¿Cada cuántos días se repite el horario?</label>
+                                        <input
+                                            type="number"
+                                            className="border p-2 w-full"
+                                            value={periodicity}
+                                            onChange={(e) => setPeriodicity(e.target.value)}
+                                        />
+                                    </div>
+                                </>
+                                ) : (
+                                    <div className="flex space-x-4">
+                                        <div>
+                                            <label className="block text-md font-semibold">Fecha</label>
+                                            <input
+                                                type="date"
+                                                className="border p-2 mb-4 mr-2"
+                                                value={date}
+                                                onChange={(e) => setDate(e.target.value)}
+                                            />
+                                        </div>
+                                    </div>
+                                )}
                                 <div className="flex space-x-4">
                                     <div>
                                         <label className="block text-md font-semibold">Hora de inicio</label>

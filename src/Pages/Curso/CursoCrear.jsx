@@ -4,10 +4,11 @@ import { Button } from "@nextui-org/react";
 import "../../css/Curso/CursoCrear.css"
 import SubidaFichero from "../../Components/SubidaFichero";
 import FlechaVolver from "../../Components/FlechaVolver";
-import { createSubject } from "../../supabase/course/course";
+import { createSubject, getSubjectIdByCode } from "../../supabase/course/course";
 import { createAcademicEvent } from "../../supabase/academicEvent/academicEvent";
 import { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
+import constants from "../../constants/constants";
 import { useNavigate } from "react-router-dom";
 import Logout from "../../Components/Logout";
 
@@ -22,8 +23,6 @@ const CursoCrear = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const calendario = location.state?.calendario || [];
-
-    console.log(calendario)
 
     const create = async () => {
         setError(""); // Limpiar cualquier mensaje de error anterior
@@ -46,37 +45,47 @@ const CursoCrear = () => {
         // Llamada a la API para crear una asignatura
         const res = await createSubject(nombre, nip, user.id)
         if (res.error) {
-            setError("Hubo un error en el registro: " + res.error.message);
+            setError("Hubo un error en el registro: " + res.error);
+            window.scrollTo({ top: 0, behavior: "smooth" });
+            return;
+        }
+
+        const subject = await getSubjectIdByCode(nip);
+        if (subject.error) {
+            setError("Hubo un error en el registro: " + subject.error);
             window.scrollTo({ top: 0, behavior: "smooth" });
             return;
         }
 
         // Se obtiene el ID de la asignatura creada
-        const subject_id = res.data[0].subject_code;
+        const subject_id = subject.data;
+
+
+        console.log("Horarios ", calendario);
 
         // Crear los horarios de la asignatura
         calendario.forEach(async (horario) => {
-            horario.codigo = nip;
-            res = await createAcademicEvent(
+            const horarioResponse = await createAcademicEvent(
                 nombre, 
                 horario.starting_date, 
                 horario.end_date, 
                 horario.group_name, 
-                horario.periodicity, 
+                horario.periodicity ? parseInt(horario.periodicity) : 0, 
                 horario.description, 
                 horario.type, 
                 horario.place, 
                 horario.start, 
                 horario.end, 
                 subject_id);
-            if (res.error) {
-                setError("Hubo un error en el registro: " + res.error.message);
+            if (horarioResponse.error) {
+                setError("Hubo un error en el registro: " + res.error);
                 window.scrollTo({ top: 0, behavior: "smooth" });
                 return;
             }
+            console.log("Respuesta del servidor: ", horarioResponse);
         });
 
-        navigate(-1)
+        navigate(constants.root);
     }
 
     const calendar = () => {

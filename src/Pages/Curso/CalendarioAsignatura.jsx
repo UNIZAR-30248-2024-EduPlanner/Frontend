@@ -401,7 +401,7 @@ const CalendarioAsignatura = () => {
                 title={"Editar horario"}
                 initialData={modalData}
                 gruposExistentes={gruposExistentes}
-                tiposExistentes={["Clase", "Examen", "Prácticas", "Otro"]}
+                tiposExistentes={["Clase Magistral", "Examen", "Practicas", "Entrega", "Problemas"]}
                 onSubmit={handleSaveHorario}
                 onDelete={handleDeleteHorario}
             />

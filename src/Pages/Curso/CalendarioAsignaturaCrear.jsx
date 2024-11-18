@@ -16,6 +16,7 @@ const CalendarioAsignaturaCrear = () => {
     const [modalData, setModalData] = useState(null);
     const [horarios, setHorarios] = useState([]);
     const [horariosRecu, setHorariosRecu] = useState(location.state?.calendario || []);
+    const [horariosConPeriodicos, setHorariosConPeriodicos] = useState([]);
     const [diasSemana, setDiasSemana] = useState([])
     const [gruposExistentes, setGruposExistentes] = useState([]);
     const [mondayWeek, setMondayWeek] = useState(null)
@@ -68,29 +69,29 @@ const CalendarioAsignaturaCrear = () => {
             const minutosS = convertirAHorasEnMinutos(e.start)
             const minutosE = convertirAHorasEnMinutos(e.end)
     
-            res.push({
-                name: e.name,
-                start: e.start,
-                end: e.end,
-                description: e.description,
-                starting_date: e.starting_date,
-                end_date: e.end_date,
-                monday: e.monday,
-                place: e.place,
-                group_name: e.group_name,
-                type: e.type,
-                periodicity: e.periodicity,
-                user_id: e.user_id,
-                id: e.id,
-                day: e.day,
-                date: e.date,
-                height: ((minutosE - minutosS) * alturaPorMinuto).toString() + "vh",
-                width: numSolapes == 0 ? wCol : wCol / numSolapes,
-                top: ((hoursStart - firstHour + 1) * alturaPorHora + minutesStart * alturaPorMinuto).toString() + "vh",
-                left: (wFirstCol + (dayIndex * wCol) + (numSolapes == 0 ? 0 : position * (wCol / numSolapes))).toString() + "vw",
-                color: color,
-                textColor: getContrastColor(color)
-            });
+                res.push({
+                    name: e.name,
+                    start: e.start,
+                    end: e.end,
+                    description: e.description,
+                    starting_date: e.starting_date,
+                    end_date: e.end_date,
+                    monday: e.monday,
+                    place: e.place,
+                    group_name: e.group_name,
+                    type: e.type,
+                    periodicity: e.periodicity,
+                    user_id: e.user_id,
+                    id: e.id,
+                    day: e.day,
+                    date: e.date,
+                    height: ((minutosE - minutosS) * alturaPorMinuto).toString() + "vh",
+                    width: numSolapes == 0 ? wCol : wCol / numSolapes,
+                    top: ((hoursStart - firstHour + 1) * alturaPorHora + minutesStart * alturaPorMinuto).toString() + "vh",
+                    left: (wFirstCol + (dayIndex * wCol) + (numSolapes == 0 ? 0 : position * (wCol / numSolapes))).toString() + "vw",
+                    color: color,
+                    textColor: getContrastColor(color)
+                });
         });
         return res;
     };
@@ -111,6 +112,22 @@ const CalendarioAsignaturaCrear = () => {
         }
         return hours;
     };
+
+    // Calcular cuántos horarios hay que crear por horario periódico en la vista
+    const calcularHorariosPorPeriodico = (starting_date, end_date, periodicity) => {
+        const startDate = new Date(starting_date);
+        const endDate = new Date(end_date);
+    
+        // Calcular la diferencia en días entre las dos fechas
+        const diffTime = Math.abs(endDate - startDate);
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+        // Calcular el número de repeticiones
+        const numRepeticiones = Math.floor(diffDays / periodicity) + 1;
+    
+        return numRepeticiones;
+    }
+
 
     // Llamada para generar la lista de horas entre 8:00 y 21:00
     const hours = generateHours(firstHour, lastHour);
@@ -154,7 +171,7 @@ const CalendarioAsignaturaCrear = () => {
         const monday = new Date(fecha);
         monday.setDate(fecha.getDate() - (dayOfWeek === 0 ? 6 : dayOfWeek - 1));
         monday.setHours(0, 0, 0, 0);
-        return monday;
+        return monday; // Formato "YYYY-MM-DD"
     }
 
 
@@ -191,10 +208,60 @@ const CalendarioAsignaturaCrear = () => {
         }
     }, [user.id]);
 
+    const generaPeriodicos = (horarios) => {
+        const res = [];
+        // utilizamos solo 
+        horarios
+            .map((h) => {
+                if (h.periodicity !== "") {
+                    const periodicity = parseInt(h.periodicity);
+                    const numHorarios = calcularHorariosPorPeriodico(h.starting_date, h.end_date, periodicity);
+                    for (let i = 0; i < numHorarios; i++) {
+                        const newMonday = new Date(h.monday);
+                        const newDate = new Date(h.starting_date);
+                        newDate.setDate(newDate.getDate() + periodicity * i)
+                        const formattedDate = newDate.toISOString().split('T')[0];
+                        newMonday.setDate(newMonday.getDate() + periodicity * i);
+                        res.push({
+                            name: h.name,
+                            start: h.start,
+                            id: h.id,
+                            end: h.end,
+                            description: h.description,
+                            starting_date: formattedDate,
+                            day: obtenerDiaSemana(formattedDate),
+                            monday: newMonday,
+                            date: formattedDate,
+                            end_date: formattedDate,
+                            place: h.place,
+                            group_name: h.group_name,
+                            type: h.type,
+                            periodicity: h.periodicity,
+                            subject_id: h.subject_id,
+                        });
+                }
+            } else {
+                res.push(h);
+            }
+        });
+        return res;
+    }
+
     useEffect(() => {
-        horariosRecu.forEach((h) => h.day = obtenerDiaSemana(h.date));
-        if (mondayWeek && horariosRecu) setHorarios(procesarHorarios(horariosRecu));
+        if (mondayWeek && horariosConPeriodicos) setHorarios(procesarHorarios(horariosConPeriodicos));
+    }, [mondayWeek, horariosConPeriodicos]);
+
+    useEffect(() => {
+        horariosRecu.forEach((h) => h.day = obtenerDiaSemana(h.starting_date));
+        if (mondayWeek && horariosRecu) setHorariosConPeriodicos(generaPeriodicos(horariosRecu));
     }, [mondayWeek, horariosRecu]);
+
+    const findHorarioAndOpenModal = (id) => {
+        const horario = horariosRecu.find((h) => h.id === id);
+        if (horario) {
+            openModal(horario);
+        }
+    };
 
     // Función para abrir el modal
     const openModal = (data) => {
@@ -216,8 +283,10 @@ const CalendarioAsignaturaCrear = () => {
                 end: h.end,
                 description: h.description,
                 starting_date: h.starting_date,
+                id: h.id,
                 day: h.day,
-                date: h.date,
+                monday: h.monday,
+                date: h.date || h.starting_date,
                 end_date: h.end_date,
                 place: h.place,
                 group_name: h.group_name,
@@ -237,7 +306,7 @@ const CalendarioAsignaturaCrear = () => {
         }
 
         // Calcula el lunes de la semana de la fecha del horario
-        horario.monday = calculateMondayWeekOfDate(horario.date);
+        horario.monday = calculateMondayWeekOfDate(horario.starting_date);
 
         const updatedHorarios = horariosRecu.map((h) => 
             h.id === horario.id ? { ...h, ...horario } : h
@@ -344,7 +413,7 @@ const CalendarioAsignaturaCrear = () => {
                     }}
                         key={idx}
                         onClick={() => {
-                            openModal(h);
+                            findHorarioAndOpenModal(h.id);
                         }}>
                         <p className="ml-[5px] font-bold"> {h.start} - {h.end} </p>
                         <p className="ml-[5px]"> {h.name} </p>
@@ -357,7 +426,7 @@ const CalendarioAsignaturaCrear = () => {
                 title={"Editar horario"}
                 initialData={modalData}
                 gruposExistentes={gruposExistentes}
-                tiposExistentes={["Clase", "Examen", "Prácticas", "Otro"]}
+                tiposExistentes={["Clase Magistral", "Examen", "Practicas", "Entrega", "Problemas"]}
                 onSubmit={handleSaveHorario}
                 onDelete={handleDeleteHorario}
             />
