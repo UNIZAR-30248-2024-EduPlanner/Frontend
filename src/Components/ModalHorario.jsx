@@ -33,7 +33,7 @@ const ModalHorario = ({ isOpen, onOpenChange, title, date_start, date_finish, pl
                 <ModalContent>
                     {(onClose) => (
                         <>
-                            <ModalHeader className="modal-header">{title}</ModalHeader>
+                            <ModalHeader style={{ textAlign: "center" }} className="modal-header">{title}</ModalHeader>
                             <hr className="separator" />
                             <ModalBody>
                                 <div>
