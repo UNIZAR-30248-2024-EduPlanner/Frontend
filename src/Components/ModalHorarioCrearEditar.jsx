@@ -59,7 +59,7 @@ const ModalHorarioCrearEditar = ({
             setType(initialData.type || "");
             setName(initialData.name || "");
             setSubjectId(initialData.subjectId || "");
-            setIsPeriodic(initialData.periodicity !== "");
+            setIsPeriodic(initialData.periodicity !== "" && initialData.periodicity >= 7);
             setPeriodicity(initialData.periodicity || "");
         } else {
             title = "Crear horario";

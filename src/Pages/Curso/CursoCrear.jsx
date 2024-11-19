@@ -60,9 +60,6 @@ const CursoCrear = () => {
         // Se obtiene el ID de la asignatura creada
         const subject_id = subject.data;
 
-
-        console.log("Horarios ", calendario);
-
         // Crear los horarios de la asignatura
         calendario.forEach(async (horario) => {
             const horarioResponse = await createAcademicEvent(

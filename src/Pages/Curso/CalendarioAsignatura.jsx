@@ -6,7 +6,7 @@ import { calcularSolapes, convertirAHorasEnMinutos, hexToRgb, getContrastColor, 
 import { useLocation } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import ModalHorarioCrearEditar from '../../Components/ModalHorarioCrearEditar.jsx';
-import { getAcademicEventsBySubject, createAcademicEvent, editAcademicEvent, deleteAcademicEvent } from '../../supabase/academicEvent/academicEvent.js';
+import { getAcademicEventsBySubject, createAcademicEventAndPublish, editAcademicEvent, deleteAcademicEvent } from '../../supabase/academicEvent/academicEvent.js';
 import FlechaVolver from '../../Components/FlechaVolver.jsx';
 
 const CalendarioAsignatura = () => {
@@ -36,7 +36,6 @@ const CalendarioAsignatura = () => {
     const getHorarios = async () => {
         const response = await getAcademicEventsBySubject(subject_id);
         if (response.error) return console.error(response.error);
-
         response.data.forEach(evento => {
             if (evento.date == null) evento.date = evento.starting_date;    // Compara si es null o undefined
             const fecha = evento.starting_date || evento.date;
@@ -47,10 +46,6 @@ const CalendarioAsignatura = () => {
             evento.start = evento.start_time ? evento.start_time.slice(0, 5) : null;
             evento.end = evento.end_time ? evento.end_time.slice(0, 5) : null;
         });
-
-
-        console.log("Horarios obtenidos: ", response.data);
-
         setHorariosRecu(response.data);
     }
 
@@ -276,6 +271,13 @@ const CalendarioAsignatura = () => {
         if (horariosRecu) setHorariosConPeriodicos(generaPeriodicos(horariosRecu));
     }, [horariosRecu]);
 
+    const findHorarioAndOpenModal = (id) => {
+        const horario = horariosRecu.find((h) => h.id === id);
+        if (horario) {
+            openModal(horario);
+        }
+    };
+
     // Función para abrir el modal
     const openModal = (data) => {
         setModalData(data);
@@ -288,20 +290,38 @@ const CalendarioAsignatura = () => {
     };
 
     const handleSaveHorario = async (horario) => {
+        // Actualiza las fechas de inicio y fin si el horario no es periódico
+        if (horario.periodicity < 7 || horario.periodicity === "") {
+            horario.starting_date = horario.date;
+            horario.end_date = horario.date;
+        }
         // Crear o editar un horario directamente en esta función
         let response;
         if (horario.id) {
             // Editar horario
-            response = await editAcademicEvent(horario.id, horario);
+            const updates = {
+                name: horario.name, 
+                starting_date: horario.starting_date, 
+                end_date: horario.end_date,
+                group_name: horario.group_name, 
+                periodicity: parseInt(horario.periodicity), 
+                description: horario.description, 
+                type: horario.type, 
+                place: horario.place, 
+                start_time: horario.start, 
+                end_time: horario.end, 
+                subject_id: subject_id
+            }
+            response = await editAcademicEvent(horario.id, updates);
             if (response.error) return console.error(response.error);
         } else {
             // Crear horario
-            response = await createAcademicEvent(
+            response = await createAcademicEventAndPublish(
                 horario.name, 
                 horario.starting_date, 
                 horario.end_date, 
                 horario.group_name, 
-                horario.periodicity ? horario.periodicity : "", 
+                parseInt(horario.periodicity), 
                 horario.description, 
                 horario.type, 
                 horario.place, 
@@ -326,7 +346,7 @@ const CalendarioAsignatura = () => {
             setGruposExistentes([...gruposExistentes, horario.group_name]);
         }
 
-        setHorariosRecu(updatedHorarios);
+        setHorariosRecu([...updatedHorarios]); // Crear una nueva referencia del array (detectar cambios en los elementos)
         setIsModalOpen(false);
     };
 
@@ -413,7 +433,7 @@ const CalendarioAsignatura = () => {
                     }}
                         key={idx}
                         onClick={() => {
-                            openModal(h);
+                            findHorarioAndOpenModal(h.id);
                         }}>
                         <p className="ml-[5px] font-bold"> {h.start} - {h.end} </p>
                         <p className="ml-[5px]"> {h.description} </p>
