@@ -28,6 +28,6 @@ describe("E2E Flow: Login as Organization", () => {
 
         cy.get(".logout-container").click();
 
-        cy.url().should("include", "/EduPlanner");
+        cy.url().should("include", "/Frontend");
     });
 });

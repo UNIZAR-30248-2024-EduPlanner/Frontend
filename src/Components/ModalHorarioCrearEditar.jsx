@@ -139,6 +139,7 @@ const ModalHorarioCrearEditar = ({
                         <div className="mb-4">
                             <h2 className="text-xl font-bold mb-4">Fecha y Hora</h2>
                             <Checkbox
+                                name="periodic"
                                 isSelected={isPeriodic}
                                 onChange={() => setIsPeriodic(!isPeriodic)}
                                 className="mb-4"
@@ -149,6 +150,7 @@ const ModalHorarioCrearEditar = ({
                                         <div>
                                             <label className="block text-md font-semibold">Fecha de inicio</label>
                                             <input
+                                                name="starting_date"
                                                 type="date"
                                                 className="border p-2 mb-4 mr-2"
                                                 value={starting_date}
@@ -158,6 +160,7 @@ const ModalHorarioCrearEditar = ({
                                         <div>
                                             <label className="block text-md font-semibold">Fecha de finalización</label>
                                             <input
+                                                name="end_date"
                                                 type="date"
                                                 className="border p-2 mb-4"
                                                 value={end_date}
@@ -168,6 +171,7 @@ const ModalHorarioCrearEditar = ({
                                     <div>
                                         <label className="block text-md font-semibold">¿Cada cuántos días se repite el horario?</label>
                                         <input
+                                            name="periodicity"
                                             type="number"
                                             className="border p-2 w-full"
                                             value={periodicity}
@@ -178,8 +182,10 @@ const ModalHorarioCrearEditar = ({
                                 ) : (
                                     <div className="flex space-x-4">
                                         <div>
-                                            <label className="block text-md font-semibold">Fecha</label>
+                                            <label htmlFor="date" className="block text-md font-semibold">Fecha</label>
                                             <input
+                                                name="date"
+                                                id="date"
                                                 type="date"
                                                 className="border p-2 mb-4 mr-2"
                                                 value={date}
@@ -190,8 +196,10 @@ const ModalHorarioCrearEditar = ({
                                 )}
                                 <div className="flex space-x-4">
                                     <div>
-                                        <label className="block text-md font-semibold">Hora de inicio</label>
+                                        <label htmlFor="start" className="block text-md font-semibold">Hora de inicio</label>
                                         <input
+                                            name="start"
+                                            id="start"
                                             type="time"
                                             className="border p-2 mr-16"
                                             value={start}
@@ -208,8 +216,10 @@ const ModalHorarioCrearEditar = ({
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-md font-semibold">Hora de finalización</label>
+                                        <label htmlFor="end" className="block text-md font-semibold">Hora de finalización</label>
                                         <input
+                                            name="end"
+                                            id="end"
                                             type="time"
                                             className="border p-2"
                                             value={end}
@@ -230,6 +240,7 @@ const ModalHorarioCrearEditar = ({
                             <div className="mb-4">
                                 <h2 className="text-xl font-bold mb-4">Lugar</h2>
                                 <input
+                                    name="place"
                                     type="text"
                                     className="border p-2 w-full"
                                     placeholder="Ingrese el espacio reservado"
@@ -240,6 +251,7 @@ const ModalHorarioCrearEditar = ({
                             <div className="mb-4">
                                 <h2 className="text-xl font-bold mb-4">Grupo</h2>
                                 <select
+                                    name="group_name"
                                     className="border p-2 w-full"
                                     value={newGroup ? "nuevo" : group_name}
                                     onChange={handleGroupChange}
@@ -252,6 +264,7 @@ const ModalHorarioCrearEditar = ({
                                 </select>
                                 {newGroup && (
                                     <input
+                                        name="new_group"
                                         type="text"
                                         className="border p-2 w-full mt-4"
                                         placeholder="Ingrese el grupo"
@@ -263,6 +276,7 @@ const ModalHorarioCrearEditar = ({
                             <div className="mb-4">
                                 <h2 className="text-xl font-bold mb-4">Tipo</h2>
                                 <select
+                                    name="type"
                                     className="border p-2 w-full"
                                     value={type}
                                     onChange={handleTipoChange}
@@ -276,6 +290,7 @@ const ModalHorarioCrearEditar = ({
                             <div className="mb-4">
                                 <h2 className="text-xl font-bold mb-4">Descripción</h2>
                                 <textarea
+                                    name="description"
                                     className="border p-2 w-full"
                                     placeholder="Ingrese una descripción"
                                     value={description}
@@ -290,6 +305,8 @@ const ModalHorarioCrearEditar = ({
                                     </Button>
                             )}
                             <Button 
+                                name="save-button"
+                                data-testid="save-button"
                                 color="primary" 
                                 onPress={handleSubmit}>
                                 Guardar en el calendario
