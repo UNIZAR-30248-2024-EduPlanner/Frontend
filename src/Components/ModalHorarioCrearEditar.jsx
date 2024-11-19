@@ -178,8 +178,9 @@ const ModalHorarioCrearEditar = ({
                                 ) : (
                                     <div className="flex space-x-4">
                                         <div>
-                                            <label className="block text-md font-semibold">Fecha</label>
+                                            <label htmlFor="date" className="block text-md font-semibold">Fecha</label>
                                             <input
+                                                id="date"
                                                 type="date"
                                                 className="border p-2 mb-4 mr-2"
                                                 value={date}
@@ -190,8 +191,9 @@ const ModalHorarioCrearEditar = ({
                                 )}
                                 <div className="flex space-x-4">
                                     <div>
-                                        <label className="block text-md font-semibold">Hora de inicio</label>
+                                        <label htmlFor="start" className="block text-md font-semibold">Hora de inicio</label>
                                         <input
+                                            id="start"
                                             type="time"
                                             className="border p-2 mr-16"
                                             value={start}
@@ -208,8 +210,9 @@ const ModalHorarioCrearEditar = ({
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-md font-semibold">Hora de finalización</label>
+                                        <label htmlFor="end" className="block text-md font-semibold">Hora de finalización</label>
                                         <input
+                                            id="end"
                                             type="time"
                                             className="border p-2"
                                             value={end}
@@ -290,6 +293,7 @@ const ModalHorarioCrearEditar = ({
                                     </Button>
                             )}
                             <Button 
+                                data-testid="save-button"
                                 color="primary" 
                                 onPress={handleSubmit}>
                                 Guardar en el calendario
