@@ -411,6 +411,7 @@ const CalendarioAsignaturaCrear = () => {
                         overflow: "hidden"
                     }}
                         key={idx}
+                        data-testid={idx}
                         onClick={() => {
                             findHorarioAndOpenModal(h.id);
                         }}>

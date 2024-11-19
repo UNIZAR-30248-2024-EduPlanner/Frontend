@@ -110,6 +110,7 @@ const CursoCrear = () => {
                             </p>
                         )}
                         <Input
+                            name="name"
                             size="lg"
                             type="name"
                             labelPlacement="outside"
@@ -122,6 +123,7 @@ const CursoCrear = () => {
                             onChange={(e) => setNombre(e.target.value)}
                         />
                         <Input
+                            name="nip"
                             size="lg"
                             type="name"
                             color="primary"
