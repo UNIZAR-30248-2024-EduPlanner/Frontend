@@ -1,4 +1,4 @@
-import '../../css/Curso/CalendarioAsignaturaCrear.css';
+import '../../css/Curso/CalendarioAsignatura.css';
 import { FaRegArrowAltCircleLeft, FaRegArrowAltCircleRight } from "react-icons/fa";
 import { Button, Tooltip } from '@nextui-org/react'
 import { useEffect, useState } from 'react'

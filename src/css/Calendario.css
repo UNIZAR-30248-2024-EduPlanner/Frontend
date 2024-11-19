@@ -10,7 +10,7 @@
 }
 
 .personalizar {
-    position: fixed;
+    position: absolute;
     top: 1vh;
     right: 5vw;
 }

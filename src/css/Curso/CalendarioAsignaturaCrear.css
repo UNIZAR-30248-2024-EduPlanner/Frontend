@@ -44,7 +44,7 @@
 
 .flecha .flecha-volver-container {
     background-color: transparent;
-    position: fixed;
+    position: absolute;
     top: 0.5vh;
     left: 1vw;
     font-size: 14rem;
