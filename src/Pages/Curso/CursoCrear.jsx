@@ -1,12 +1,14 @@
-import { useParams } from "react-router-dom"
+import { useParams, useLocation } from "react-router-dom"
 import { Input } from "@nextui-org/input";
 import { Button } from "@nextui-org/react";
 import "../../css/Curso/CursoCrear.css"
 import SubidaFichero from "../../Components/SubidaFichero";
 import FlechaVolver from "../../Components/FlechaVolver";
-import { createSubject } from "../../supabase/course/course";
+import { createSubject, getSubjectIdByCode } from "../../supabase/course/course";
+import { createAcademicEvent } from "../../supabase/academicEvent/academicEvent";
 import { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
+import constants from "../../constants/constants";
 import { useNavigate } from "react-router-dom";
 import Logout from "../../Components/Logout";
 
@@ -18,11 +20,11 @@ const CursoCrear = () => {
     const [error, setError] = useState("");
     const typeSingular = type.slice(0, -1)
     const { user } = useAuth();
-    const navigate = useNavigate()
-
+    const location = useLocation();
+    const navigate = useNavigate();
+    const calendario = location.state?.calendario || [];
 
     const create = async () => {
-        // TODO:  llamada a funcion crear
         setError(""); // Limpiar cualquier mensaje de error anterior
 
         if (
@@ -40,18 +42,51 @@ const CursoCrear = () => {
             return;
         }
 
-        // Si llega aquí, se ejecuta la petición para crear
-
-        console.log(user)
-        // Llamada a la API para crear un profesor
+        // Llamada a la API para crear una asignatura
         const res = await createSubject(nombre, nip, user.id)
         if (res.error) {
-            setError("Hubo un error en el registro: " + res.error.message);
+            setError("Hubo un error en el registro: " + res.error);
             window.scrollTo({ top: 0, behavior: "smooth" });
             return;
         }
 
-        navigate(-1)
+        const subject = await getSubjectIdByCode(nip);
+        if (subject.error) {
+            setError("Hubo un error en el registro: " + subject.error);
+            window.scrollTo({ top: 0, behavior: "smooth" });
+            return;
+        }
+
+        // Se obtiene el ID de la asignatura creada
+        const subject_id = subject.data;
+
+        // Crear los horarios de la asignatura
+        calendario.forEach(async (horario) => {
+            const horarioResponse = await createAcademicEvent(
+                nombre, 
+                horario.starting_date, 
+                horario.end_date, 
+                horario.group_name, 
+                parseInt(horario.periodicity), 
+                horario.description, 
+                horario.type, 
+                horario.place, 
+                horario.start, 
+                horario.end, 
+                subject_id);
+            if (horarioResponse.error) {
+                setError("Hubo un error en el registro: " + res.error);
+                window.scrollTo({ top: 0, behavior: "smooth" });
+                return;
+            }
+            console.log("Respuesta del servidor: ", horarioResponse);
+        });
+
+        navigate(constants.root + 'CursoMenu');
+    }
+
+    const calendar = () => {
+        navigate(`${location.pathname}/Calendario/`, { state: { calendario: calendario } });
     }
 
     return (
@@ -98,9 +133,14 @@ const CursoCrear = () => {
                             value={nip}
                             onChange={(e) => setNip(e.target.value)}
                         />
-                        <Button size="lg" color="primary" onClick={create}>
-                            Crear
-                        </Button>
+                        <div className="botones">
+                            <Button size="lg" color="primary" onClick={calendar}>
+                                Establecer calendario
+                            </Button>
+                            <Button size="lg" color="primary" onClick={create}>
+                                Crear
+                            </Button>
+                        </div>
                     </div>
                 </div>
                 <div className="fich">
