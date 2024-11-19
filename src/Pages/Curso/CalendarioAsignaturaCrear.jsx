@@ -69,29 +69,29 @@ const CalendarioAsignaturaCrear = () => {
             const minutosS = convertirAHorasEnMinutos(e.start)
             const minutosE = convertirAHorasEnMinutos(e.end)
     
-                res.push({
-                    name: e.name,
-                    start: e.start,
-                    end: e.end,
-                    description: e.description,
-                    starting_date: e.starting_date,
-                    end_date: e.end_date,
-                    monday: e.monday,
-                    place: e.place,
-                    group_name: e.group_name,
-                    type: e.type,
-                    periodicity: e.periodicity,
-                    user_id: e.user_id,
-                    id: e.id,
-                    day: e.day,
-                    date: e.date,
-                    height: ((minutosE - minutosS) * alturaPorMinuto).toString() + "vh",
-                    width: numSolapes == 0 ? wCol : wCol / numSolapes,
-                    top: ((hoursStart - firstHour + 1) * alturaPorHora + minutesStart * alturaPorMinuto).toString() + "vh",
-                    left: (wFirstCol + (dayIndex * wCol) + (numSolapes == 0 ? 0 : position * (wCol / numSolapes))).toString() + "vw",
-                    color: color,
-                    textColor: getContrastColor(color)
-                });
+            res.push({
+                name: e.name,
+                start: e.start,
+                end: e.end,
+                description: e.description,
+                starting_date: e.starting_date,
+                end_date: e.end_date,
+                monday: e.monday,
+                place: e.place,
+                group_name: e.group_name,
+                type: e.type,
+                periodicity: e.periodicity,
+                user_id: e.user_id,
+                id: e.id,
+                day: e.day,
+                date: e.date,
+                height: ((minutosE - minutosS) * alturaPorMinuto).toString() + "vh",
+                width: numSolapes == 0 ? wCol : wCol / numSolapes,
+                top: ((hoursStart - firstHour + 1) * alturaPorHora + minutesStart * alturaPorMinuto).toString() + "vh",
+                left: (wFirstCol + (dayIndex * wCol) + (numSolapes == 0 ? 0 : position * (wCol / numSolapes))).toString() + "vw",
+                color: color,
+                textColor: getContrastColor(color)
+            });
         });
         return res;
     };
@@ -210,7 +210,6 @@ const CalendarioAsignaturaCrear = () => {
 
     const generaPeriodicos = (horarios) => {
         const res = [];
-        // utilizamos solo 
         horarios
             .map((h) => {
                 if (h.periodicity !== "") {
@@ -253,8 +252,8 @@ const CalendarioAsignaturaCrear = () => {
 
     useEffect(() => {
         horariosRecu.forEach((h) => h.day = obtenerDiaSemana(h.starting_date));
-        if (mondayWeek && horariosRecu) setHorariosConPeriodicos(generaPeriodicos(horariosRecu));
-    }, [mondayWeek, horariosRecu]);
+        if (horariosRecu) setHorariosConPeriodicos(generaPeriodicos(horariosRecu));
+    }, [horariosRecu]);
 
     const findHorarioAndOpenModal = (id) => {
         const horario = horariosRecu.find((h) => h.id === id);
@@ -416,7 +415,7 @@ const CalendarioAsignaturaCrear = () => {
                             findHorarioAndOpenModal(h.id);
                         }}>
                         <p className="ml-[5px] font-bold"> {h.start} - {h.end} </p>
-                        <p className="ml-[5px]"> {h.name} </p>
+                        <p className="ml-[5px]"> {h.description} </p>
                     </div>
                 ))}
             </div>

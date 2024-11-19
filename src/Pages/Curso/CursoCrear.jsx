@@ -70,7 +70,7 @@ const CursoCrear = () => {
                 horario.starting_date, 
                 horario.end_date, 
                 horario.group_name, 
-                horario.periodicity ? parseInt(horario.periodicity) : 0, 
+                parseInt(horario.periodicity), 
                 horario.description, 
                 horario.type, 
                 horario.place, 
@@ -85,7 +85,7 @@ const CursoCrear = () => {
             console.log("Respuesta del servidor: ", horarioResponse);
         });
 
-        navigate(constants.root);
+        navigate(constants.root + 'CursoMenu');
     }
 
     const calendar = () => {

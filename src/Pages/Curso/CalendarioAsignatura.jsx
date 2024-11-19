@@ -1,23 +1,23 @@
 import '../../css/Curso/CalendarioAsignaturaCrear.css';
-import { FaArrowLeft, FaRegArrowAltCircleLeft, FaRegArrowAltCircleRight } from "react-icons/fa";
+import { FaRegArrowAltCircleLeft, FaRegArrowAltCircleRight } from "react-icons/fa";
 import { Button, Tooltip } from '@nextui-org/react'
 import { useEffect, useState } from 'react'
 import { calcularSolapes, convertirAHorasEnMinutos, hexToRgb, getContrastColor, isInWeek, numberToMonth } from '../../Components/CalendarioFunctions.jsx';
-import { useNavigate, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import ModalHorarioCrearEditar from '../../Components/ModalHorarioCrearEditar.jsx';
 import { getAcademicEventsBySubject, createAcademicEvent, editAcademicEvent, deleteAcademicEvent } from '../../supabase/academicEvent/academicEvent.js';
-import constants from '../../constants/constants.jsx';
+import FlechaVolver from '../../Components/FlechaVolver.jsx';
 
 const CalendarioAsignatura = () => {
     const { user } = useAuth();
-    const navigate = useNavigate();
     const location = useLocation();
     const {nombre, subject_id, codigo } = location.state || {};
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [modalData, setModalData] = useState(null);
     const [horarios, setHorarios] = useState([]);
     const [horariosRecu, setHorariosRecu] = useState([]);
+    const [horariosConPeriodicos, setHorariosConPeriodicos] = useState([]);
     const [diasSemana, setDiasSemana] = useState([])
     const [gruposExistentes, setGruposExistentes] = useState([]);
     const [mondayWeek, setMondayWeek] = useState(null)
@@ -38,6 +38,7 @@ const CalendarioAsignatura = () => {
         if (response.error) return console.error(response.error);
 
         response.data.forEach(evento => {
+            if (evento.date == null) evento.date = evento.starting_date;    // Compara si es null o undefined
             const fecha = evento.starting_date || evento.date;
             if (fecha) {
                 evento.day = obtenerDiaSemana(fecha);
@@ -59,6 +60,59 @@ const CalendarioAsignatura = () => {
             color = '#' + Math.floor(Math.random() * 16777215).toString(16);
         } while (isColorTooLight(color) || isColorSimilarToWhite(color));
         return color;
+    };
+
+    // Calcular cuántos horarios hay que crear por horario periódico en la vista
+    const calcularHorariosPorPeriodico = (starting_date, end_date, periodicity) => {
+        const startDate = new Date(starting_date);
+        const endDate = new Date(end_date);
+        
+        // Calcular la diferencia en días entre las dos fechas
+        const diffTime = Math.abs(endDate - startDate);
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        
+        // Calcular el número de repeticiones
+        const numRepeticiones = Math.floor(diffDays / periodicity) + 1;
+        
+        return numRepeticiones;
+    };
+
+    const generaPeriodicos = (horarios) => {
+        const res = [];
+        horarios
+            .map((h) => {
+                if (h.periodicity !== "") {
+                    const periodicity = parseInt(h.periodicity);
+                    const numHorarios = calcularHorariosPorPeriodico(h.starting_date, h.end_date, periodicity);
+                    for (let i = 0; i < numHorarios; i++) {
+                        const newMonday = new Date(h.monday);
+                        const newDate = new Date(h.starting_date);
+                        newDate.setDate(newDate.getDate() + periodicity * i)
+                        const formattedDate = newDate.toISOString().split('T')[0];
+                        newMonday.setDate(newMonday.getDate() + periodicity * i);
+                        res.push({
+                            name: h.name,
+                            start: h.start,
+                            id: h.id,
+                            end: h.end,
+                            description: h.description,
+                            starting_date: formattedDate,
+                            day: obtenerDiaSemana(formattedDate),
+                            monday: newMonday,
+                            date: formattedDate,
+                            end_date: formattedDate,
+                            place: h.place,
+                            group_name: h.group_name,
+                            type: h.type,
+                            periodicity: h.periodicity,
+                            subject_id: h.subject_id,
+                        });
+                }
+            } else {
+                res.push(h);
+            }
+        });
+        return res;
     };
 
     const isColorTooLight = (hex) => {
@@ -208,15 +262,19 @@ const CalendarioAsignatura = () => {
     useEffect(() => {
         if (user && user.id) {
             getDiasSemana();
-            getHorarios();
             setColor(generateRandomColor());
+            getHorarios();
         }
     }, [user.id]);
 
     useEffect(() => {
-        horariosRecu.forEach((h) => h.day = obtenerDiaSemana(h.date));
-        if (mondayWeek && horariosRecu) setHorarios(procesarHorarios(horariosRecu));
-    }, [mondayWeek, horariosRecu]);
+        if (mondayWeek && horariosConPeriodicos) setHorarios(procesarHorarios(horariosConPeriodicos));
+    }, [mondayWeek, horariosConPeriodicos]);
+
+    useEffect(() => {
+        horariosRecu.forEach((h) => h.day = obtenerDiaSemana(h.starting_date));
+        if (horariosRecu) setHorariosConPeriodicos(generaPeriodicos(horariosRecu));
+    }, [horariosRecu]);
 
     // Función para abrir el modal
     const openModal = (data) => {
@@ -228,29 +286,6 @@ const CalendarioAsignatura = () => {
     const closeModal = () => {
         setIsModalOpen(false);
     };
-
-    const handleSave = () => {
-        const calendario = [];
-        horariosRecu.forEach((h) => {
-            calendario.push({
-                name: h.name,
-                start: h.start,
-                end: h.end,
-                description: h.description,
-                starting_date: h.starting_date,
-                day: h.day,
-                date: h.date,
-                end_date: h.end_date,
-                place: h.place,
-                group_name: h.group_name,
-                type: h.type,
-                periodicity: h.periodicity,
-                subject_id: h.subject_id,
-            });
-        });
-
-        navigate(`${constants.root}CursoModificar/asignaturas/${subject_id}/${nombre}/${codigo}`, { state: { calendario: calendario } });
-    }; 
 
     const handleSaveHorario = async (horario) => {
         // Crear o editar un horario directamente en esta función
@@ -309,17 +344,7 @@ const CalendarioAsignatura = () => {
     return (
         <div className="calendario">
             <div className="header">
-                <div className="flecha">
-                <Tooltip content="Atrás">
-                    <Button
-                    className="flecha-volver-container"
-                    onClick={handleSave}
-                    size="lg"
-                    >
-                    <FaArrowLeft className="flecha-volver"/>
-                    </Button>
-                </Tooltip>
-                </div>
+                <FlechaVolver />
                 <div className="mes-tit flex">
                     <h1 className="mes-tit"> {monthYear} </h1>
                 </div>
@@ -391,7 +416,7 @@ const CalendarioAsignatura = () => {
                             openModal(h);
                         }}>
                         <p className="ml-[5px] font-bold"> {h.start} - {h.end} </p>
-                        <p className="ml-[5px]"> {h.name} </p>
+                        <p className="ml-[5px]"> {h.description} </p>
                     </div>
                 ))}
             </div>

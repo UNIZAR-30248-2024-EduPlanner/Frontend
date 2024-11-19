@@ -42,7 +42,7 @@ const ModalHorarioCrearEditar = ({
         setNewGroup(false);
         setName("");
         setSubjectId("");
-        setIsPeriodic(false);
+        setIsPeriodic("");
     };
 
     useEffect(() => {
@@ -59,7 +59,7 @@ const ModalHorarioCrearEditar = ({
             setType(initialData.type || "");
             setName(initialData.name || "");
             setSubjectId(initialData.subjectId || "");
-            setIsPeriodic(!!initialData.starting_date && !!initialData.end_date);
+            setIsPeriodic(initialData.periodicity !== "");
             setPeriodicity(initialData.periodicity || "");
         } else {
             title = "Crear horario";
@@ -88,11 +88,15 @@ const ModalHorarioCrearEditar = ({
             alert("La hora de inicio debe ser igual o anterior a la hora de finalización");
             return;
         }
+        if (group_name === "") {
+            alert("Debe seleccionar un grupo o crear uno nuevo");
+            return;
+        }
         if (isPeriodic && starting_date >= end_date) {
             alert("La fecha de inicio debe ser anterior a la fecha de finalización");
             return;
         }
-        if (!isPeriodic && periodicity % 7 !== 0) {
+        if (isPeriodic && (periodicity < 7 || periodicity % 7 !== 0)) {
             alert("La periodicidad debe ser un múltiplo de 7");
             return;
         }
