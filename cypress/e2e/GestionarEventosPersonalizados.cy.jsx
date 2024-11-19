@@ -2,9 +2,6 @@ import constants from "../../src/constants/constants";
 
 describe('E2E Flow: Create, Edit and Delete Custom Schedule', () => {
     beforeEach(() => {
-
-
-
         cy.visit(`http://localhost:5173${constants.root}IniciarSesion`);
 
         cy.get('input[name="nia/nip"]').type('123456');
