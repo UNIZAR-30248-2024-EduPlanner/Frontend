@@ -1,5 +1,6 @@
 import bcrypt from 'bcryptjs';
 import { supabase } from '../supabaseClient.js';
+import {registerUser} from '../user/user.js';
 
 // Función para registrar una organización
 export const registerOrganization = async (name, nip, pass) => {
@@ -40,6 +41,10 @@ export const loginOrganization = async (id, nip, pass) => {
             return { data: null, error: "Organización no encontrada" };
         }
 
+        if(data.pass == pass){
+            return { data: true, error: null }; // Inicio de sesión exitoso
+        }
+
         // Verificar la contraseña proporcionada contra el hash almacenado
         const passwordMatch = await bcrypt.compare(pass, data.pass);
         if (!passwordMatch) {
@@ -49,67 +54,6 @@ export const loginOrganization = async (id, nip, pass) => {
         return { data: true, error: null }; // Inicio de sesión exitoso
     } catch (error) {
         console.error("Error al iniciar sesión:", error);
-        return { data: null, error };
-    }
-};
-
-// Función para registrar un nuevo usuario
-export const registerUser = async (name, nip, pass, role, organization_id) => {
-    try {
-        // Cifrar la contraseña del usuario
-        const saltRounds = 10;
-        const hashedPassword = await bcrypt.hash(pass, saltRounds);
-
-        // Insertar el usuario con la contraseña cifrada
-        const { data, error } = await supabase
-            .from('users')
-            .insert([
-                {
-                    name,
-                    nip,
-                    pass: hashedPassword, // Almacena la contraseña cifrada
-                    role,
-                    organization_id,
-                },
-            ]);
-
-        if (error) {
-            console.error("Error al registrar el usuario:", error);
-            return { data: null, error };
-        }
-
-        return { data, error: null };
-    } catch (error) {
-        console.error("Error al cifrar la contraseña del usuario:", error);
-        return { data: null, error };
-    }
-};
-
-// Función para iniciar sesión (login) de un usuario
-export const loginUser = async (nip, pass, role, organization_id) => {
-    try {
-        const { data, error } = await supabase
-            .from('users')
-            .select('*') // Selecciona solo la contraseña cifrada
-            .eq('nip', nip)
-            .eq('role', role)
-            .eq('organization_id', organization_id)
-            .single();
-
-        if (error || !data) {
-            console.error("Error al iniciar sesión del usuario:", error);
-            return { data: null, error: "Usuario no encontrado" };
-        }
-
-        // Verificar la contraseña proporcionada contra el hash almacenado
-        const passwordMatch = await bcrypt.compare(pass, data.pass);
-        if (!passwordMatch) {
-            return { data: null, error: "Contraseña incorrecta" };
-        }
-
-        return { data: true, error: null }; // Inicio de sesión exitoso
-    } catch (error) {
-        console.error("Error al iniciar sesión del usuario:", error);
         return { data: null, error };
     }
 };
@@ -258,6 +202,7 @@ export const getOrganizationIdByName = async (name) => {
     return data ? data.id : null; // Retorna el ID si se encontró, null si no
 };
 
+// Función para obtener el ID de un usuario por su NIP
 export const getUserIdByNIP = async (nip, organizationId) => {
     const { data, error } = await supabase
         .from('users')
@@ -274,6 +219,7 @@ export const getUserIdByNIP = async (nip, organizationId) => {
     return data ? data.id : null; // Devuelve el ID o null si no se encuentra
 };
 
+// Función para obtener la información de un usuario por su NIP
 export const getUserInfoByNIP = async (nip, organizationId) => {
     const { data, error } = await supabase
         .from('users')
@@ -310,7 +256,6 @@ export const getAllOrganizations = async () => {
     return { data: result, error: null }; // Devuelve el resultado transformado
 }
 
-
 // Función para obtener una organización por su ID
 export const getOrganizationById = async (organizationId) => {
     const { data, error } = await supabase
@@ -326,13 +271,3 @@ export const getOrganizationById = async (organizationId) => {
     console.log("Organización por el ID dado:", data);
     return { data, error: null }; // Devuelve la organización encontrada
 };
-
-
-// Función para eliminar una organización y sus registros asociados
-//TODO
-/*
-export const eliminateOrganizationAndRelatedData = async (organizationId) => {
-    
-};
-*/
-

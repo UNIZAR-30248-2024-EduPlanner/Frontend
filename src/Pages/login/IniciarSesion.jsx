@@ -35,8 +35,8 @@ const IniciarSesion = () => {
     useEffect(() => {
         if (isAuthenticated) {
             if (type == constants.organizacion) navigate(constants.root + "OrganizacionMenu")
-            else if (type == constants.alumno) navigate(constants.root + "AlumnoMenu")
-            else if (type == constants.profesor) navigate(constants.root + "ProfesorMenu")
+            else if (type == constants.alumno) navigate(constants.root + "Calendario")
+            else if (type == constants.profesor) navigate(constants.root + "Calendario")
             else if (type == constants.curso) navigate(constants.root + "CursoMenu")
         }
     }, [type, isAuthenticated])
@@ -59,7 +59,7 @@ const IniciarSesion = () => {
         // Si llega aquí, se ejecuta la petición para loguear
         const res = await login(nia, password, role, organization);
         console.log(res);
-        if (res == false) {
+        if (res.data == null) {
             setError("Usuario y/o contraseñas incorrectos.");
             window.scrollTo({ top: 0, behavior: "smooth" });
             return;

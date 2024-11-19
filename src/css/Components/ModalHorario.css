@@ -1,0 +1,27 @@
+.modal-header {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.separator {
+    margin: 0.5rem 0;
+    border: 1px solid #ccc;
+}
+
+.session-info {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.session-info img {
+    width: 40px;
+    height: 40px;
+    margin-right: 8px;
+}
+
+.session-info h3 {
+    font-weight: bold;
+    font-size: 1.25rem;
+}

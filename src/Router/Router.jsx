@@ -8,6 +8,7 @@ import CursoModificar from "../Pages/Curso/CursoModificar"
 import OrganizacionCrear from "../Pages/Organizacion/OrganizacionCrear"
 import OrganizacionModificar from "../Pages/Organizacion/OrganizacionModificar"
 import CrearOrganizacion from "../Pages/login/CrearOrganizacion"
+import AlumnoMenu from "../Pages/Alumno/AlumnoMenu"
 import IniciarSesion from "../Pages/login/IniciarSesion"
 import { ProtectedRouter, ProtectedUser } from "./ProtectedRouter"
 import { AuthProvider, useAuth } from "../context/AuthContext"
@@ -32,8 +33,8 @@ const AppRoutes = () => {
         if (user && isAuthenticated) {
             if (type === constants.organizacion) navigate(constants.root + "OrganizacionMenu");
             else if (type === constants.curso) navigate(constants.root + "CursoMenu");
-            else if (type === constants.alumno) navigate(constants.root + "AlumnoMenu");
-            else if (type === constants.profesor) navigate(constants.root + "ProfesorMenu");
+            else if (type === constants.alumno) navigate(constants.root + "Calendario");
+            else if (type === constants.profesor) navigate(constants.root + "Calendario");
         }
     }, [user, type, isAuthenticated]);
 
@@ -62,6 +63,7 @@ const AppRoutes = () => {
 
                 {/* USUARIO ALUMNO */}
                 <Route element={<ProtectedUser userType={constants.alumno} />}>
+                    <Route path={constants.root + "Calendario"} element={<Calendario />} />
                 </Route>
 
                 {/* USUARIO PROFESOR */}

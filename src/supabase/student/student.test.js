@@ -1,26 +1,31 @@
 import * as f from './student.js';
 import { supabase } from '../supabaseClient.js';
+import { createAcademicEventAndPublish, deleteAcademicEvent } from '../academicEvent/academicEvent.js';
+import { getFullVisibleAcademicEventsForUser } from '../customAcademicEvent/customAcademicEvent.js';
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 
 const testArrayStudents = [
   {
     name: 'Estudiante 1',
-    nip: 11111,
+    nip: 1111111,
     pass: 'studentpass1'
   },
   {
     name: 'Estudiante 2',
-    nip: 22222,
+    nip: 2222222,
     pass: 'studentpass2'
   },
   {
     name: 'Estudiante 3',
-    nip: 33333,
+    nip: 3333333,
     pass: 'studentpass3'
   }
 ];
 
 let organizationId = 1;
+let subject_id = 323;
+let academicEventPublished;
+let academicEventPublished2;
 
 describe('Student API Tests', () => {
   // Configuración inicial
@@ -42,6 +47,12 @@ describe('Student API Tests', () => {
 
     const result = await f.registerArrayStudents(testArrayStudents, organizationId);
     expect(result.error).toBeNull(); // Verifica que no haya error
+
+    //Creamos dos eventos academicos y los publicamos, pero no hay nadie matriculado
+    academicEventPublished = await createAcademicEventAndPublish('Evento Académico 2', '2021-12-03', '2021-12-03', 'Grupo A', 1, 'Descripción 2', 'Clase Magistral', 'Clase A', '11:00:00', '12:00:00', subject_id);
+    expect(academicEventPublished.error).toBeNull(); // Verificar que no haya error
+    academicEventPublished2 = await createAcademicEventAndPublish('Evento Académico 1', '2021-12-03', '2021-12-03', 'Grupo A', 1, 'Descripción 1', 'Clase Magistral', 'Clase A', '10:30:00', '12:00:00', subject_id);
+    expect(academicEventPublished2.error).toBeNull(); // Verificar que no haya error
   });
 
   // Prueba para registrar un array de estudiantes
@@ -84,14 +95,74 @@ describe('Student API Tests', () => {
 
   // Matricular un estudiante en una asignatura
   it('should matriculate a student in a subject', async () => {
-    const result = await f.matriculateStudent(testArrayStudents[0].nip, 20001);
+    await supabase
+      .from('enrollments')
+      .delete()
+      .eq('user_id', testArrayStudents[0].nip);
+    const result = await f.matriculateStudent(testArrayStudents[0].nip, 99995);
     expect(result.error).toBeNull(); // Verifica que no haya error
+
+    const userId = await f.getStudentIdByNip(testArrayStudents[0].nip);
+
+    const subjects = await f.getSubjectsByStudentId(userId.data);
+    expect(subjects.error).toBeNull(); // Verifica que no haya error
+    expect(subjects.data.length).toBe(1); // Verifica que haya una asignatura
+
+    // Obtenemos los eventos académicos visibles para el usuario
+    const resultAcademicEvents = await getFullVisibleAcademicEventsForUser(userId.data);
+    console.log("resultAcademicEvents", resultAcademicEvents);
+    expect(resultAcademicEvents.error).toBeNull(); // Verifica que no haya error
+    expect(resultAcademicEvents.data.id).toBe(academicEventPublished.data.id); // Verifica que el evento académico sea el esperado
   });
 
   // Matricular un estudiante en múltiples asignaturas
   it('should matriculate a student in multiple subjects', async () => {
-    const result = await f.matriculateStudentOnMultipleSubjects(testArrayStudents[1].nip, [20001, 20002]);
+    await supabase
+      .from('enrollments')
+      .delete()
+      .eq('user_id', testArrayStudents[1].nip);
+    const result = await f.matriculateStudentOnMultipleSubjects(testArrayStudents[1].nip, [99995, 99996]);
     expect(result.error).toBeNull(); // Verifica que no haya error
+
+    const userId = await f.getStudentIdByNip(testArrayStudents[1].nip);
+
+    const subjects = await f.getSubjectsByStudentId(userId.data);
+    expect(subjects.error).toBeNull(); // Verifica que no haya error
+    expect(subjects.data.length).toBe(2); // Verifica que haya una asignatura
+
+    // Obtenemos los eventos académicos visibles para el usuario
+    const resultAcademicEvents = await getFullVisibleAcademicEventsForUser(userId.data);
+    expect(resultAcademicEvents.error).toBeNull(); // Verifica que no haya error
+  });
+
+  it('should unenroll an student from a subject', async () => {
+    const result = await f.unenrollStudent(testArrayStudents[0].nip, 99995);
+    expect(result.error).toBeNull(); // Verifica que no haya error
+
+    const userId = await f.getStudentIdByNip(testArrayStudents[0].nip);
+
+    const subjects = await f.getSubjectsByStudentId(userId.data);
+    expect(subjects.error).toBeNull(); // Verifica que no haya error
+    expect(subjects.data.length).toBe(0); // Verifica que haya una asignatura
+
+    const resultAcademicEvents = await getFullVisibleAcademicEventsForUser(userId.data);
+    expect(resultAcademicEvents.error).toBeNull(); // Verifica que no haya error
+    expect(resultAcademicEvents.data.length).toBe(0); // Verifica que haya dos eventos académicos
+  });
+
+  it('should unenroll an student from multiple subjects', async () => {
+    const result = await f.unenrollStudentFromMultipleSubjects(testArrayStudents[1].nip, [99995, 99996]);
+    expect(result.error).toBeNull(); // Verifica que no haya error
+
+    const userId = await f.getStudentIdByNip(testArrayStudents[1].nip);
+
+    const subjects = await f.getSubjectsByStudentId(userId.data);
+    expect(subjects.error).toBeNull(); // Verifica que no haya error
+    expect(subjects.data.length).toBe(0); // Verifica que haya una asignatura
+
+    const resultAcademicEvents = await getFullVisibleAcademicEventsForUser(userId.data);
+    expect(resultAcademicEvents.error).toBeNull(); // Verifica que no haya error
+    expect(resultAcademicEvents.data.length).toBe(0); // Verifica que no haya eventos academicos
   });
 
   // Obtener las asignaturas de un estudiante
@@ -101,9 +172,17 @@ describe('Student API Tests', () => {
     expect(result.error).toBeNull(); // Verifica que no haya error
   });
 
-
   // Limpiar datos después de las pruebas
   afterAll(async () => {
+
+    await supabase
+      .from('custom_academic_event')
+      .delete()
+      .eq('user_id', testArrayStudents[0].nip);
+
+    await deleteAcademicEvent(academicEventPublished.data[0].id);
+    await deleteAcademicEvent(academicEventPublished2.data[0].id);
+
     await supabase
       .from('users')
       .delete()
@@ -133,5 +212,7 @@ describe('Student API Tests', () => {
       .from('users')
       .delete()
       .eq('nip', 66666);
+
+
   });
 });

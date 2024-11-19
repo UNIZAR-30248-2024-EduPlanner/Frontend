@@ -1,49 +1,72 @@
 import { supabase } from '../supabaseClient.js';
-
-
-// Función para iniciar sesión (login) de un usuario
-export const loginUser = async (nip, pass, role, organization_id) => {
-  const { data, error } = await supabase
-    .from('users')
-    .select('*')
-    .eq('nip', nip)
-    .eq('pass', pass)
-    .eq('role', role)
-    .eq('organization_id', organization_id)
-    .single();
-
-  if (error) {
-    console.error("Error al iniciar sesión del usuario:", error);
-    return { data: null, error }; // Devuelve el error y data como null de forma consistente
-  }
-
-  return { data: !!data, error: null }; // Devuelve true si hay datos, false si no, y error como null
-};
-
+import bcrypt from 'bcryptjs';
 
 // Función para registrar un nuevo usuario
 export const registerUser = async (name, nip, pass, role, organization_id) => {
-  const { data, error } = await supabase
-    .from('users')
-    .insert([
-      {
-        name,
-        nip,
-        pass, // Almacena la contraseña de forma segura en producción
-        role,
-        organization_id, // Relación con la organización a la que pertenece
-      },
-    ]);
+  try {
+      // Cifrar la contraseña del usuario
+      const saltRounds = 10;
+      const hashedPassword = await bcrypt.hash(pass, saltRounds);
 
-  if (error) {
-    console.error("Error al registrar el usuario:", error);
-    return { data: null, error }; // Devuelve el error y data como null de forma consistente
+      // Insertar el usuario con la contraseña cifrada
+      const { data, error } = await supabase
+          .from('users')
+          .insert([
+              {
+                  name,
+                  nip,
+                  pass: hashedPassword, // Almacena la contraseña cifrada
+                  role,
+                  organization_id,
+              },
+          ]);
+
+      if (error) {
+          console.error("Error al registrar el usuario:", error);
+          return { data: null, error };
+      }
+
+      return { data, error: null };
+  } catch (error) {
+      console.error("Error al cifrar la contraseña del usuario:", error);
+      return { data: null, error };
   }
-
-  return { data, error: null }; // Devuelve tanto 'data' como 'error' de forma consistente
 };
 
+// Función para iniciar sesión (login) de un usuario
+export const loginUser = async (nip, pass, role, organization_id) => {
+  try {
+      const { data, error } = await supabase
+          .from('users')
+          .select('*') // Selecciona solo la contraseña cifrada
+          .eq('nip', nip)
+          .eq('role', role)
+          .eq('organization_id', organization_id)
+          .single();
 
+      if (error || !data) {
+          console.error("Error al iniciar sesión del usuario:", error);
+          return { data: null, error: "Usuario no encontrado" };
+      }
+
+      if(pass == data.pass){
+        return {data:true, error:null};
+      }
+
+      // Verificar la contraseña proporcionada contra el hash almacenado
+      const passwordMatch = await bcrypt.compare(pass, data.pass);
+      if (!passwordMatch) {
+          return { data: null, error: "Contraseña incorrecta" };
+      }
+
+      return { data: true, error: null }; // Inicio de sesión exitoso
+  } catch (error) {
+      console.error("Error al iniciar sesión del usuario:", error);
+      return { data: null, error };
+  }
+};
+
+// Función para obtener el ID de un usuario dado su NIP
 export const getUserIdByNIP = async (nip, organizationId) => {
   const { data, error } = await supabase
     .from('users')
@@ -60,7 +83,7 @@ export const getUserIdByNIP = async (nip, organizationId) => {
   return { data: data ? data.id : null, error: null }; // Devuelve tanto 'data' como 'error' de forma consistente
 };
 
-
+// Función para obtener la información de un usuario dado su NIP
 export const getUserInfoByNIP = async (nip, organizationId) => {
   const { data, error } = await supabase
     .from('users')
