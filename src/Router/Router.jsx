@@ -9,6 +9,8 @@ import OrganizacionCrear from "../Pages/Organizacion/OrganizacionCrear"
 import OrganizacionModificar from "../Pages/Organizacion/OrganizacionModificar"
 import CrearOrganizacion from "../Pages/login/CrearOrganizacion"
 import AlumnoMenu from "../Pages/Alumno/AlumnoMenu"
+import CalendarioAsignatura from "../Pages/Curso/CalendarioAsignatura"
+import CalendarioAsignaturaCrear from "../Pages/Curso/CalendarioAsignaturaCrear"
 import IniciarSesion from "../Pages/login/IniciarSesion"
 import { ProtectedRouter, ProtectedUser } from "./ProtectedRouter"
 import { AuthProvider, useAuth } from "../context/AuthContext"
@@ -57,8 +59,10 @@ const AppRoutes = () => {
                 {/* USUARIO CURSO */}
                 <Route element={<ProtectedUser userType={constants.curso} />}>
                     <Route path={constants.root + "CursoMenu"} element={<CursoMenu />} />
-                    <Route path={constants.root + "CursoCrear/:type/"} element={<CursoCrear />} />
+                    <Route path={constants.root + "CursoCrear/:type"} element={<CursoCrear />} />
+                    <Route path={constants.root + "CursoCrear/:type/Calendario"} element={<CalendarioAsignaturaCrear />} />
                     <Route path={constants.root + "CursoModificar/:type/:id/:nombreViejo/:nipViejo"} element={<CursoModificar />} />
+                    <Route path={constants.root + "CursoModificar/:type/:id/:nombreViejo/:nipViejo/Calendario"} element={<CalendarioAsignatura />} />
                 </Route>
 
                 {/* USUARIO ALUMNO */}
@@ -70,6 +74,9 @@ const AppRoutes = () => {
                 <Route element={<ProtectedUser userType={constants.profesor} />}>
                 </Route>
             </Route>
+            
+            {/* RUTA DESCONOCIDA */}
+            <Route path="*" element={<IniciarSesion />} />
         </Routes>
     )
 }

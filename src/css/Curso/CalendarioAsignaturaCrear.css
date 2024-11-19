@@ -1,0 +1,60 @@
+.calendario {
+    width: 100vw;
+}
+
+.header {
+    display: flex;
+    justify-content: center;    
+    align-items: center;
+    width: 100%;
+}
+
+.mes-tit {
+    display: flex;
+    justify-content: center;
+    font-weight: bold;
+    align-items: center;
+}
+
+.personalizar {
+    top: 1vh;
+    right: 1vw;
+    justify-self: end;
+}
+
+.calen {
+    position: relative;
+}
+
+.first-col {
+    display: flex;
+    width: 5vw;
+    height: 7vh;
+    justify-content: center;
+    background-color: var(--color-primary);
+    font-size: 1.25rem;
+    color: white;
+    font-weight: bold;
+    align-items: center;
+}
+
+.d {
+    width: 13.57vw;
+}
+
+.flecha .flecha-volver-container {
+    background-color: transparent;
+    position: fixed;
+    top: 0.5vh;
+    left: 1vw;
+    font-size: 14rem;
+    color: var(--color-primary);
+}
+
+.flecha .flecha-volver {
+    font-size: 100%;
+}
+
+.flecha .flecha-volver:hover {
+    opacity: 0.75;
+}    

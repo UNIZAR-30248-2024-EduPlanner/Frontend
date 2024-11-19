@@ -118,8 +118,6 @@ const Calendario = () => {
                 color: color,
                 textColor: getContrastColor(color)
             });
-    
-            // }
         });
 
         return res;
