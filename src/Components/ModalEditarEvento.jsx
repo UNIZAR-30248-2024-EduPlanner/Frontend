@@ -27,56 +27,26 @@ const ModalEditarEvento = ({ isOpen, onOpenChange, title, date_start, date_finis
     }, [isOpen, title, date_start, date_finish, place, description]);
 
     const modificarEvento = async () => {
-        const horaInicioMinima = "08:00";
-        const horaFinalMaxima = "21:00";
-    
-        if (!nombreActividad || !horaInicio || !horaFin || !fecha) {
+        if (nombreActividad && horaInicio && horaFin && fecha) {
+            console.log("Nombre de la actividad:", nombreActividad);
+            console.log("Hora de inicio:", horaInicio);
+            console.log("Hora de finalización:", horaFin);
+            console.log("Espacio reservado:", espacioReservado);
+            console.log("Descripción:", descripcion);
+            console.log("ID del evento:", id);
+            console.log("Fecha:", fecha);
+            const updates = { name: nombreActividad.toString(), start_time: horaInicio, end_time: horaFin, place: espacioReservado.toString(), description: descripcion.toString(), date: fecha };
+            // Lógica para modificar el evento
+            await editCustomEvent(id, updates);
+            setConfirmModalOpen(false); // Cierra el modal de confirmación
+            onOpenChange(false); // Cierra el modal de edición 
+            window.location.reload();
+        } else {
             setError("Por favor, complete todos los campos obligatorios (nombre, horas y fecha).");
             window.scrollTo({ top: 0, behavior: "smooth" });
             return;
         }
-    
-        if (horaInicio < horaInicioMinima) {
-            setError("La hora de inicio debe ser después de las 08:00.");
-            window.scrollTo({ top: 0, behavior: "smooth" });
-            return;
-        }
-    
-        if (horaFin > horaFinalMaxima) {
-            setError("La hora de finalización debe ser antes de las 21:00.");
-            window.scrollTo({ top: 0, behavior: "smooth" });
-            return;
-        }
-    
-        if (horaInicio >= horaFin) {
-            setError("La hora de inicio debe ser anterior a la hora de finalización.");
-            window.scrollTo({ top: 0, behavior: "smooth" });
-            return;
-        }
-    
-        console.log("Nombre de la actividad:", nombreActividad);
-        console.log("Hora de inicio:", horaInicio);
-        console.log("Hora de finalización:", horaFin);
-        console.log("Espacio reservado:", espacioReservado);
-        console.log("Descripción:", descripcion);
-        console.log("ID del evento:", id);
-        console.log("Fecha:", fecha);
-    
-        const updates = {
-            name: nombreActividad.toString(),
-            start_time: horaInicio,
-            end_time: horaFin,
-            place: espacioReservado.toString(),
-            description: descripcion.toString(),
-            date: fecha,
-        };
-    
-        await editCustomEvent(id, updates);
-        setConfirmModalOpen(false); 
-        onOpenChange(false); 
-        window.location.reload();
     };
-    
 
     return (
         <>

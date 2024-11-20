@@ -22,7 +22,7 @@ const Home = () => {
         { original: image1, thumbnail: image1, description: "Imagen 1" },
         { original: image2, thumbnail: image2, description: "Imagen 2" },
         { original: image3, thumbnail: image3, description: "Imagen 3" },
-        /*{ original: image4, thumbnail: image4, description: "Imagen 4" },*/
+        { original: image4, thumbnail: image4, description: "Imagen 4" },
         { original: image5, thumbnail: image5, description: "Imagen 5" }
     ];
 
@@ -53,8 +53,10 @@ const Home = () => {
 
             <hr className="separator" />
 
-            <div><h1 className="header-title">Bienvenido a EduPlanner</h1></div>
-            <p className="header-subtitle">La plataforma que mejora la planificación educativa de tu organización.</p>
+            <header className="header">
+                <h1 className="header-title">Bienvenido a EduPlanner</h1>
+                <p className="header-subtitle">La plataforma que mejora la planificación educativa de tu organización.</p>
+            </header>
 
             {/* Galería de imágenes */}
             <div className="image-slice">
