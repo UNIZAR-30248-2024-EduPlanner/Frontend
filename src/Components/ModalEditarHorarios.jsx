@@ -42,23 +42,44 @@ const ModalEditarHorarios = ({ isOpen, onOpenChange, listaCompletaEventos }) => 
     };
 
     const handleSubmit = async () => {
-        if (nombreActividad && horaInicio && horaFin && fecha) {
-            console.log("Nombre de la actividad:", nombreActividad);
-            console.log("Hora de inicio:", horaInicio);
-            console.log("Hora de finalización:", horaFin);
-            console.log("Espacio reservado:", espacioReservado);
-            console.log("Descripción:", descripcion);
-            console.log("Fecha:", fecha);
+        const horaInicioMinima = "08:00";
+        const horaFinalMaxima = "21:00";
 
-            // Llamada a la función para crear el evento
-            await createCustomEvent(nombreActividad, descripcion, espacioReservado, fecha, horaInicio, horaFin, user.id);
-            window.location.reload();
-        } else {
+        if (!nombreActividad || !horaInicio || !horaFin || !fecha) {
             setError("Por favor, complete todos los campos obligatorios (nombre, horas y fecha).");
             window.scrollTo({ top: 0, behavior: "smooth" });
             return;
         }
+
+        if (horaInicio < horaInicioMinima) {
+            setError("La hora de inicio debe ser después de las 08:00.");
+            window.scrollTo({ top: 0, behavior: "smooth" });
+            return;
+        }
+
+        if (horaFin > horaFinalMaxima) {
+            setError("La hora de finalización debe ser antes de las 21:00.");
+            window.scrollTo({ top: 0, behavior: "smooth" });
+            return;
+        }
+
+        if (horaInicio >= horaFin) {
+            setError("La hora de inicio debe ser anterior a la hora de finalización.");
+            window.scrollTo({ top: 0, behavior: "smooth" });
+            return;
+        }
+
+        console.log("Nombre de la actividad:", nombreActividad);
+        console.log("Hora de inicio:", horaInicio);
+        console.log("Hora de finalización:", horaFin);
+        console.log("Espacio reservado:", espacioReservado);
+        console.log("Descripción:", descripcion);
+        console.log("Fecha:", fecha);
+
+        await createCustomEvent(nombreActividad, descripcion, espacioReservado, fecha, horaInicio, horaFin, user.id);
+        window.location.reload();
     };
+
 
     const handleSubmitadd = async () => {
         if (selectedHorarios.length > 0) {
