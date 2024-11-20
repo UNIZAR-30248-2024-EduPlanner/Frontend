@@ -46,6 +46,7 @@ const CalendarioAsignatura = () => {
             evento.start = evento.start_time ? evento.start_time.slice(0, 5) : null;
             evento.end = evento.end_time ? evento.end_time.slice(0, 5) : null;
         });
+        setGruposExistentes([...new Set(response.data.map((h) => h.group_name))]);
         setHorariosRecu(response.data);
     }
 

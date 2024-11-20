@@ -104,8 +104,8 @@ const ModalHorarioCrearEditar = ({
         const horario = {
             id: id,
             name: name,
-            starting_date: starting_date !== "" ? starting_date : date,
-            end_date: end_date !== "" ? end_date : date,
+            starting_date: starting_date !== "" && isPeriodic ? starting_date : date,
+            end_date: end_date !== "" && isPeriodic ? end_date : date,
             day: date,
             date: date,
             start: start,
