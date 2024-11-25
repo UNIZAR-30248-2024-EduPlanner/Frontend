@@ -92,8 +92,6 @@ export const AuthProvider = ({ children }) => {
     // Esto es para que al refrescar la página la sesión se mantenga
     const recoverUser = async () => {
         const userIdStored = localStorage.getItem("user");
-        console.log(userIdStored)
-        console.log(userIdStored === "undefined")
         if (userIdStored == null || userIdStored == "undefined") {
             setIsAuthenticated(false);
             setUser(null);

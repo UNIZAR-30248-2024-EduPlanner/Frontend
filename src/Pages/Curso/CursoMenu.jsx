@@ -20,11 +20,9 @@ const CursoMenu = () => {
         const subjects = await getAllSubjects(id)
         if (subjects.error) setAsignaturas([])
         else setAsignaturas(subjects.data)
-        console.log(subjects.data)
     }
 
     useEffect(() => {
-        console.log(user)
         if (user) {
             setCursoName(user.name)
             getAllItems(user.id)

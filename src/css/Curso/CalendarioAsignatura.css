@@ -2,6 +2,13 @@
     width: 100vw;
 }
 
+.header {
+    display: flex;
+    justify-content: center;    
+    align-items: center;
+    width: 100%;
+}
+
 .mes-tit {
     display: flex;
     justify-content: center;
@@ -10,15 +17,9 @@
 }
 
 .personalizar {
-    position: absolute;
-    top: 1vh;
-    right: 5vw;
-}
-
-.profesor {
-    position: absolute;
     top: 1vh;
     right: 1vw;
+    justify-self: end;
 }
 
 .calen {
@@ -40,3 +41,20 @@
 .d {
     width: 13.57vw;
 }
+
+.flecha .flecha-volver-container {
+    background-color: transparent;
+    position: absolute;
+    top: 0.5vh;
+    left: 1vw;
+    font-size: 14rem;
+    color: var(--color-primary);
+}
+
+.flecha .flecha-volver {
+    font-size: 100%;
+}
+
+.flecha .flecha-volver:hover {
+    opacity: 0.75;
+}    

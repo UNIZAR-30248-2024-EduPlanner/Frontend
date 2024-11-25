@@ -22,7 +22,6 @@ const SubidaFichero = ({ type, lista, setLista }) => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
     const readFile = (e) => {
-        console.log("Hola")
         setErrores([])
         setLista([])
 
@@ -88,7 +87,6 @@ const SubidaFichero = ({ type, lista, setLista }) => {
     }
 
     const readFileSubjects = (e) => {
-        console.log("Hola")
         setErrores([])
         setLista([])
 

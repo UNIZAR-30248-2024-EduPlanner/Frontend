@@ -27,38 +27,68 @@ const ModalEditarEvento = ({ isOpen, onOpenChange, title, date_start, date_finis
     }, [isOpen, title, date_start, date_finish, place, description]);
 
     const modificarEvento = async () => {
-        if (nombreActividad && horaInicio && horaFin && fecha) {
-            console.log("Nombre de la actividad:", nombreActividad);
-            console.log("Hora de inicio:", horaInicio);
-            console.log("Hora de finalización:", horaFin);
-            console.log("Espacio reservado:", espacioReservado);
-            console.log("Descripción:", descripcion);
-            console.log("ID del evento:", id);
-            console.log("Fecha:", fecha);
-            const updates = { name: nombreActividad.toString(), start_time: horaInicio, end_time: horaFin, place: espacioReservado.toString(), description: descripcion.toString(), date: fecha };
-            // Lógica para modificar el evento
-            await editCustomEvent(id, updates);
-            setConfirmModalOpen(false); // Cierra el modal de confirmación
-            onOpenChange(false); // Cierra el modal de edición 
-            window.location.reload();
-        } else {
+        const horaInicioMinima = "08:00";
+        const horaFinalMaxima = "21:00";
+    
+        if (!nombreActividad || !horaInicio || !horaFin || !fecha) {
             setError("Por favor, complete todos los campos obligatorios (nombre, horas y fecha).");
             window.scrollTo({ top: 0, behavior: "smooth" });
             return;
         }
+    
+        if (horaInicio < horaInicioMinima) {
+            setError("La hora de inicio debe ser después de las 08:00.");
+            window.scrollTo({ top: 0, behavior: "smooth" });
+            return;
+        }
+    
+        if (horaFin > horaFinalMaxima) {
+            setError("La hora de finalización debe ser antes de las 21:00.");
+            window.scrollTo({ top: 0, behavior: "smooth" });
+            return;
+        }
+    
+        if (horaInicio >= horaFin) {
+            setError("La hora de inicio debe ser anterior a la hora de finalización.");
+            window.scrollTo({ top: 0, behavior: "smooth" });
+            return;
+        }
+    
+        console.log("Nombre de la actividad:", nombreActividad);
+        console.log("Hora de inicio:", horaInicio);
+        console.log("Hora de finalización:", horaFin);
+        console.log("Espacio reservado:", espacioReservado);
+        console.log("Descripción:", descripcion);
+        console.log("ID del evento:", id);
+        console.log("Fecha:", fecha);
+    
+        const updates = {
+            name: nombreActividad.toString(),
+            start_time: horaInicio,
+            end_time: horaFin,
+            place: espacioReservado.toString(),
+            description: descripcion.toString(),
+            date: fecha,
+        };
+    
+        await editCustomEvent(id, updates);
+        setConfirmModalOpen(false); 
+        onOpenChange(false); 
+        window.location.reload();
     };
+    
 
     return (
         <>
-            <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
-                <ModalContent>
+            <Modal isOpen={isOpen} onOpenChange={onOpenChange} style={{ transform: "scale(0.95)", overflow: "auto", width: "90%", maxWidth: "600px", margin: "auto" }}>
+                <ModalContent style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", textAlign: "center" }}>
                     {(onClose) => (
                         <>
-                            <ModalHeader className="modal-header">
+                            <ModalHeader className="text-center text-xl">
                                 {"Modificar evento"}
                             </ModalHeader>
-                            <hr className="separator" />
-                            <ModalBody>
+                            <hr className="separator" style={{ width: "100%", margin: "10px 0", border: "1px solid #ccc" }} />
+                            <ModalBody style={{ transform: "scale(0.9)", maxHeight: "80vh", overflow: "auto", padding: "20px" }}>
                                 {/* Mensaje de error en color secundario */}
                                 {error && (
                                     <p style={{ color: "var(--color-second)", textAlign: "center" }}>
@@ -87,8 +117,8 @@ const ModalEditarEvento = ({ isOpen, onOpenChange, title, date_start, date_finis
                                             onChange={(e) => setFecha(e.target.value)}
                                         />
                                     </div>
-                                    <div className="flex">
-                                        <div className="mr-2">
+                                    <div className="flex space-x-4">
+                                        <div>
                                             <label className="block text-lg font-semibold">Hora de inicio</label>
                                             <input
                                                 type="time"
