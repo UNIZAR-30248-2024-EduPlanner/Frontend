@@ -1,6 +1,6 @@
 import { supabase } from '../supabaseClient.js';
-import {getAcademicEventsBySubject} from '../academicEvent/academicEvent';
-import {createCustomAcademicEvent, deleteCustomAcademicEvent} from '../customAcademicEvent/customAcademicEvent';
+import { getAcademicEventsBySubject } from '../academicEvent/academicEvent';
+import { createCustomAcademicEvent, deleteCustomAcademicEvent } from '../customAcademicEvent/customAcademicEvent';
 
 export const registerArrayTeachers = async (teachers, organization_id) => {
   try {
@@ -32,23 +32,45 @@ export const registerArrayTeachers = async (teachers, organization_id) => {
 
 export const getSubjectsByTeacherId = async (teacher_id) => {
   try {
-    const { data, error } = await supabase
+    // Primero obtenemos la lista de subject_id del profesor
+    const { data: teachingData, error: teachingError } = await supabase
       .from('teachings')
       .select('subject_id')
       .eq('teacher_id', teacher_id);
 
-    if (error) {
-      console.error('Error al obtener las asignaturas del profesor:', error);
-      return { data: null, error };
+    if (teachingError) {
+      console.error('Error al obtener las asignaturas del profesor:', teachingError);
+      return { data: null, error: teachingError };
     }
 
-    console.log('Asignaturas del profesor obtenidas correctamente:', data);
-    return { data, error: null };
+    console.log('Asignaturas del profesor obtenidas correctamente:', teachingData);
+
+    // Extraer los IDs de las asignaturas
+    const subjectIds = teachingData.map(item => item.subject_id);
+
+    if (subjectIds.length === 0) {
+      console.log('El profesor no tiene asignaturas asociadas.');
+      return { data: [], error: null };
+    }
+
+    // Consultar las asignaturas completas en la tabla subjects
+    const { data: subjects, error: subjectsError } = await supabase
+      .from('subjects')
+      .select('*')
+      .in('id', subjectIds);
+
+    if (subjectsError) {
+      console.error('Error al obtener los detalles de las asignaturas:', subjectsError);
+      return { data: null, error: subjectsError };
+    }
+
+    console.log('Detalles de las asignaturas obtenidos correctamente:', subjects);
+    return { data: subjects, error: null };
   } catch (err) {
     console.error('Ha ocurrido un error:', err);
     return { data: null, error: err };
   }
-}
+};
 
 export const assignSubjectToTeacher = async (nip, subjectCode) => {
   const teacher = await supabase

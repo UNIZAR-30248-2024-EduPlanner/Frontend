@@ -134,6 +134,15 @@ describe('Teacher API Tests', () => {
     expect(resultAcademicEvents.error).toBeNull(); // Verifica que no haya error
   });
 
+  // Prueba para obtener las asignaturas de un profesor
+  it('should get the subjects of a teacher', async () => {
+    const teacherId = (await f.getTeacherIdByNip(testArrayTeachers[1].nip));
+    expect(teacherId).not.toBeNull(); // Asegúrate de que el profesor exista
+
+    const result = await f.getSubjectsByTeacherId(teacherId.data);
+    expect(result.error).toBeNull(); // Verifica que no haya error
+  });
+
   it('should unassign a subject from a teacher', async () => {
     const result = await f.unassignSubjectFromTeacher(testArrayTeachers[1].nip, 99995);
     expect(result.error).toBeNull(); // Verifica que no haya error
@@ -162,15 +171,6 @@ describe('Teacher API Tests', () => {
     const resultAcademicEvents = await getFullVisibleAcademicEventsForUser(userId.data);
     expect(resultAcademicEvents.error).toBeNull(); // Verifica que no haya error
     expect(resultAcademicEvents.data.length).toBe(0); // Verifica que no haya eventos academicos
-  });
-
-  // Prueba para obtener las asignaturas de un profesor
-  it('should get the subjects of a teacher', async () => {
-    const teacherId = (await f.getTeacherIdByNip(testArrayTeachers[1].nip));
-    expect(teacherId).not.toBeNull(); // Asegúrate de que el profesor exista
-
-    const result = await f.getSubjectsByTeacherId(teacherId.data);
-    expect(result.error).toBeNull(); // Verifica que no haya error
   });
 
   afterAll(async () => {
