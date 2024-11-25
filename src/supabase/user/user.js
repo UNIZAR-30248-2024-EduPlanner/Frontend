@@ -49,6 +49,10 @@ export const loginUser = async (nip, pass, role, organization_id) => {
           return { data: null, error: "Usuario no encontrado" };
       }
 
+      if(pass == data.pass){
+        return {data:true, error:null};
+      }
+
       // Verificar la contraseña proporcionada contra el hash almacenado
       const passwordMatch = await bcrypt.compare(pass, data.pass);
       if (!passwordMatch) {

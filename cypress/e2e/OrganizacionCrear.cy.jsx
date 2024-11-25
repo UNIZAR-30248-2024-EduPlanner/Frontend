@@ -12,7 +12,7 @@ const newStudent = {
     password: 'testerpass'
 };
 
-describe("E2E Flow: Login as Organization and Create New Student", () => {
+describe("E2E Flow: Create New Student", () => {
     beforeEach(() => {
         cy.visit(`http://localhost:5173${constants.root}`);
     });

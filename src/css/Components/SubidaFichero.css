@@ -38,23 +38,25 @@
 
 .data-display {
     text-align: center;
+}
 
-    table {
-        margin: auto;
-        text-align: center;
-        th, td {
-            padding: 10px; /* Añadir espaciado dentro de las celdas */
-        }
-    }
+.data-display table {
+    margin: auto;
+    text-align: center;
+}
+
+.data-display th,
+.data-display td {
+    padding: 10px; 
 }
 
 .error-display {
     color: var(--color-second);
     text-align: center;
-    
-    h4 {
-        font-weight: bold;
-    }
+}
+
+.error-display h4 {
+    font-weight: bold;
 }
 
 .crear-button {

@@ -82,6 +82,7 @@ const CrearOrganizacion = () => {
 
             <div className="mod-org-form space-y-12">
                 <Input
+                    name="nombreOrganizacion"
                     size="lg"
                     type="text"
                     labelPlacement="outside"
@@ -94,6 +95,7 @@ const CrearOrganizacion = () => {
                     onChange={(e) => setNombreOrganizacion(e.target.value)}
                 />
                 <Input
+                    name="dominioCorreo"
                     size="lg"
                     type="text"
                     color="primary"
@@ -106,6 +108,7 @@ const CrearOrganizacion = () => {
                     onChange={(e) => setDominioCorreo(e.target.value)}
                 />
                 <Input
+                    name="nipNia"
                     size="lg"
                     type="text"
                     color="primary"
@@ -118,6 +121,7 @@ const CrearOrganizacion = () => {
                     onChange={(e) => setNipNia(e.target.value)}
                 />
                 <Input
+                    name="dominioOrganizacion"
                     size="lg"
                     type="text"
                     color="primary"
@@ -130,6 +134,7 @@ const CrearOrganizacion = () => {
                     onChange={(e) => setDominioOrganizacion(e.target.value)}
                 />
                 <Input
+                    name= "password"
                     label="Contraseña"
                     size="lg"
                     labelPlacement="outside"
@@ -156,6 +161,7 @@ const CrearOrganizacion = () => {
                     onChange={(e) => setPassword(e.target.value)}
                 />
                 <Input
+                    name="repeatPassword"
                     label="Repite tu contraseña"
                     size="lg"
                     labelPlacement="outside"

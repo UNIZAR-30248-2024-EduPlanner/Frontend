@@ -9,7 +9,7 @@ import 'react-image-gallery/styles/css/image-gallery.css';
 
 // Imágenes de ejemplo
 import image1 from "../assets/image1.jpg";
-import image2 from "../assets/image2.jpeg";
+import image2 from "../assets/image2.jpg";
 import image3 from "../assets/image3.jpg";
 import image4 from "../assets/image4.jpg";
 import image5 from "../assets/image5.jpg";
@@ -22,7 +22,7 @@ const Home = () => {
         { original: image1, thumbnail: image1, description: "Imagen 1" },
         { original: image2, thumbnail: image2, description: "Imagen 2" },
         { original: image3, thumbnail: image3, description: "Imagen 3" },
-        { original: image4, thumbnail: image4, description: "Imagen 4" },
+        /*{ original: image4, thumbnail: image4, description: "Imagen 4" },*/
         { original: image5, thumbnail: image5, description: "Imagen 5" }
     ];
 
@@ -53,10 +53,8 @@ const Home = () => {
 
             <hr className="separator" />
 
-            <header className="header">
-                <h1 className="header-title">Bienvenido a EduPlanner</h1>
-                <p className="header-subtitle">La plataforma que mejora la planificación educativa de tu organización.</p>
-            </header>
+            <div><h1 className="header-title">Bienvenido a EduPlanner</h1></div>
+            <p className="header-subtitle">La plataforma que mejora la planificación educativa de tu organización.</p>
 
             {/* Galería de imágenes */}
             <div className="image-slice">

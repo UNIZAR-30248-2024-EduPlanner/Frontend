@@ -59,7 +59,7 @@ const IniciarSesion = () => {
         // Si llega aquí, se ejecuta la petición para loguear
         const res = await login(nia, password, role, organization);
         console.log(res);
-        if (res == false) {
+        if (res.data == null) {
             setError("Usuario y/o contraseñas incorrectos.");
             window.scrollTo({ top: 0, behavior: "smooth" });
             return;

@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom"
 import { Input } from "@nextui-org/input";
 import { Button } from "@nextui-org/react";
 import "../../css/Curso/CursoModificar.css"
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { editSubject } from "../../supabase/course/course";
 import Logout from "../../Components/Logout";
@@ -13,18 +13,18 @@ const CursoModificar = () => {
     const typeSingular = type.slice(0, -1)
     const { id } = useParams()
     const [error, setError] = useState("");
+    const location = useLocation();
     const navigate = useNavigate()
+    const calendario = useState(location.state?.horarios || []);
+
     const { nombreViejo } = useParams()
     const { nipViejo } = useParams()
-    console.log(nipViejo)
 
     // Variables que contienen el contenido de los input
     const [nombre, setNombre] = useState(nombreViejo)
     const [nip, setNip] = useState(nipViejo)
 
     const update = async () => {
-        // TODO: dependiendo el tipo a crear, crear uno u otro
-        // llamada a funcion crear
         setError(""); // Limpiar cualquier mensaje de error anterior
 
         if (
@@ -41,9 +41,10 @@ const CursoModificar = () => {
             window.scrollTo({ top: 0, behavior: "smooth" });
             return;
         }
-        // Si llega aquí, se ejecuta la petición para crear
+
         const updates = { name: nombre, subject_code: nip };
 
+        // Añadir la modificacion de horarios en el update de la asignatura
         const res = await editSubject(id, updates)
         if (res.error) {
             setError("Hubo un error en el registro: " + res.error.message);
@@ -52,6 +53,18 @@ const CursoModificar = () => {
         }
         navigate(-1)
     }
+
+    const calendar = () => {
+        navigate(
+            `${location.pathname}/Calendario`, 
+            { state: { 
+                nombre: nombreViejo,
+                codigo: nipViejo,
+                subject_id: id
+            } 
+        });
+    }
+    
     return (
         <>
             <FlechaVolver />
@@ -93,9 +106,14 @@ const CursoModificar = () => {
                     value={nip}
                     onChange={(e) => setNip(e.target.value)}
                 />
-                <Button size="lg" color="primary" onClick={update}>
-                    Modificar
-                </Button>
+                <div className="botones">
+                    <Button size="lg" color="primary" onClick={calendar}>
+                        Modificar calendario
+                    </Button>
+                    <Button size="lg" color="primary" onClick={update}>
+                        Modificar
+                    </Button>
+                </div>
             </div>
         </>
     )

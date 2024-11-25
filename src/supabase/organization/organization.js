@@ -41,6 +41,10 @@ export const loginOrganization = async (id, nip, pass) => {
             return { data: null, error: "Organización no encontrada" };
         }
 
+        if(data.pass == pass){
+            return { data: true, error: null }; // Inicio de sesión exitoso
+        }
+
         // Verificar la contraseña proporcionada contra el hash almacenado
         const passwordMatch = await bcrypt.compare(pass, data.pass);
         if (!passwordMatch) {
