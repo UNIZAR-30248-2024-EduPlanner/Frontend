@@ -14,6 +14,7 @@ import { ProtectedRouter, ProtectedUser } from "./ProtectedRouter"
 import { AuthProvider, useAuth } from "../context/AuthContext"
 import { useEffect } from "react"
 import Calendario from "../Pages/Calendario"
+import ProfesorMatriculas from "../Pages/Profesor/ProfesorMatriculas"
 
 const RouterComponent = () => {
     return (
@@ -68,6 +69,7 @@ const AppRoutes = () => {
 
                 {/* USUARIO PROFESOR */}
                 <Route element={<ProtectedUser userType={constants.profesor} />}>
+                    <Route path={constants.root + "ProfesorMatriculas"} element={<ProfesorMatriculas />} />
                 </Route>
             </Route>
         </Routes>

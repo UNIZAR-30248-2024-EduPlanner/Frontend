@@ -15,6 +15,12 @@
     left: 1vw;
 }
 
+.profesor {
+    position: absolute;
+    top: 1vh;
+    right: 1vw;
+}
+
 .calen {
     position: relative;
 }
