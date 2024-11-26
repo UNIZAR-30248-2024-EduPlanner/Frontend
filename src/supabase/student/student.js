@@ -1,6 +1,6 @@
 import { supabase } from '../supabaseClient';
-import {getAcademicEventsBySubject} from '../academicEvent/academicEvent';
-import {createCustomAcademicEvent, deleteCustomAcademicEvent} from '../customAcademicEvent/customAcademicEvent';
+import { getAcademicEventsBySubject } from '../academicEvent/academicEvent';
+import { createCustomAcademicEvent, deleteCustomAcademicEvent } from '../customAcademicEvent/customAcademicEvent';
 
 export const registerArrayStudents = async (students, organization_id) => {
   try {
@@ -233,4 +233,24 @@ export const getStudentIdByNip = async (nip) => {
     console.error('Ha ocurrido un error:', err);
     return { data: null, error: err }; // Retorna el error
   }
+}
+
+export const getStudentsBySubject = async (subject_id) => {
+  const students = await supabase
+    .from('enrollments')
+    .select('student_id')
+    .eq('subject_id', subject_id);
+
+  const studentsData = await Promise.all(
+    students.data.map(async student => {
+      const studentData = await supabase
+        .from('users')
+        .select('nip', 'name', 'email')
+        .eq('id', student.student_id).select();
+
+      return studentData.data[0];
+    })
+  );
+
+  console.log('Estudiantes obtenidos correctamente:', studentsData);
 }
