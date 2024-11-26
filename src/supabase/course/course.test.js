@@ -184,6 +184,26 @@ describe('Course API Tests', () => {
     expect(result.data).toBe(true);
   });
 
+  it('should assign a subject to a student', async () => {
+    const result = await f.assignSubjectToStudent(111111, testArraySubjects[0].subject_code, 1);
+    expect(result.error).toBeNull();
+  });
+
+  it('should assign a subject to a teacher', async () => {
+    const result = await f.assignSubjectToTeacher(2002, testArraySubjects[0].subject_code, 1);
+    expect(result.error).toBeNull();
+  });
+
+  it('should assign a subject to multiple students', async () => {
+    const result = await f.assignArrayStudentsToSubject([111111, 222222], testArraySubjects[1].subject_code);
+    expect(result.error).toBeNull();
+  });
+
+  it('should assign a subject to multiple teachers', async () => {
+    const result = await f.assignArrayTeachersToSubject([2002, 839995], testArraySubjects[1].subject_code);
+    expect(result.error).toBeNull();
+  });
+
   afterAll(async () => {
     await supabase
       .from('users')
