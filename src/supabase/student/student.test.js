@@ -135,6 +135,18 @@ describe('Student API Tests', () => {
     expect(resultAcademicEvents.error).toBeNull(); // Verifica que no haya error
   });
 
+  // Obtener las asignaturas de un estudiante
+  it('should get the subjects of a student', async () => {
+    const studentId = (await f.getStudentIdByNip(testArrayStudents[0].nip));
+    const result = await f.getSubjectsByStudentId(studentId.data);
+    expect(result.error).toBeNull(); // Verifica que no haya error
+  });
+
+  it('should get students info by subject', async () => {
+    const result = await f.getStudentsBySubject(323);
+    expect(result).not.toBeNull();
+  });
+
   it('should unenroll an student from a subject', async () => {
     const result = await f.unenrollStudent(testArrayStudents[0].nip, 99995);
     expect(result.error).toBeNull(); // Verifica que no haya error
@@ -165,12 +177,7 @@ describe('Student API Tests', () => {
     expect(resultAcademicEvents.data.length).toBe(0); // Verifica que no haya eventos academicos
   });
 
-  // Obtener las asignaturas de un estudiante
-  it('should get the subjects of a student', async () => {
-    const studentId = (await f.getStudentIdByNip(testArrayStudents[0].nip));
-    const result = await f.getSubjectsByStudentId(studentId.data);
-    expect(result.error).toBeNull(); // Verifica que no haya error
-  });
+
 
   // Limpiar datos después de las pruebas
   afterAll(async () => {
