@@ -156,3 +156,16 @@ export const getSubjectIdByCode = async (subject_code) => {
 
     return { data: data?.id, error: null }; // Devuelve el ID de la asignatura, null si no se encontró
 };
+
+// Función para obtener la información de una asignatura por ID
+export const getSubjectById = async (subjectId) => {
+    const { data, error } = await supabase
+        .from('subjects')
+        .select('*')
+        .eq('id', subjectId)
+        .single().select();
+
+    console.log('Información de la asignatura: ', data);
+
+    return { data, error }; // Devolver tanto 'data' como 'error' para una respuesta consistente
+};

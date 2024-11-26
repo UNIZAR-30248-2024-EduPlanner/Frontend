@@ -159,6 +159,11 @@ describe('Course API Tests', () => {
     expect(result.error).not.toBeNull();
   });
 
+  it('should get all info of a subject by ID', async () => {
+    const result = await f.getSubjectById(subjectId);
+    expect(result.error).toBeNull();
+  });
+
   it('should delete a subject', async () => {
     const result = await f.eliminateSubject(subjectId);
     expect(result.error).toBeNull();
