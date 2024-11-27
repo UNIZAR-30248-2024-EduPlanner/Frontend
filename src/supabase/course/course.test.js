@@ -195,12 +195,12 @@ describe('Course API Tests', () => {
   });
 
   it('should assign a subject to multiple students', async () => {
-    const result = await f.assignArrayStudentsToSubject([111111, 222222], testArraySubjects[1].subject_code);
+    const result = await f.assignSubjectToStudents([111111, 222222], testArraySubjects[1].subject_code, 1);
     expect(result.error).toBeNull();
   });
 
   it('should assign a subject to multiple teachers', async () => {
-    const result = await f.assignArrayTeachersToSubject([2002, 839995], testArraySubjects[1].subject_code);
+    const result = await f.assignSubjectToTeachers([2002, 839995], testArraySubjects[1].subject_code, 1);
     expect(result.error).toBeNull();
   });
 
