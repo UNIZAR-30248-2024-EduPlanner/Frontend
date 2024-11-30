@@ -1,6 +1,8 @@
+import React, { useEffect, useState } from 'react';
 import FlechaVolver from '../../Components/FlechaVolver.jsx';
 import Logout from "../../Components/Logout";
-import { useEffect, useState } from 'react'
+import { Input } from "@nextui-org/input";
+import { Button } from "@nextui-org/button";
 import { useAuth } from "../../context/AuthContext";
 import { useLocation } from "react-router-dom";
 import '../../css/Curso/CursoMatriculados.css';
@@ -8,11 +10,12 @@ import '../../css/Curso/CursoMatriculados.css';
 const CursoMatriculados = () => {
     const { user } = useAuth();
     const location = useLocation();
-    const {nombre, subject_id, codigo } = location.state || {};
+    const { nombre, subject_id, codigo } = location.state || {};
     const [alumnos, setAlumnos] = useState([]);
     const [profesores, setProfesores] = useState([]);
     const [sortConfigAlumnos, setSortConfigAlumnos] = useState({ key: null, direction: 'asc' });
     const [sortConfigProfesores, setSortConfigProfesores] = useState({ key: null, direction: 'asc' });
+    const [search, setSearch] = useState('');
 
     useEffect(() => {
         if (user && user.id) {
@@ -42,7 +45,6 @@ const CursoMatriculados = () => {
             { nip: 262, nombre: 'Clara Jiménez' },
             { nip: 272, nombre: 'Adrián Herrera' },
             { nip: 282, nombre: 'Isabel Mendoza' },
-
         ];
         const mockProfesores = [
             { nip: 301, nombre: 'Roberto Álvarez' },
@@ -90,74 +92,113 @@ const CursoMatriculados = () => {
         }
     };
 
+    // Funcion para solo aceptar digitos en la busqueda
+    const handleSearchChange = (e) => {
+        const value = e.target.value;
+        if (/^\d*$/.test(value)) {
+            setSearch(value);
+        }
+    };
+
+    const searchByNIP = (nip) => {
+        //Deberá buscar en la base de datos si existe el nip y si es profesor o alumno
+    }
 
     return (
         <>
             <FlechaVolver isSave={true}/>
             <Logout/>
-            <div className="container">
-                <h2>Profesores asignados</h2>
-                <div className="table-container">
-                    <table className="table">
-                        <thead>
-                            <tr>
-                                <th>
-                                    NIP
-                                    <button onClick={() => handleSort('nip', 'profesores')} className="sort-button">↕</button>
-                                </th>
-                                <th>
-                                    Nombre
-                                    <button onClick={() => handleSort('nombre', 'profesores')} className="sort-button">↕</button>
-                                </th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {profesores.map(profesor => (
-                                <tr key={profesor.nip}>
-                                    <td>{profesor.nip}</td>
-                                    <td>{profesor.nombre}</td>
-                                    <td>
-                                        <button className='delete' onClick={() => deleteMatriculado(profesor.nip)}>X</button>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
+            <div className='title-container'>
+                <h2>Añadir nuevo profesor/alumno</h2>
+                <div className='search-container'>
+                    <Input
+                            name="nip/nia"
+                            size="lg"
+                            type="text"
+                            labelPlacement="outside"
+                            color="primary"
+                            variant="bordered"
+                            placeholder="Añadir profesor/alumno"
+                            className="max-w-xs"
+                            value={search}
+                            onChange={handleSearchChange}
+                    />
+                    <Button 
+                        size="lg" 
+                        color="primary" 
+                        className='search-button'
+                        onClick={() => searchByNIP(search)}
+                        >
+                        Buscar
+                    </Button>
                 </div>
-                <h2>Alumnos matriculados</h2>
-                <div className="table-container">
-                    <table className="table">
-                        <thead>
-                            <tr>
-                                <th>
-                                    NIP
-                                    <button onClick={() => handleSort('nip', 'alumnos')} className="sort-button">↕</button>
-                                </th>
-                                <th>
-                                    Nombre
-                                    <button onClick={() => handleSort('nombre', 'alumnos')} className="sort-button">↕</button>
-                                </th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {alumnos.map(alumno => (
-                                <tr key={alumno.nip}>
-                                    <td>{alumno.nip}</td>
-                                    <td>{alumno.nombre}</td>
-                                    <td>
-                                        <button className='delete' onClick={() => deleteMatriculado(alumno.nip)}>X</button>
-                                    </td>
+            </div>
+            <div className="container">
+                <div className="column-one">
+                    <h2>Profesores asignados</h2>
+                    <div className="table-container">
+                        <table className="table">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        NIP
+                                        <button onClick={() => handleSort('nip', 'profesores')} className="sort-button">↕</button>
+                                    </th>
+                                    <th>
+                                        Nombre
+                                        <button onClick={() => handleSort('nombre', 'profesores')} className="sort-button">↕</button>
+                                    </th>
+                                    <th>Acciones</th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                {profesores.map(profesor => (
+                                    <tr key={profesor.nip}>
+                                        <td>{profesor.nip}</td>
+                                        <td>{profesor.nombre}</td>
+                                        <td>
+                                            <button className='delete' onClick={() => deleteMatriculado(profesor.nip)}>X</button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div className="column-two">
+                    <h2>Alumnos matriculados</h2>
+                    <div className="table-container">
+                        <table className="table">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        NIP
+                                        <button onClick={() => handleSort('nip', 'alumnos')} className="sort-button">↕</button>
+                                    </th>
+                                    <th>
+                                        Nombre
+                                        <button onClick={() => handleSort('nombre', 'alumnos')} className="sort-button">↕</button>
+                                    </th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {alumnos.map(alumno => (
+                                    <tr key={alumno.nip}>
+                                        <td>{alumno.nip}</td>
+                                        <td>{alumno.nombre}</td>
+                                        <td>
+                                            <button className='delete' onClick={() => deleteMatriculado(alumno.nip)}>X</button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </>
     )
-
 }
 
 export default CursoMatriculados

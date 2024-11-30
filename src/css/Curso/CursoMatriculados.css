@@ -1,14 +1,43 @@
-.container {
+.title-container {
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-top: 150px;
-    margin-left: 120px;
+    margin-top: 20px;
 }
 
-.container h2 {
-    margin-right: 120px;
-    margin-bottom: 20px;
+.search-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.search-container .search-button {
+    margin-left: 12px;
+}
+
+.container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    margin-top: 40px;
+    width: 100%;
+}
+
+.column-one {
+    display: flex;
+    flex-direction: column;
+    margin-left: 250px;
+    align-items: center;
+    width: 100%;
+}
+
+.column-two {
+    display: flex;
+    flex-direction: column;
+    margin-left: 180px;
+    align-items: center;
+    width: 100%;
 }
 
 .table-container {
@@ -17,13 +46,13 @@
     align-items: center;
     margin-bottom: 40px;
     width: 100%;
-    max-height: 300px;
+    max-height: 600px;
     overflow-y: auto;
     border-collapse: collapse;
 }
 
 .table {
-    width: 80%;
+    width: 100%;
     border-collapse: collapse;
 }
 
@@ -32,7 +61,7 @@
     border: none;
     cursor: pointer;
     font-size: 1rem;
-    margin-left: 0.5rem;
+    margin-left: 5px;
 }
 
 .table th, .table td {
@@ -43,7 +72,7 @@
 
 .table th {
     background-color: #f2f2f2;
-    color: var(--color-primary);
+    color: black;
 }
 
 .table tr:nth-child(even) {
