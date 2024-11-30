@@ -109,7 +109,7 @@ const CursoMatriculados = () => {
             <FlechaVolver isSave={true}/>
             <Logout/>
             <div className='title-container'>
-                <h2>Añadir nuevo profesor/alumno</h2>
+                <h2>Añadir nuevo profesor o alumno</h2>
                 <div className='search-container'>
                     <Input
                             name="nip/nia"
