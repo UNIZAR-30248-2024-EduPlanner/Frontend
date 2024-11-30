@@ -1,5 +1,5 @@
 import '../../css/Curso/CalendarioAsignaturaCrear.css';
-import { FaArrowLeft, FaRegArrowAltCircleLeft, FaRegArrowAltCircleRight } from "react-icons/fa";
+import { FaSave, FaRegArrowAltCircleLeft, FaRegArrowAltCircleRight } from "react-icons/fa";
 import { Button, Tooltip } from '@nextui-org/react'
 import { useEffect, useState } from 'react'
 import { calcularSolapes, convertirAHorasEnMinutos, hexToRgb, getContrastColor, isInWeek, numberToMonth } from '../../Components/CalendarioFunctions.jsx';
@@ -340,7 +340,7 @@ const CalendarioAsignaturaCrear = () => {
                     onClick={handleSave}
                     size="lg"
                     >
-                    <FaArrowLeft className="flecha-volver"/>
+                    <FaSave className="flecha-volver"/>
                     </Button>
                 </Tooltip>
                 </div>
