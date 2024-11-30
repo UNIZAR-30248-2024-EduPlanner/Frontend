@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import FlechaVolver from '../../Components/FlechaVolver.jsx';
+import { FaMagnifyingGlass } from "react-icons/fa6";
 import Logout from "../../Components/Logout";
 import { Input } from "@nextui-org/input";
 import { Button } from "@nextui-org/button";
@@ -115,6 +116,7 @@ const CursoMatriculados = () => {
                             name="nip/nia"
                             size="lg"
                             type="text"
+                            startContent={<FaMagnifyingGlass />}
                             labelPlacement="outside"
                             color="primary"
                             variant="bordered"
