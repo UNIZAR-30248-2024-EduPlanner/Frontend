@@ -102,7 +102,7 @@ const Calendario = () => {
 
             const minutosS = convertirAHorasEnMinutos(e.start)
             const minutosE = convertirAHorasEnMinutos(e.end)
-    
+
             res.push({
                 name: e.name,
                 start: e.start,
@@ -270,7 +270,7 @@ const Calendario = () => {
 
             getHorarios();
         }
-    }, [user, ]);
+    }, [user,]);
 
     useEffect(() => {
         if (mondayWeek && horariosBD) setHorarios(procesarHorarios(horariosBD));
@@ -294,7 +294,7 @@ const Calendario = () => {
 
     if (user) {
         console.log(user);
-        console.log(user.type === "teacher");    
+        console.log(user.type === "teacher");
     }
 
     return (
@@ -305,14 +305,14 @@ const Calendario = () => {
                     Personalizar calendario
                 </Button>
                 {user && user.role == "teacher" && (
-                    <Button 
-                      color="primary"
-                      onClick={() => navigate(constants.root + "ProfesorMatriculas")}
-                      className="ml-[5px]"
+                    <Button
+                        color="primary"
+                        onClick={() => navigate(constants.root + "ProfesorMatriculas")}
+                        className="ml-[5px]"
                     >
                         Gestionar matrículas
                     </Button>
-                
+
                     // <Dropdown>
                     //     <DropdownTrigger>
                     //       <Button 
@@ -417,6 +417,7 @@ const Calendario = () => {
                 isOpen={isModalOpen}
                 onOpenChange={closeModal}
                 listaCompletaEventos={horariosrecu}
+                listaCompletaEventosVisibles={horariosBD}
             />
         </div>
 
