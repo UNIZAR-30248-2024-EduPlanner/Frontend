@@ -5,6 +5,12 @@ import { useEffect, useState } from 'react'
 const ModalTareas = ({ isOpen, onOpenChange, listaTareas }) => {
     const { user } = useAuth();
 
+    const listaOrdenada = [...listaTareas].sort((a, b) => {
+        const fechaA = new Date(`${a.end_date}T${a.end_time || "00:00"}`);
+        const fechaB = new Date(`${b.end_date}T${b.end_time || "00:00"}`);
+        return fechaA - fechaB;
+    });
+
     return (
         <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
             <ModalContent style={{ transform: "scale(0.95)", overflow: "visible" }}>
@@ -12,7 +18,7 @@ const ModalTareas = ({ isOpen, onOpenChange, listaTareas }) => {
                     <>
                         <ModalBody style={{ transform: "scale(0.9)", maxHeight: "100vh", overflow: "visible", overflowY: "auto" }}>
                             <div className="tabs-org">
-                                {listaTareas.map((tarea) => (
+                                {listaOrdenada.map((tarea) => (
                                     <div
                                         key={tarea.id}
                                         className="task-card"

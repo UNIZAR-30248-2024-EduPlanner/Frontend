@@ -108,7 +108,7 @@ const ModalEditarHorarios = ({ isOpen, onOpenChange, listaCompletaEventos, lista
                 window.scrollTo({ top: 0, behavior: "smooth" });
                 return;
             }
-            await createAcademicEventAndPublish(selectedAsignatura, fecha, fecha, selectedGrupo, 0, descripcion, "Creado por profesores", espacioReservado, horaInicio, horaFin, selectedAsignaturaId);
+            await createAcademicEventAndPublish(selectedAsignatura, fecha, fecha, selectedGrupo, 0, nombreActividad, "Creado por profesores", espacioReservado, horaInicio, horaFin, selectedAsignaturaId);
         } else if (tarea === true) {
             if (!selectedAsignatura || !selectedGrupo) {
                 setError("Escoga una asignatura y un grupo para crear el evento y publicarlo.");
@@ -370,16 +370,17 @@ const ModalEditarHorarios = ({ isOpen, onOpenChange, listaCompletaEventos, lista
                                                 onChange={(e) => setEspacioReservado(e.target.value)}
                                             />
                                         </div>
-
-                                        <div className="mb-4">
-                                            <h2 className="text-2xl font-bold">Descripción</h2>
-                                            <textarea
-                                                className="border p-2 w-full"
-                                                placeholder="Ingrese una descripción"
-                                                value={descripcion}
-                                                onChange={(e) => setDescripcion(e.target.value)}
-                                            ></textarea>
-                                        </div>
+                                        {tipo !== "academico" && (
+                                            <div className="mb-4">
+                                                <h2 className="text-2xl font-bold">Descripción</h2>
+                                                <textarea
+                                                    className="border p-2 w-full"
+                                                    placeholder="Ingrese una descripción"
+                                                    value={descripcion}
+                                                    onChange={(e) => setDescripcion(e.target.value)}
+                                                ></textarea>
+                                            </div>
+                                        )}
                                         <Button color="primary" onPress={handleSubmit}>
                                             Guardar evento
                                         </Button>
