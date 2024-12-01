@@ -6,6 +6,7 @@ import { calcularSolapes, convertirAHorasEnMinutos, getContrastColor, isInWeek, 
 import { useDisclosure } from "@nextui-org/react";
 import ModalComponent from "../Components/ModalHorario";
 import ModalComponentcreate from "../Components/ModalEditarHorarios";
+import ModalTareas from '../Components/ModalTareas.jsx';
 import { getAllEventsForUser } from '../supabase/event/event.js';
 import { useAuth } from "../context/AuthContext";
 import { getFullNonVisibleAcademicEventsForUser } from '../supabase/customAcademicEvent/customAcademicEvent.js';
@@ -19,10 +20,14 @@ const Calendario = () => {
 
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isModalTareasOpen, setIsModalTareasOpen] = useState(false);
     const [modalData, setModalData] = useState(null);
 
     // HorariosBD son todos los horarios recuperados de la BD
     const [horariosBD, setHorariosBD] = useState([]);
+
+    // HorariosBD son todos las tareas recuperados de la BD
+    const [tareas, setTareas] = useState([]);
 
     // Horarios son los horarios procesados para la actual semana
     const [horarios, setHorarios] = useState([]);
@@ -128,10 +133,13 @@ const Calendario = () => {
     const getHorarios = async () => {
 
         // Se piden los horarios a la BD
-        const horariosRes = await getAllEventsForUser(user.id);
+        let horariosRes = await getAllEventsForUser(user.id);
         const horariosRecuperar = await getFullNonVisibleAcademicEventsForUser(user.id);
         if (horariosRes.error) return console.error("ERROR: recuperando los horarios");
 
+        const ListaTareas = horariosRes.data.filter(evento => evento.type === "Entrega");
+        setTareas(ListaTareas);
+        horariosRes.data = horariosRes.data.filter(evento => evento.type !== "Entrega");
         setHorariosBD(horariosRes.data);
 
         horariosRes.data.forEach(evento => {
@@ -292,6 +300,13 @@ const Calendario = () => {
         onOpen();
     };
 
+    const openModalTareas = () => {
+        setIsModalTareasOpen(true);
+    };
+
+    const closeModalTareas = () => {
+        setIsModalTareasOpen(false);
+    };
     if (user) {
         console.log(user);
         console.log(user.type === "teacher");
@@ -301,6 +316,9 @@ const Calendario = () => {
         <div className="calendario">
             <Logout />
             <div className="personalizar flex">
+                <Button color="primary" onClick={openModalTareas}>
+                    Ver tareas
+                </Button>
                 <Button color="primary" onClick={openModal}>
                     Personalizar calendario
                 </Button>
@@ -418,6 +436,11 @@ const Calendario = () => {
                 onOpenChange={closeModal}
                 listaCompletaEventos={horariosrecu}
                 listaCompletaEventosVisibles={horariosBD}
+            />
+            <ModalTareas
+                isOpen={isModalTareasOpen}
+                onOpenChange={closeModalTareas}
+                listaTareas={tareas}
             />
         </div>
 

@@ -115,12 +115,12 @@ const ModalEditarHorarios = ({ isOpen, onOpenChange, listaCompletaEventos, lista
                 window.scrollTo({ top: 0, behavior: "smooth" });
                 return;
             }
-            if (!nombreActividad || !horaFin || !fecha) {
-                setError("Por favor, complete todos los campos obligatorios (nombre, hora limite y fecha).");
+            if (!descripcion || !horaFin || !fecha) {
+                setError("Por favor, complete todos los campos obligatorios (tarea, hora limite y fecha).");
                 window.scrollTo({ top: 0, behavior: "smooth" });
                 return;
             }
-            await createAcademicEventAndPublish(nombreActividad, fecha, fecha, selectedGrupo, 0, descripcion, "Entrega", espacioReservado, horaFin, horaFin, selectedAsignaturaId);
+            await createAcademicEventAndPublish(selectedAsignatura, fecha, fecha, selectedGrupo, 0, descripcion, "Entrega", espacioReservado, horaFin, horaFin, selectedAsignaturaId);
         } else {
             if (!nombreActividad || !horaInicio || !horaFin || !fecha) {
                 setError("Por favor, complete todos los campos obligatorios (nombre, horas y fecha).");
@@ -439,17 +439,6 @@ const ModalEditarHorarios = ({ isOpen, onOpenChange, listaCompletaEventos, lista
                                             </div>
 
                                             <div className="mb-4">
-                                                <h2 className="text-2xl font-bold">Nombre de la tarea:</h2>
-                                                <input
-                                                    type="text"
-                                                    className="border p-2 w-full"
-                                                    placeholder="Ingrese el nombre de la tarea"
-                                                    value={nombreActividad}
-                                                    onChange={(e) => setNombreActividad(e.target.value)}
-                                                />
-                                            </div>
-
-                                            <div className="mb-4">
                                                 <h2 className="text-2xl font-bold">Fecha y Hora</h2>
                                                 <div>
                                                     <label className="block text-lg font-semibold">Fecha</label>
@@ -473,10 +462,10 @@ const ModalEditarHorarios = ({ isOpen, onOpenChange, listaCompletaEventos, lista
                                             </div>
 
                                             <div className="mb-4">
-                                                <h2 className="text-2xl font-bold">Descripción</h2>
+                                                <h2 className="text-2xl font-bold">Tarea</h2>
                                                 <textarea
                                                     className="border p-2 w-full"
-                                                    placeholder="Ingrese una descripción"
+                                                    placeholder="Ingrese la tarea"
                                                     value={descripcion}
                                                     onChange={(e) => setDescripcion(e.target.value)}
                                                 ></textarea>
