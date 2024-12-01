@@ -2,11 +2,12 @@ import { Button, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter } from
 import { useState } from "react";
 import { unenrollStudent } from "../supabase/student/student.js";
 import PropTypes from 'prop-types';
+import { useAuth } from "../context/AuthContext";
 
-const ModalDesasociarAsignaturas = ({ isOpen, onOpenChange, asignaturas, userNip, empty }) => {
+const ModalDesasociarAsignaturas = ({ isOpen, onOpenChange, asignaturas, empty }) => {
   const [selectedAsignaturas, setSelectedAsignaturas] = useState([]); // Para guardar asignaturas seleccionadas
   const [isConfirmModalOpen, setConfirmModalOpen] = useState(false);
-
+  const {user} = useAuth();
   // Manejador para cuando se selecciona o deselecciona una asignatura
   const handleCheckboxChange = (asignaturaId) => {
     setSelectedAsignaturas((prev) => {
@@ -27,15 +28,18 @@ const ModalDesasociarAsignaturas = ({ isOpen, onOpenChange, asignaturas, userNip
 
   // Confirmar desasociación
   const confirmarDesasociacion = async () => {
-    for (const asignaturaId of selectedAsignaturas) {
-      // Desasociar cada asignatura seleccionada
-      const asignatura = asignaturas.find((a) => a.id === asignaturaId);
-      await unenrollStudent(userNip, asignatura.subject_code);
+    if (user){
+      for (const asignaturaId of selectedAsignaturas) {
+    
+        // Desasociar cada asignatura seleccionada
+        const asignatura = asignaturas.find((a) => a.id === asignaturaId);
+        await unenrollStudent(user.nip, asignatura.subject_code);
+      }
+      // Limpiar las asignaturas seleccionadas y cerrar el modal
+      setSelectedAsignaturas([]);
+      setConfirmModalOpen(false);
     }
 
-    // Limpiar las asignaturas seleccionadas y cerrar el modal
-    setSelectedAsignaturas([]);
-    setConfirmModalOpen(false);
   };
 
   const handleConfirmModalClose = () => {
@@ -87,7 +91,7 @@ const ModalDesasociarAsignaturas = ({ isOpen, onOpenChange, asignaturas, userNip
                       onChange={() => handleCheckboxChange(asignatura.id)}
                       className="mr-2"
                     />
-                    <span className="text-lg font-semibold">{asignatura.name}</span>
+                    <span className="text-lg font-semibold">{asignatura.name && asignatura.name }</span>
                   </li>
                 ))}
               </ul>
@@ -174,7 +178,6 @@ ModalDesasociarAsignaturas.propTypes = {
       course_id: PropTypes.number.isRequired,
     })
   ).isRequired,
-  userNip: PropTypes.number.isRequired,
   isOpen: PropTypes.bool.isRequired,
   onOpenChange: PropTypes.func.isRequired,
   empty: PropTypes.bool.isRequired

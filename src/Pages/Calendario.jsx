@@ -320,6 +320,10 @@ const Calendario = () => {
 
     const getUserNip = async () => {
         const { data: userData, error: userError } = await getUserInfoById(user.id);
+        if (userError) {
+          console.error("Error al obtener la información del usuario:", userError);
+          return;
+        }
         setUserNip(userData.nip);
     }
 
@@ -505,7 +509,6 @@ const Calendario = () => {
                 isOpen={isOpenGestionarAsignaturas}
                 onOpenChange={closeModalGestionarAsignaturas}
                 asignaturas={modalAsignaturasData}
-                userNip = {userNip}
                 empty = {modalAsignaturasData?.length === 0}
             />
         </div>
