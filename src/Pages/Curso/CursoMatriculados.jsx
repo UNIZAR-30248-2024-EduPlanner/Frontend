@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import FlechaVolver from '../../Components/FlechaVolver.jsx';
-import { FaMagnifyingGlass } from "react-icons/fa6";
+import { FaMagnifyingGlass, FaCirclePlus } from "react-icons/fa6";
 import Logout from "../../Components/Logout";
 import { Input } from "@nextui-org/input";
 import { Button } from "@nextui-org/button";
@@ -20,7 +20,6 @@ const CursoMatriculados = () => {
 
     useEffect(() => {
         if (user && user.id) {
-            console.log(nombre, subject_id, codigo);
             getMatriculados()
         }
     }, [user.id]);
@@ -105,6 +104,10 @@ const CursoMatriculados = () => {
         //Deberá buscar en la base de datos si existe el nip y si es profesor o alumno
     }
 
+    const navigateToAddMatriculados = () => {
+        //Deberá navegar a la pagina de añadir profesor/alumno
+    }
+
     return (
         <>
             <FlechaVolver isSave={true}/>
@@ -133,6 +136,9 @@ const CursoMatriculados = () => {
                         >
                         Buscar
                     </Button>
+                    <div className="create-button" onClick={navigateToAddMatriculados}>
+                        <FaCirclePlus />
+                    </div>
                 </div>
             </div>
             <div className="container">

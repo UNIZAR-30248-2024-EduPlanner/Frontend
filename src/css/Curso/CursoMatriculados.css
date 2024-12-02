@@ -16,6 +16,27 @@
     margin-left: 12px;
 }
 
+.create-button {
+    position: fixed;
+    color: var(--color-primary);
+}
+
+@media (min-width: 900px) {
+    .create-button {
+        bottom: 4vh;
+        right: 4vw;    
+        font-size: 7rem;
+    }
+}
+
+@media (max-width: 900px) {
+    .create-button {
+        bottom: 1vh;
+        right: 1vw;
+        font-size: 12vw;
+    }
+}
+
 .container {
     display: flex;
     flex-direction: row;
