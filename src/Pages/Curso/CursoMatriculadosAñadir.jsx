@@ -2,6 +2,7 @@ import { useLocation } from "react-router-dom";
 import { useState } from "react";
 import { Input } from "@nextui-org/input";
 import { Button } from "@nextui-org/react";
+import { FaMagnifyingGlass } from "react-icons/fa6";
 import SubidaFichero from "../../Components/SubidaFichero";
 import FlechaVolver from "../../Components/FlechaVolver";
 import Logout from "../../Components/Logout";
@@ -55,7 +56,7 @@ const CursoMatriculadosAñadir = () => {
             <h1 className="cur-crear-tit"> Añadir profesores o alumnos </h1>
             <div className="cur-crear-container">
                 <div className="cur-crear-uno">
-                    <h2>Buscar por NIP</h2>
+                    <h2>Buscar por NIP/NIA</h2>
                     <div className="botones">
                         <Input
                             name="nip"
@@ -63,9 +64,9 @@ const CursoMatriculadosAñadir = () => {
                             type="name"
                             color="primary"
                             labelPlacement="outside"
+                            startContent={<FaMagnifyingGlass />}
                             variant="bordered"
-                            label="Codigo"
-                            placeholder="Codigo de la asignatura"
+                            placeholder="NIP/NIA"
                             className="max-w-xs"
                             value={nip}
                             onChange={(e) => {setNip(e.target.value); setShow(false)}}
