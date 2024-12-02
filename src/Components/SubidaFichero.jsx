@@ -145,6 +145,60 @@ const SubidaFichero = ({ type, lista, setLista }) => {
         }
     }
 
+    const readFileMatriculas = (e) => {
+        setErrores([])
+        setLista([])
+
+        const file = e.target.files[0]
+        if (!file) return
+
+        const fileReader = new FileReader()
+
+        fileReader.readAsText(file)
+
+        fileReader.onload = () => {
+            const text = fileReader.result;
+            const lines = text.split(/\r?\n|\r/);
+
+            const parsedData = [];
+            const erroresEncontrados = [];
+
+            lines.forEach((line, index) => {
+                // Eliminamos comillas y dividimos por ';'
+                if (line !== "") {
+                    const fields = line.split(";");
+                    console.log(fields);
+
+                    // Validar que haya exactamente 2 campos
+                    if (fields.length === 2) {
+                        const [nip, vacio] = fields;
+
+                        if (vacio !== "") {
+                            erroresEncontrados.push(`Línea ${index + 1}: Número incorrecto de campos.`);
+                            return;
+                        }
+
+                        // Validar que 'NIP/NIA' sea un número entero
+                        const nipParsed = parseInt(nip, 10);
+                        if (isNaN(nipParsed)) {
+                            erroresEncontrados.push(`Línea ${index + 1}: NIP/NIA debe ser un número entero.`);
+                            return;
+                        } 
+
+                        // Si todas la validación pasa, agregamos el objeto a los datos procesados
+                        parsedData.push({ nip: nipParsed });
+                    } else {
+                        erroresEncontrados.push(`Línea ${index + 1}: Número incorrecto de campos.`);
+                    }
+                }
+            });
+
+            // Guardamos los datos válidos y los errores
+            setLista(parsedData);
+            setErrores(erroresEncontrados);
+        }
+    }
+
     const create = async (lista) => {
         // TODO:  llamada a funcion crear
         setError(""); // Limpiar cualquier mensaje de error anterior
@@ -183,6 +237,14 @@ const SubidaFichero = ({ type, lista, setLista }) => {
                 window.scrollTo({ top: 0, behavior: "smooth" });
                 return;
             }
+        } else if (type == "matriculas") {
+            // Llamada a la API para asignar profesores y alumnos a una asignatura
+            const res = {error: {message: "No implementado"}};
+            if (res.error) {
+                setError("Hubo un error en el registro: " + res.error.message);
+                window.scrollTo({ top: 0, behavior: "smooth" });
+                return;
+            }
         }
         navigate(-1)
     }
@@ -205,7 +267,7 @@ const SubidaFichero = ({ type, lista, setLista }) => {
                     className="file-upload-input"
                     data-testid="file-input"
                     type="file"
-                    onChange={(e) => type === "asignaturas" ? readFileSubjects(e) : readFile(e)}
+                    onChange={(e) => type === "asignaturas" ? readFileSubjects(e) : "matriculas" ? readFileMatriculas(e) : readFile(e)}
                 />
                 <div className="text-information">
                     {lista.length > 0 ? (
@@ -238,6 +300,22 @@ const SubidaFichero = ({ type, lista, setLista }) => {
                                             <tr key={index}>
                                                 <td>{item.name}</td>
                                                 <td>{item.subject_code}</td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            ) : type === "matriculas" ? (
+                                // Tabla para matriculas
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th className="campo">NIP/NIA</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {lista.map((item, index) => (
+                                            <tr key={index}>
+                                                <td>{item.nip}</td>
                                             </tr>
                                         ))}
                                     </tbody>

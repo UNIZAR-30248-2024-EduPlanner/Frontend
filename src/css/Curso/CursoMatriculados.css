@@ -5,17 +5,6 @@
     margin-top: 20px;
 }
 
-.search-container {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    margin-top: 20px;
-}
-
-.search-container .search-button {
-    margin-left: 12px;
-}
-
 .create-button {
     position: fixed;
     color: var(--color-primary);

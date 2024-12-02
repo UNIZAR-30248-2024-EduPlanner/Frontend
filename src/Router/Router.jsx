@@ -17,6 +17,7 @@ import { AuthProvider, useAuth } from "../context/AuthContext"
 import { useEffect } from "react"
 import Calendario from "../Pages/Calendario"
 import ProfesorMatriculas from "../Pages/Profesor/ProfesorMatriculas"
+import CursoMatriculadosAñadir from "../Pages/Curso/CursoMatriculadosAñadir"
 
 const RouterComponent = () => {
     return (
@@ -63,6 +64,7 @@ const AppRoutes = () => {
                     <Route path={constants.root + "CursoCrear/:type"} element={<CursoCrear />} />
                     <Route path={constants.root + "CursoCrear/:type/Calendario"} element={<CalendarioAsignaturaCrear />} />
                     <Route path={constants.root + "CursoModificar/:type/:id/:nombreViejo/:nipViejo/Matriculas"} element={<CursoMatriculados />} />
+                    <Route path={constants.root + "CursoModificar/:type/:id/:nombreViejo/:nipViejo/Matriculas/Añadir"} element={<CursoMatriculadosAñadir />} />
                     <Route path={constants.root + "CursoModificar/:type/:id/:nombreViejo/:nipViejo"} element={<CursoModificar />} />
                     <Route path={constants.root + "CursoModificar/:type/:id/:nombreViejo/:nipViejo/Calendario"} element={<CalendarioAsignatura />} />
                 </Route>

@@ -1,16 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import FlechaVolver from '../../Components/FlechaVolver.jsx';
-import { FaMagnifyingGlass, FaCirclePlus } from "react-icons/fa6";
+import { FaCirclePlus } from "react-icons/fa6";
 import Logout from "../../Components/Logout";
-import { Input } from "@nextui-org/input";
-import { Button } from "@nextui-org/button";
 import { useAuth } from "../../context/AuthContext";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import '../../css/Curso/CursoMatriculados.css';
 
 const CursoMatriculados = () => {
     const { user } = useAuth();
     const location = useLocation();
+    const navigate = useNavigate()
     const { nombre, subject_id, codigo } = location.state || {};
     const [alumnos, setAlumnos] = useState([]);
     const [profesores, setProfesores] = useState([]);
@@ -105,7 +104,15 @@ const CursoMatriculados = () => {
     }
 
     const navigateToAddMatriculados = () => {
-        //Deberá navegar a la pagina de añadir profesor/alumno
+        navigate(
+            `${location.pathname}/Añadir`, 
+            { state: { 
+                nombre: nombre,
+                codigo: codigo,
+                subject_id: subject_id,
+                organization_id: user.organization_id
+            } 
+        }); 
     }
 
     return (
@@ -113,33 +120,7 @@ const CursoMatriculados = () => {
             <FlechaVolver isSave={true}/>
             <Logout/>
             <div className='title-container'>
-                <h2>Añadir nuevo profesor o alumno</h2>
-                <div className='search-container'>
-                    <Input
-                            name="nip/nia"
-                            size="lg"
-                            type="text"
-                            startContent={<FaMagnifyingGlass />}
-                            labelPlacement="outside"
-                            color="primary"
-                            variant="bordered"
-                            placeholder="Añadir profesor/alumno"
-                            className="max-w-xs"
-                            value={search}
-                            onChange={handleSearchChange}
-                    />
-                    <Button 
-                        size="lg" 
-                        color="primary" 
-                        className='search-button'
-                        onClick={() => searchByNIP(search)}
-                        >
-                        Buscar
-                    </Button>
-                    <div className="create-button" onClick={navigateToAddMatriculados}>
-                        <FaCirclePlus />
-                    </div>
-                </div>
+                <h2>Matriculados en {nombre}</h2>
             </div>
             <div className="container">
                 <div className="column-one">
@@ -204,6 +185,9 @@ const CursoMatriculados = () => {
                         </table>
                     </div>
                 </div>
+                <div className="create-button" onClick={navigateToAddMatriculados}>
+                        <FaCirclePlus />
+                    </div>
             </div>
         </>
     )
