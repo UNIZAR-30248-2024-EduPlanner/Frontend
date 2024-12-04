@@ -11,9 +11,7 @@ import constants from "../../constants/constants";
 const CrearOrganizacion = () => {
     const [isVisible, setIsVisible] = useState(false);
     const [nombreOrganizacion, setNombreOrganizacion] = useState("");
-    const [dominioCorreo, setDominioCorreo] = useState("");
     const [nipNia, setNipNia] = useState("");
-    const [dominioOrganizacion, setDominioOrganizacion] = useState("");
     const [password, setPassword] = useState("");
     const [repeatPassword, setRepeatPassword] = useState("");
     const [error, setError] = useState(""); // Estado para el mensaje de error
@@ -28,9 +26,7 @@ const CrearOrganizacion = () => {
 
         if (
             !nombreOrganizacion ||
-            !dominioCorreo ||
             !nipNia ||
-            !dominioOrganizacion ||
             !password ||
             !repeatPassword
         ) {
@@ -95,19 +91,6 @@ const CrearOrganizacion = () => {
                     onChange={(e) => setNombreOrganizacion(e.target.value)}
                 />
                 <Input
-                    name="dominioCorreo"
-                    size="lg"
-                    type="text"
-                    color="primary"
-                    labelPlacement="outside"
-                    variant="bordered"
-                    label="Dominio de correo electrónico"
-                    placeholder=""
-                    className="max-w-xs"
-                    value={dominioCorreo}
-                    onChange={(e) => setDominioCorreo(e.target.value)}
-                />
-                <Input
                     name="nipNia"
                     size="lg"
                     type="text"
@@ -119,19 +102,6 @@ const CrearOrganizacion = () => {
                     className="max-w-xs"
                     value={nipNia}
                     onChange={(e) => setNipNia(e.target.value)}
-                />
-                <Input
-                    name="dominioOrganizacion"
-                    size="lg"
-                    type="text"
-                    color="primary"
-                    labelPlacement="outside"
-                    variant="bordered"
-                    label="Dominio de la organización"
-                    placeholder=""
-                    className="max-w-xs"
-                    value={dominioOrganizacion}
-                    onChange={(e) => setDominioOrganizacion(e.target.value)}
                 />
                 <Input
                     name= "password"

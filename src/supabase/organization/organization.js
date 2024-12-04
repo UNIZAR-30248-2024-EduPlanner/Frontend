@@ -19,7 +19,7 @@ export const registerOrganization = async (name, nip, pass) => {
             return { data: null, error };
         }
 
-        return { data, error: null };
+        return { data: true, error: null };
     } catch (error) {
         console.error("Error al cifrar la contraseña:", error);
         return { data: null, error };
