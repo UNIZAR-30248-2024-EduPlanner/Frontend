@@ -299,7 +299,6 @@ const Calendario = () => {
 
     return (
         <div className="calendario">
-            <Logout />
             <div className="personalizar flex">
                 <Button color="primary" onClick={openModal}>
                     Personalizar calendario
@@ -311,30 +310,13 @@ const Calendario = () => {
                       className="ml-[5px]"
                     >
                         Gestionar matrículas
-                    </Button>
-                
-                    // <Dropdown>
-                    //     <DropdownTrigger>
-                    //       <Button 
-                    //         variant="bordered" 
-                    //       >
-                    //         Open Menu
-                    //       </Button>
-                    //     </DropdownTrigger>
-                    //     <DropdownMenu aria-label="Static Actions">
-                    //       <DropdownItem key="new">New file</DropdownItem>
-                    //       <DropdownItem key="copy">Copy link</DropdownItem>
-                    //       <DropdownItem key="edit">Edit file</DropdownItem>
-                    //       <DropdownItem key="delete" className="text-danger" color="danger">
-                    //         Delete file
-                    //       </DropdownItem>
-                    //     </DropdownMenu>
-                    // </Dropdown>
+                    </Button>                
                 )}
             </div>
             <div className="mes-tit flex">
                 <h1 className="mes-tit"> {monthYear} </h1>
             </div>
+            <Logout/>
             <div className="relative">
                 <div className="flex bg-primary text-white text-[1.5rem] items-center font-bold">
                     <div className="first-col">

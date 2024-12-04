@@ -5,14 +5,16 @@ import Lista from "../../Components/Lista";
 import { Button, Input } from "@nextui-org/react";
 import { FaMagnifyingGlass } from "react-icons/fa6";
 import "../../css/Profesor/ProfesorMatriculas.css";
+import { useNavigate } from "react-router-dom";
+import constants from "../../constants/constants";
 
 const ProfesorMatriculas = () => {
     
     const { user } = useAuth();
+    const navigate = useNavigate();
     const [asignaturas, setAsignaturas] = useState([]);
     const [search, setSearch] = useState("");
     const [filteredList, setFilteredList] = useState([]);
-
     
     const recuperarAsignaturas = async () => {
         const lista = await getSubjectsByTeacherId(user.id);
@@ -31,21 +33,21 @@ const ProfesorMatriculas = () => {
         const newList = asignaturas.filter(item => {
             const searchTerm = search.toLowerCase();
             return (
-                item.name.toLowerCase().includes(searchTerm) || // Busca por nombre
-                (item.nip.toString().includes(searchTerm)) // Busca por NIP si está disponible
+                item.name.toLowerCase().includes(searchTerm) // Busca por nombre
             );
         });
 
         setFilteredList(newList);
     }, [search]);
 
+    console.log("asignaturas", asignaturas)
 
     return (
-        <>
+        <div className="flex flex-col items-center">
             <h1 className="tit"> Tus asignaturas, {user.name} </h1>
-            <div className="flex justify-center">
+            <div className="busqueda-asig flex justify-center">
                 <Input
-                    className="busqueda-asig"
+                    className=""
                     size="lg"
                     placeholder={"Búsqueda de asignaturas"}
                     startContent={<FaMagnifyingGlass />}
@@ -57,7 +59,11 @@ const ProfesorMatriculas = () => {
                 {filteredList.length > 0 ? (
                     <>
                         {filteredList.map((item, index) => (
-                            <div className="lista-item" key={index}>
+                            <div 
+                              className="lista-item" 
+                              key={index}
+                              onClick={() => navigate(constants.root + "GestionarMatriculas/" + item.id)}
+                            >
                                 <p className="lista-text">{item.name}</p>
                             </div>
                         ))}
@@ -65,14 +71,18 @@ const ProfesorMatriculas = () => {
                 ) : (
                     <>
                         {asignaturas.map((item, index) => (
-                            <div className="lista-item" key={index}>
+                            <div 
+                              className="lista-item" 
+                              key={index}
+                              onClick={() => navigate(constants.root + "GestionarMatriculas/" + item.id)}
+                            >
                                 <p className="lista-text">{item.name}</p>
                             </div>
                         ))}
                     </>
                 )}
             </div>
-        </>
+        </div>
     )
 }
 

@@ -236,21 +236,29 @@ export const getStudentIdByNip = async (nip) => {
 }
 
 export const getStudentsBySubject = async (subject_id) => {
-  const students = await supabase
+  try {
+    const students = await supabase
     .from('enrollments')
     .select('student_id')
     .eq('subject_id', subject_id);
 
-  const studentsData = await Promise.all(
-    students.data.map(async student => {
-      const studentData = await supabase
-        .from('users')
-        .select('nip', 'name', 'email')
-        .eq('id', student.student_id).select();
+    const studentsData = await Promise.all(
+      students.data.map(async student => {
+        const studentData = await supabase
+          .from('users')
+          .select('nip', 'name', 'email')
+          .eq('id', student.student_id).select();
 
-      return studentData.data[0];
-    })
-  );
+        return studentData.data[0];
+      })
+    );
 
-  console.log('Estudiantes obtenidos correctamente:', studentsData);
+    console.log('Estudiantes obtenidos correctamente:', studentsData);
+
+    return {data: studentsData, error: null};
+
+  } catch (err) {
+    return {data: null, error: err};
+
+  }
 }

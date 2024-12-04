@@ -18,14 +18,12 @@ const Logout = () => {
     return (
         <div className="logout">
             <Tooltip content="Logout">
-            <Button 
-              className="logout-container"
-              onClick={() => handleClick()}
-              size="lg"
-            >
-                <RxExit 
-                  className="logout"
-                />
+                <Button 
+                  className="logout-container bg-transparent"
+                  onClick={() => handleClick()}
+                  size="lg"
+                >
+                <RxExit className="text-primary text-[3rem]" />
             </Button>
             </Tooltip>
 

@@ -17,6 +17,8 @@ import { AuthProvider, useAuth } from "../context/AuthContext"
 import { useEffect } from "react"
 import Calendario from "../Pages/Calendario"
 import ProfesorMatriculas from "../Pages/Profesor/ProfesorMatriculas"
+import GestionarMatriculas from "../Pages/Profesor/GestionarMatriculas"
+import MatricularAlumnos from "../Pages/Profesor/MatricularAlumnos"
 
 const RouterComponent = () => {
     return (
@@ -74,6 +76,8 @@ const AppRoutes = () => {
                 {/* USUARIO PROFESOR */}
                 <Route element={<ProtectedUser userType={constants.profesor} />}>
                     <Route path={constants.root + "ProfesorMatriculas"} element={<ProfesorMatriculas />} />
+                    <Route path={constants.root + "GestionarMatriculas/:id"} element={<GestionarMatriculas />} />
+                    <Route path={constants.root + "MatricularAlumnos/:id"} element={<MatricularAlumnos />} />
                 </Route>
             </Route>
             

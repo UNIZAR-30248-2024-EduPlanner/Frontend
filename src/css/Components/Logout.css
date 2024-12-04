@@ -1,17 +1,12 @@
-.logout .logout-container {
-        background-color: transparent;
-        position: fixed;
-        top: 1vh;
-        right: 1vw;
-        font-size: 52rem;
-        color: var(--color-primary);
-    }
-    
-    .logout .logout {
-        font-size: 60rem;
-    }
-    
-    .logout .logout:hover {
-        opacity: 0.75;
-    }    
+.logout {
+    position: absolute;
+    top: 1vh;
+    right: 1vw;
+    color: var(--color-primary);
+}
 
+.logout-container {
+    color: var(--color-primary);
+    display: flex;
+    align-items: center;
+}

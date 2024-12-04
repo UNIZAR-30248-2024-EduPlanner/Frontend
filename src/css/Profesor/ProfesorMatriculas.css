@@ -7,3 +7,7 @@
     }
     margin-top: 5vh;
 }
+
+.lista-item {
+    cursor: pointer;
+}
