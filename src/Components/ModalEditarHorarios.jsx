@@ -21,7 +21,7 @@ const ModalEditarHorarios = ({ isOpen, onOpenChange, listaCompletaEventos }) => 
     const [descripcion, setDescripcion] = useState("");
     const [fecha, setFecha] = useState("");
     const [error, setError] = useState("");
-    console.log(listaCompletaEventos);
+    // console.log(listaCompletaEventos);
 
 
     const filteredGrupos = Array.from(new Set(

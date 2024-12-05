@@ -5,6 +5,7 @@ import Lista from "../../Components/Lista";
 import { Button, Input } from "@nextui-org/react";
 import { FaMagnifyingGlass } from "react-icons/fa6";
 import "../../css/Profesor/ProfesorMatriculas.css";
+import FlechaVolver from "../../Components/FlechaVolver";
 import { useNavigate } from "react-router-dom";
 import constants from "../../constants/constants";
 
@@ -44,6 +45,7 @@ const ProfesorMatriculas = () => {
 
     return (
         <div className="flex flex-col items-center">
+            <FlechaVolver/>
             <h1 className="tit"> Tus asignaturas, {user.name} </h1>
             <div className="busqueda-asig flex justify-center">
                 <Input

@@ -2,7 +2,7 @@ import '../css/Calendario.css'
 import { FaRegArrowAltCircleLeft, FaRegArrowAltCircleRight } from "react-icons/fa";
 import { Button, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, Tooltip } from '@nextui-org/react'
 import { useEffect, useState } from 'react'
-import { calcularSolapes, convertirAHorasEnMinutos, getContrastColor, isInWeek, numberToMonth } from '../Components/CalendarioFunctions.jsx';
+import { calcularSolapes, convertirAHorasEnMinutos, getAntiContrastColor, getAuxColor, getContrastColor, isInWeek, numberToMonth } from '../Components/CalendarioFunctions.jsx';
 import { useDisclosure } from "@nextui-org/react";
 import ModalComponent from "../Components/ModalHorario";
 import ModalComponentcreate from "../Components/ModalEditarHorarios";
@@ -10,6 +10,7 @@ import { getAllEventsForUser } from '../supabase/event/event.js';
 import { useAuth } from "../context/AuthContext";
 import { getFullNonVisibleAcademicEventsForUser } from '../supabase/customAcademicEvent/customAcademicEvent.js';
 import Logout from '../Components/Logout.jsx';
+import { GrNotes } from "react-icons/gr";
 import { useNavigate } from 'react-router-dom';
 import constants from '../constants/constants.jsx';
 
@@ -102,7 +103,7 @@ const Calendario = () => {
 
             const minutosS = convertirAHorasEnMinutos(e.start)
             const minutosE = convertirAHorasEnMinutos(e.end)
-    
+            
             res.push({
                 name: e.name,
                 start: e.start,
@@ -118,6 +119,7 @@ const Calendario = () => {
                 top: ((hoursStart - firstHour + 1) * alturaPorHora + minutesStart * alturaPorMinuto).toString() + "vh",
                 left: (wFirstCol + (dayIndex * wCol) + (numSolapes == 0 ? 0 : position * (wCol / numSolapes))).toString() + "vw",
                 color: color,
+                type: e.type,
                 textColor: getContrastColor(color)
             });
         });
@@ -126,7 +128,6 @@ const Calendario = () => {
     };
 
     const getHorarios = async () => {
-
         // Se piden los horarios a la BD
         const horariosRes = await getAllEventsForUser(user.id);
         const horariosRecuperar = await getFullNonVisibleAcademicEventsForUser(user.id);
@@ -154,39 +155,6 @@ const Calendario = () => {
         // setHorarios(procesarHorarios(horariosRes.data));
         setHorariosrecu(horariosRecuperar.data);
     }
-
-    /*const horariosAux = [
-        {
-            id: "test1", name: "Matemáticas II", starting_date: "2024-11-4", end_date: null, group_name: "Grupo D", periodicity: null, description: "srvwwe", start: "8:00", end: "10:00", subject_id: "1", type: null, place: "Aula B.1",
-        },
-        {
-            id: "test2", name: "Matemáticas I", starting_date: "2024-11-4", end_date: null, group_name: "Grupo A", periodicity: null, description: "srvwwe", start: "8:00", end: "10:00", subject_id: "2", type: null, place: "Aula A.11",
-        },
-        {
-            id: "test3", name: "Programación I", starting_date: "2024-11-4", end_date: null, group_name: "Grupo E", periodicity: null, description: "srvwwe", start: "8:00", end: "10:00", subject_id: "3", type: null, place: "Laboratorio C.3",
-        },
-        {
-            id: "test4", name: "Programación I", starting_date: "2024-11-4", end_date: null, group_name: "Grupo E", periodicity: null, description: "srvwwe", start: "8:00", end: "10:00", subject_id: "4", type: null, place: "Laboratorio C.3",
-        },
-        {
-            id: "test5", name: "FAE", starting_date: "2024-11-4", end_date: null, group_name: "Grupo F", periodicity: null, description: null, start: "10:00", end: "12:00", subject_id: "5", type: null, place: "Aula D.4",
-        },
-        {
-            id: "test6", name: "IC", starting_date: "2024-11-4", end_date: null, group_name: "Grupo G", periodicity: null, description: null, start: "10:00", end: "12:00", subject_id: "6", type: null, place: "Aula E.5",
-        },
-        {
-            id: "test7", name: "Matemáticas II", starting_date: "2024-11-4", end_date: null, group_name: "Grupo D", periodicity: null, description: null, start: "10:00", end: "12:00", subject_id: "37", type: null, place: "Aula B.1",
-        },
-        {
-            id: "test8", name: "Matemáticas I", starting_date: "2024-11-4", end_date: null, group_name: "Grupo A", periodicity: null, description: null, start: "10:00", end: "12:00", subject_id: "8", type: null, place: "Aula A.11",
-        },
-        {
-            id: "test9", name: "Matemáticas II", starting_date: "2024-11-4", end_date: null, group_name: "Grupo D", periodicity: null, description: null, start: "12:00", end: "13:00", subject_id: "9", type: null, place: "Aula B.1",
-        },
-        {
-            id: "test10", name: "Matemáticas II", starting_date: "2024-11-4", end_date: null, group_name: "Grupo D", periodicity: null, description: null, start: "13:00", end: "14:00", subject_id: "11", type: null, place: "Aula B.1",
-        }
-    ]; */
 
     // Función que obtiene el día de la semana a partir de una fecha en formato "YYYY-MM-DD"
     const obtenerDiaSemana = (fechaStr) => {
@@ -220,11 +188,11 @@ const Calendario = () => {
             newMonday.setDate(newMonday.getDate() - 7);
         }
         newMonday.setHours(0, 0, 0, 0); // Establece la hora en 00:00:00
-
         setMondayWeek(newMonday);
 
         // Extraemos el mes y año
-        setMonthYear(numberToMonth(newMonday.getMonth()) + " " + newMonday.getFullYear())
+        const my = numberToMonth(newMonday.getMonth()) + " " + newMonday.getFullYear();
+        setMonthYear(my)
 
         // Array para almacenar solo los números de los días de la semana desde lunes a domingo
         const days = [];
@@ -244,9 +212,9 @@ const Calendario = () => {
 
         // Calcular el lunes de esta semana
         const monday = new Date(today);
+
         monday.setDate(today.getDate() - (dayOfWeek === 0 ? 6 : dayOfWeek - 1));
         monday.setHours(0, 0, 0, 0); // Establece la hora en 00:00:00
-
         setMondayWeek(monday)
 
         // Extraemos el mes y año
@@ -267,7 +235,6 @@ const Calendario = () => {
     useEffect(() => {
         if (user && user.id) {
             getDiasSemana();
-
             getHorarios();
         }
     }, [user, ]);
@@ -291,11 +258,6 @@ const Calendario = () => {
         setModalData(data);
         onOpen();
     };
-
-    if (user) {
-        console.log(user);
-        console.log(user.type === "teacher");    
-    }
 
     return (
         <div className="calendario">
@@ -366,7 +328,14 @@ const Calendario = () => {
                         height: `${h.height}`,
                         width: `${h.width}vw`,
                         color: `${h.textColor}`,
-                        backgroundColor: `${h.color}`,
+                        background: h.type === "Practicas"
+                        ? `repeating-linear-gradient(
+                            45deg, 
+                            ${h.color}, 
+                            ${h.color} 10px, 
+                            ${getAuxColor(h.color)} 10px, 
+                            ${getAuxColor(h.color)} 20px)`
+                        : `${h.color}`,
                         borderWidth: "1px",
                         borderColor: "black",
                         overflow: "hidden"
@@ -375,7 +344,18 @@ const Calendario = () => {
                         //onClick={() => console.log(`Start: ${h.start}, End: ${h.end}, Name: ${h.name}`)}
                         onClick={() => handleOpenModal(h)}
                     >
-                        <p className="ml-[5px] font-bold"> {h.start} - {h.end} </p>
+                        <div className="flex items-center">
+                            <p className="ml-[5px] font-bold"> {h.start} - {h.end} </p>
+                            {h.type === "Examen" && (
+                                <div style={{
+                                    color: getContrastColor(h.color),
+                                    marginLeft: "10px",
+                                    fontWeight: "bold"
+                                }}>
+                                    <GrNotes/>
+                                </div>
+                            )}
+                        </div>
                         <p className="ml-[5px]"> {h.name} </p>
                     </div>
                 ))}

@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom"
 import { getSubjectById } from "../../supabase/course/course";
 import { Button, Input, useDisclosure } from "@nextui-org/react";
 import { FaCirclePlus, FaMagnifyingGlass } from "react-icons/fa6";
+import FlechaVolver from "../../Components/FlechaVolver";
 import constants from "../../constants/constants";
 import { FaRegTrashAlt } from "react-icons/fa";
 import ModalComponent from "../../Components/ModalComponent";
@@ -63,6 +64,7 @@ const GestionarMatriculas = () => {
 
     return (
         <div className="flex flex-col items-center">
+            <FlechaVolver/>
             <h1 className="tit"> 
                 Alumnos de {subject && subject.name && subject.name} 
             </h1>

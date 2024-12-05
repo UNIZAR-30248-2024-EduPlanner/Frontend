@@ -58,6 +58,10 @@ export function hexToRgb(hex) {
     return { r, g, b };
 }
 
+function rgbToHex(r, g, b) {
+    return `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
+}
+
 // Devuelve 'black' o 'white' para usar como color del texto sobre un color
 // de fondo en hexadecimal <hex>
 export function getContrastColor(hex) {
@@ -70,6 +74,30 @@ export function getContrastColor(hex) {
     return luminance >= 128 ? 'black' : 'white';
 }
 
+export function getAntiContrastColor(hex) {
+    const { r, g, b } = hexToRgb(hex);
+
+    // Calcular la luminancia relativa
+    const luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+
+    // Decidir el color del texto
+    return luminance >= 128 ? 'white' : 'black';
+}
+
+export function getAuxColor(hex, percentage = 20) {
+    const { r, g, b } = hexToRgb(hex);
+
+    const factor = (100 - percentage) / 100;
+
+    // Oscurece cada componente RGB
+    const newR = Math.max(0, Math.floor(r * factor));
+    const newG = Math.max(0, Math.floor(g * factor));
+    const newB = Math.max(0, Math.floor(b * factor));
+
+    // Convierte de nuevo a hexadecimal
+    return rgbToHex(newR, newG, newB);
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // Horarios
 ////////////////////////////////////////////////////////////////////////////////
@@ -78,6 +106,7 @@ export function getContrastColor(hex) {
 export const numberToMonth = (number) => {
     if (number < 0 || number > 11) {
         console.error("number debe ser un número entre 0 y 11");
+        return "";
     } else {
         const months = [
             "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio",
@@ -93,7 +122,7 @@ export const monthToNumber = (month) => {
     const monthMap = {
         Enero: 0, Febrero: 1, Marzo: 2, Abril: 3,
         Mayo: 4, Junio: 5, Julio: 6, Agosto: 7,
-        Septiembre: 9, Octubre: 10, Noviembre: 11, Diciembre: 12
+        Septiembre: 8, Octubre: 9, Noviembre: 10, Diciembre: 11
     };
 
     return monthMap[month]

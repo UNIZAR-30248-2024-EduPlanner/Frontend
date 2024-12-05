@@ -99,7 +99,7 @@ const MatricularAlumnos = () => {
                 </div>
             </div>
             <div className="fich">
-                <h2 className="org-crear-tit"> Sube un fichero de NIPS </h2>
+                <h2 className="org-crear-tit"> Sube un fichero de NIPs </h2>
                 <p className="formato">
                     El formato del fichero por línea será el siguiente: <br />
                     <span>
