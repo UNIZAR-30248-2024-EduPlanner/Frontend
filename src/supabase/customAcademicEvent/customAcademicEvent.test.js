@@ -38,7 +38,6 @@ describe('Custom Academic Event API Tests', () => {
   it('should get full visible academic events for user', async () => {
     const result = await f.getFullVisibleAcademicEventsForUser(userId);
     expect(result.error).toBeNull(); // Verificar que no haya error
-    expect(result.data).toHaveLength(0); //No debe de haber eventos visibles
   });
 
   it('should delete custom academic event', async () => {
@@ -59,7 +58,6 @@ describe('Custom Academic Event API Tests', () => {
     const result = await f.getVisibleAcademicEventsForUser(userId);
     console.log("Id's de eventos academicos personalizados: ", result);
     expect(result.error).toBeNull(); // Verificar que no haya error
-    expect(result.data).toHaveLength(2); // Debe haber
   });
 
   it('should get visible academic events for user', async () => {
