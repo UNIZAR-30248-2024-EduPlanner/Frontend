@@ -143,6 +143,22 @@ describe('Teacher API Tests', () => {
     expect(result.error).toBeNull(); // Verifica que no haya error
   });
 
+  // Prueba para que un profesor asocie a un estudiante a una asignatura
+  it('should let a teacher assign a student to a subject', async () => {
+    const result = await f.letTeacherAssociateStudentToSubject(testArrayTeachers[1].nip, 111111, 99995);
+    expect(result.error).toBeNull(); // Verifica que no haya error
+  });
+
+  it('should get the students of a subject', async () => {
+    const result = await f.getStudentsAssignedToSubject(testArrayTeachers[1].nip, 99995);
+    expect(result.error).toBeNull(); // Verifica que no haya error
+  });
+
+  it('should let a teacher unassociate a student from a subject', async () => {
+    const result = await f.letTeacherUnAssociateStudentFromSubject(testArrayTeachers[1].nip, 111111, 99995);
+    expect(result.error).toBeNull(); // Verifica que no haya error
+  });
+
   it('should unassign a subject from a teacher', async () => {
     const result = await f.unassignSubjectFromTeacher(testArrayTeachers[1].nip, 99995);
     expect(result.error).toBeNull(); // Verifica que no haya error
