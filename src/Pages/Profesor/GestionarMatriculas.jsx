@@ -8,9 +8,12 @@ import constants from "../../constants/constants";
 import { FaRegTrashAlt } from "react-icons/fa";
 import ModalComponent from "../../Components/ModalComponent";
 import { getStudentsBySubject } from "../../supabase/student/student";
+import { letTeacherUnAssociateStudentFromSubject } from "../../supabase/teacher/teacher";
+import { useAuth } from "../../context/AuthContext";
 
 const GestionarMatriculas = () => {
     const { id } = useParams(); // id de la asignatura
+    const { user } = useAuth();
     const navigate = useNavigate();
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
@@ -32,11 +35,18 @@ const GestionarMatriculas = () => {
 
     // Función para borrar el elemento seleccionado
     const borrar = async (nip) => {
-        // Filtrar la lista para eliminar el elemento sin recargar la página
-        setAlumnos((prevList) => prevList.filter((item) => item.nip !== nip));
-        setFilteredList((prevList) => prevList.filter((item) => item.nip !== nip));
+        console.log("USER IN COMPONENT:", user);
+        if (user && user.nip) {
+            // Filtrar la lista para eliminar el elemento sin recargar la página
+            setAlumnos((prevList) => prevList.filter((item) => item.nip !== nip));
+            setFilteredList((prevList) => prevList.filter((item) => item.nip !== nip));
 
-        // TODO: llamada a la API para desmatricular al alumno
+            // Llamada a la API para desmatricular al alumno
+            const res = await letTeacherUnAssociateStudentFromSubject(user.nip, nip, subject.subject_code);
+            if (res.error) return console.error(res.error);
+        } else {
+            console.error("Noooooooooooooooo")
+        }
     };
 
     // Función para manejar la apertura del modal y setear el ID seleccionado

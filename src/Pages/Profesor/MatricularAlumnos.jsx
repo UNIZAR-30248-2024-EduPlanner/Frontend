@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 import FlechaVolver from "../../Components/FlechaVolver";
 import Logout from "../../Components/Logout";
 import { useEffect, useState } from "react";
@@ -6,9 +6,13 @@ import { Button, Input, useDisclosure } from "@nextui-org/react";
 import ModalComponent from "../../Components/ModalComponent";
 import SubidaFichero from "../../Components/SubidaFichero";
 import { getSubjectById } from "../../supabase/course/course";
+import { letTeacherAssociateStudentToSubject } from "../../supabase/teacher/teacher";
+import { useAuth } from "../../context/AuthContext";
 
 const MatricularAlumnos = () => {
     const { id } = useParams(); // id de la asignatura
+    const { user } = useAuth();
+    const navigate = useNavigate();
 
     const [subject, setSubject] = useState(null);
     const [nip, setNip] = useState("");
@@ -41,9 +45,10 @@ const MatricularAlumnos = () => {
         }
 
         // Si llega aquí, se matricula al alumno
+        const res = await letTeacherAssociateStudentToSubject(user.nip, nip, subject.subject_code);
+        if (res.error) setError(res.error);
 
-        // TODO
-        
+        navigate(-1);
     }
 
     useEffect(() => {
@@ -85,7 +90,7 @@ const MatricularAlumnos = () => {
                     onChange={(e) => setNip(e.target.value)}
                 />
                 <Button size="lg" color="primary" onClick={onOpen}>
-                    Crear
+                    Matricular
                 </Button>
                 <ModalComponent
                     isOpen={isOpen}
@@ -106,7 +111,13 @@ const MatricularAlumnos = () => {
                         NIP; <br />
                     </span>
                 </p>
-                <SubidaFichero type={"nips"} lista={lista} setLista={setLista} />
+                <SubidaFichero 
+                  type={"nips"} 
+                  lista={lista} 
+                  setLista={setLista} 
+                  teacherNip={user.nip} 
+                  subjectCode={subject && subject.subject_code} 
+                />
             </div>
             </div>
         </>

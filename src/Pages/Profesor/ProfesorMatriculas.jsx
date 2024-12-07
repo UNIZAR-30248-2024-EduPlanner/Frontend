@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../../context/AuthContext"
 import { getSubjectsByTeacherId } from "../../supabase/teacher/teacher";
-import Lista from "../../Components/Lista";
-import { Button, Input } from "@nextui-org/react";
+import { Input } from "@nextui-org/react";
 import { FaMagnifyingGlass } from "react-icons/fa6";
 import "../../css/Profesor/ProfesorMatriculas.css";
 import FlechaVolver from "../../Components/FlechaVolver";

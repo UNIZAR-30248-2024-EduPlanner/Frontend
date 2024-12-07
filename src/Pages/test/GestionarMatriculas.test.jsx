@@ -7,6 +7,7 @@ import { getStudentsBySubject } from "../../supabase/student/student";
 import { useNavigate } from "react-router-dom";
 import constants from "../../constants/constants";
 import { AuthProvider } from "../../context/AuthContext"; // Import AuthProvider
+import { letTeacherUnAssociateStudentFromSubject } from "../../supabase/teacher/teacher.js";
 
 // Mock dependencies
 vi.mock("../../supabase/course/course", () => ({
@@ -16,6 +17,24 @@ vi.mock("../../supabase/course/course", () => ({
 vi.mock("../../supabase/student/student", () => ({
   getStudentsBySubject: vi.fn(),
 }));
+
+vi.mock("../../supabase/teacher/teacher", () => ({
+  letTeacherUnAssociateStudentFromSubject: vi.fn(), // Añadir el mock correctamente
+}));
+
+const mockUser = { id: 1, nip: 123, name: "Profesor Ejemplo" }; // Mock user
+
+const mockUseAuth = {
+  user: { id: 1, nip: 123, name: "Profesor Ejemplo" }
+};
+vi.mock("../../context/AuthContext", async (importOriginal) => {
+  const actual = await importOriginal();
+  return {
+      ...actual,
+      useAuth: () => mockUseAuth
+  };
+});
+
 
 vi.mock("react-router-dom", async (importOriginal) => {
   const actual = await importOriginal();
@@ -28,14 +47,13 @@ vi.mock("react-router-dom", async (importOriginal) => {
 });
 
 describe("GestionarMatriculas Component", () => {
-  const mockSubject = { id: "1", name: "Matemáticas" };
+  const mockSubject = { id: "1", name: "Matemáticas", subject_code: 12 };
   const mockStudents = [
-    { id: 1, nip: "12345", name: "Juan Pérez" },
-    { id: 2, nip: "67890", name: "Ana Gómez" },
+    { id: 1, nip: 12345, name: "Juan Pérez" },
+    { id: 2, nip: 67890, name: "Ana Gómez" },
   ];
 
   const mockNavigate = vi.fn();
-  const mockUser = { id: 1, name: "Profesor Ejemplo" }; // Mock user
 
   beforeEach(() => {
     useNavigate.mockReturnValue(mockNavigate);
@@ -103,30 +121,44 @@ describe("GestionarMatriculas Component", () => {
   });
 
   it("opens modal and deletes student when confirmed", async () => {
+    // Simular éxito al llamar a la función
+    letTeacherUnAssociateStudentFromSubject.mockResolvedValue({ error: null });
+  
     renderWithAuthProvider(
       <Router>
         <GestionarMatriculas />
       </Router>
     );
-
-    // Wait for the delete button
-    await waitFor(() => screen.getByLabelText(/trash 0/i));
-
-    const deleteButton = screen.getByLabelText("trash 0");
+  
+    // Esperar a que el botón de eliminación esté disponible
+    const deleteButton = await screen.findByLabelText("trash 0");
     fireEvent.click(deleteButton);
-
-    // Check if the modal is open
+  
+    // Verificar que el modal se muestra
     expect(screen.getByText("Confirmar eliminación")).toBeInTheDocument();
-
-    // Simulate accepting the deletion
+  
+    // Simular la confirmación
     const modalAcceptButton = screen.getByText("Aceptar");
     fireEvent.click(modalAcceptButton);
+  
+    console.log("iuuuuuuuuuuu", letTeacherUnAssociateStudentFromSubject.mock.calls);
 
-    // Verify that the student has been deleted
-    expect(getStudentsBySubject).toHaveBeenCalledTimes(1);
+    // Verificar la llamada a la función con los argumentos esperados
+    await waitFor(() =>
+      expect(letTeacherUnAssociateStudentFromSubject).toHaveBeenCalledWith(
+        mockUser.nip,
+        12345, // NIP del estudiante
+        mockSubject.subject_code // Código de la asignatura
+      )
+    );
+
+    // Verificar que el estudiante ya no está en la lista
     expect(screen.queryByText("12345 - Juan Pérez")).not.toBeInTheDocument();
+  
+    // Asegurarse de que se actualizó la lista
+    expect(getStudentsBySubject).toHaveBeenCalledTimes(1);
   });
-
+    
   it("navigates to MatricularAlumnos page when the button is clicked", async () => {
     renderWithAuthProvider(
       <Router>
