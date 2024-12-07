@@ -3,6 +3,8 @@ import { useState } from "react";
 import { unenrollStudent } from "../supabase/student/student.js";
 import PropTypes from 'prop-types';
 import { useAuth } from "../context/AuthContext";
+import '../css/Components/ModalHorario.css';
+import '../css/Components/ModalEditarHorario.css';
 
 const ModalDesasociarAsignaturas = ({ isOpen, onOpenChange, asignaturas, empty }) => {
   const [selectedAsignaturas, setSelectedAsignaturas] = useState([]); // Para guardar asignaturas seleccionadas
@@ -38,6 +40,7 @@ const ModalDesasociarAsignaturas = ({ isOpen, onOpenChange, asignaturas, empty }
       // Limpiar las asignaturas seleccionadas y cerrar el modal
       setSelectedAsignaturas([]);
       setConfirmModalOpen(false);
+      window.location.reload();
     }
 
   };
@@ -68,8 +71,10 @@ const ModalDesasociarAsignaturas = ({ isOpen, onOpenChange, asignaturas, empty }
             textAlign: "center",
           }}
         >
-          <ModalHeader className="text-center text-xl">{"Gestionar Asignaturas"}</ModalHeader>
-          <hr className="separator" style={{ width: "100%", margin: "10px 0", border: "1px solid #ccc" }} />
+          <hr className="separator"/>
+          <div className="modal-header">
+            <h2 style={{ marginBottom: "0" }} className="large-bold-title">Gestionar Asignaturas</h2>
+          </div>
           <ModalBody
             style={{
               transform: "scale(0.9)",
@@ -79,38 +84,60 @@ const ModalDesasociarAsignaturas = ({ isOpen, onOpenChange, asignaturas, empty }
             }}
           >
             {!empty ? (
-              <ul className="list-disc pl-5">
+              <ul className="pl-5">
                 {asignaturas.map((asignatura) => (
                   <li
                     key={asignatura.id}
                     className="flex justify-between items-center mb-4"
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      backgroundColor: '#f0f0f0', // Fondo gris claro
+                      borderRadius: '8px', // Bordes redondeados
+                      padding: '10px', // Margen interno
+                      boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)', // Sombra para resaltar
+                    }}
                   >
+                    {/* Nombre de la asignatura alineado a la izquierda */}
+                    <span
+                      //className="text-xl"
+                      style={{
+                        flex: 1,
+                        textAlign: 'left',
+                        marginRight: '10px',
+                      }}
+                    >
+                      {asignatura.name && asignatura.name}
+                    </span>
                     <input
                       type="checkbox"
                       checked={selectedAsignaturas.includes(asignatura.id)}
                       onChange={() => handleCheckboxChange(asignatura.id)}
                       className="mr-2"
+                      style={{
+                        width: '24px',
+                        height: '24px',
+                        cursor: 'pointer',
+                      }}
                     />
-                    <span className="text-lg font-semibold">{asignatura.name && asignatura.name }</span>
                   </li>
                 ))}
               </ul>
             ) : (
               <p>No tienes asignaturas asociadas.</p>
             )}
-            <Button
-              color="danger"
-              onPress={handleDesasociarClick}
-              disabled={selectedAsignaturas.length === 0} // Solo habilitar si hay asignaturas seleccionadas
-            >
-              Desasociarse
-            </Button>
           </ModalBody>
-          <ModalFooter>
-            <Button color="secondary" onPress={onOpenChange}>
-              Cerrar
-            </Button>
-          </ModalFooter>
+          {/* Botón solo aparece si hay asignaturas seleccionadas */}
+          {selectedAsignaturas.length > 0 && (
+              <Button
+                style={{ marginBottom: "20px" }}
+                color="danger"
+                onPress={handleDesasociarClick}
+              >
+                Desasociarse
+              </Button>
+            )}
         </ModalContent>
       </Modal>
 
@@ -135,13 +162,10 @@ const ModalDesasociarAsignaturas = ({ isOpen, onOpenChange, asignaturas, empty }
             textAlign: "center",
           }}
         >
-          <ModalHeader className="text-center text-xl">
-            Confirmar desasociación
-          </ModalHeader>
-          <hr
-            className="separator"
-            style={{ width: "100%", margin: "10px 0", border: "1px solid #ccc" }}
-          />
+          <hr className="separator"/>
+          <div className="modal-header" style={{ marginTop: "20px" }}>
+            <h2 style={{ marginBottom: "0" }} className="large-bold-title">Confirmar Desasociación</h2>
+          </div>
           <ModalBody
             style={{
               transform: "scale(0.9)",
@@ -156,7 +180,7 @@ const ModalDesasociarAsignaturas = ({ isOpen, onOpenChange, asignaturas, empty }
             </p>
           </ModalBody>
           <ModalFooter>
-            <Button color="secondary" onPress={handleConfirmModalClose}>
+            <Button color="primary" onPress={handleConfirmModalClose}>
               Cancelar
             </Button>
             <Button color="danger" onPress={confirmarDesasociacion}>
