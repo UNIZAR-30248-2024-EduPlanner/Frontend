@@ -90,7 +90,13 @@ const GestionarMatriculas = () => {
                                     {item.nip} - {item.name}
                                 </p>
                                 <div className="lista-iconos">
-                                    <Button className="trash" size="lg" onClick={() => handleOpenModal(item.nip)}>
+                                    <Button 
+                                      className="trash" 
+                                      size="lg" 
+                                      onClick={() => handleOpenModal(item.nip)}
+                                      aria-label={"trash" + {index}}
+                                      data-testid="trash"
+                                    >
                                         <FaRegTrashAlt />
                                     </Button>
                                 </div>
@@ -107,8 +113,16 @@ const GestionarMatriculas = () => {
                                 <p className="lista-text">
                                     {item.nip} - {item.name}
                                 </p>
-                                <div className="lista-iconos">
-                                    <Button className="trash" size="lg" onClick={() => handleOpenModal(item.nip)}>
+                                <div 
+                                  className="lista-iconos"
+                                >
+                                    <Button 
+                                      className="trash" 
+                                      aria-label={`trash ${index}`}
+                                      data-testid="trash"
+                                      size="lg" 
+                                      onClick={() => handleOpenModal(item.nip)}
+                                    >
                                         <FaRegTrashAlt />
                                     </Button>
                                 </div>
@@ -130,6 +144,7 @@ const GestionarMatriculas = () => {
             <div 
               className="create-button text-primary"
               onClick={() => navigate(constants.root + "MatricularAlumnos/" + id)}
+              data-testid="create-button" // Add a test ID
             >
                 <FaCirclePlus />
             </div>
