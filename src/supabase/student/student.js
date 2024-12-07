@@ -245,7 +245,7 @@ export const getStudentsBySubject = async (subject_id) => {
     students.data.map(async student => {
       const studentData = await supabase
         .from('users')
-        .select('nip', 'name', 'email')
+        .select('name')
         .eq('id', student.student_id).select();
 
       return studentData.data[0];

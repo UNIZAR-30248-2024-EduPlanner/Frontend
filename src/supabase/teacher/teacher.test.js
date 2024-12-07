@@ -149,6 +149,12 @@ describe('Teacher API Tests', () => {
     expect(result.error).toBeNull(); // Verifica que no haya error
   });
 
+  it('should let a teacher assign multiple students to a subject', async () => {
+    await f.letTeacherUnAssociateStudentFromSubject(testArrayTeachers[1].nip, 111111, 99995);
+    const result = await f.letTeacherAssociateArrayStudentsToSubject(testArrayTeachers[1].nip, [111111, 222222], 99995);
+    expect(result.error).toBeNull(); // Verifica que no haya error
+  });
+
   it('should get the students of a subject', async () => {
     const result = await f.getStudentsAssignedToSubject(testArrayTeachers[1].nip, 99995);
     expect(result.error).toBeNull(); // Verifica que no haya error
@@ -156,6 +162,7 @@ describe('Teacher API Tests', () => {
 
   it('should let a teacher unassociate a student from a subject', async () => {
     const result = await f.letTeacherUnAssociateStudentFromSubject(testArrayTeachers[1].nip, 111111, 99995);
+    await f.letTeacherUnAssociateStudentFromSubject(testArrayTeachers[1].nip, 222222, 99995);
     expect(result.error).toBeNull(); // Verifica que no haya error
   });
 
