@@ -147,6 +147,11 @@ describe('Student API Tests', () => {
     expect(result).not.toBeNull();
   });
 
+  it('should get students info by subject', async () => {
+    const result = await f.getStudentsBySubject(323);
+    expect(result).not.toBeNull();
+  });
+
   it('should get subjects info by student', async () => {
     await f.matriculateStudentOnMultipleSubjects(111111, [99995, 99996]);
     const result = await f.getSubjectsInfoByStudent(2346);

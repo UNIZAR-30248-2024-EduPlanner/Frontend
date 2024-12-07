@@ -242,12 +242,12 @@ export const getStudentsBySubject = async (subject_id) => {
     .select('student_id')
     .eq('subject_id', subject_id);
 
-    const studentsData = await Promise.all(
-      students.data.map(async student => {
-        const studentData = await supabase
-          .from('users')
-          .select('nip', 'name', 'email')
-          .eq('id', student.student_id).select();
+  const studentsData = await Promise.all(
+    students.data.map(async student => {
+      const studentData = await supabase
+        .from('users')
+        .select('name')
+        .eq('id', student.student_id).select();
 
         return studentData.data[0];
       })
