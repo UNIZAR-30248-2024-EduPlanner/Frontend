@@ -300,6 +300,28 @@ export const letTeacherAssociateStudentToSubject = async (teacherNip, studentNip
   }
 }
 
+export const letTeacherAssociateArrayStudentsToSubject = async (teacherNip, studentNips, subjectCode) => {
+  try {
+    // Matricular al estudiante en cada asignatura utilizando la función matriculateStudent
+    for (const student of studentNips) {
+      const result = await letTeacherAssociateStudentToSubject(teacherNip, student, subjectCode);
+
+      if (result.error) {
+        console.error(`Error al asignar al alumno en la asignatura:`, result.error);
+        return { data: null, error: result.error };
+      }
+    }
+
+    console.log('Alumnos asignados correctamente en la asignatura');
+    return { data: `Alumnos asignados en la asignatura`, error: null };
+  } catch (err) {
+    console.error('Ha ocurrido un error al asignar al alumno en la asignatura:', err);
+    return { data: null, error: err };
+  }
+}
+
+
+
 export const letTeacherUnAssociateStudentFromSubject = async (teacherNip, studentNip, subjectCode) => {
   // Obtener el ID del profesor
   const teacherId = await getTeacherIdByNip(teacherNip);
