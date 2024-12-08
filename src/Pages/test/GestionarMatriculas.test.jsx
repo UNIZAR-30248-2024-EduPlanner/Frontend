@@ -141,8 +141,6 @@ describe("GestionarMatriculas Component", () => {
     const modalAcceptButton = screen.getByText("Aceptar");
     fireEvent.click(modalAcceptButton);
   
-    console.log("iuuuuuuuuuuu", letTeacherUnAssociateStudentFromSubject.mock.calls);
-
     // Verificar la llamada a la función con los argumentos esperados
     await waitFor(() =>
       expect(letTeacherUnAssociateStudentFromSubject).toHaveBeenCalledWith(
