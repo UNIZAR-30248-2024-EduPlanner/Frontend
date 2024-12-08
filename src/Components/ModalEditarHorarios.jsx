@@ -4,10 +4,11 @@ import '../css/Components/ModalEditarHorario.css';
 import { createCustomEvent } from "../supabase/customEvent/customEvent";
 import { CheckboxGroup, Checkbox } from "@nextui-org/react";
 import { Tabs, Tab } from "@nextui-org/react";
-import { useState } from "react";
+import { useEffect, useState } from 'react'
 import { editCustomAcademicEventVisibility } from '../supabase/customAcademicEvent/customAcademicEvent';
+import { createAcademicEventAndPublish } from '../supabase/academicEvent/academicEvent';
 
-const ModalEditarHorarios = ({ isOpen, onOpenChange, listaCompletaEventos }) => {
+const ModalEditarHorarios = ({ isOpen, onOpenChange, listaCompletaEventos, listaCompletaEventosVisibles }) => {
     const { user } = useAuth();
 
 
@@ -21,7 +22,26 @@ const ModalEditarHorarios = ({ isOpen, onOpenChange, listaCompletaEventos }) => 
     const [descripcion, setDescripcion] = useState("");
     const [fecha, setFecha] = useState("");
     const [error, setError] = useState("");
-    // console.log(listaCompletaEventos);
+    const [tipo, setTipo] = useState("");
+    const [selectedAsignaturaId, setSelectedAsignaturaId] = useState(null);
+    const [initialLoad, setInitialLoad] = useState(true);
+    let combinedList = [...listaCompletaEventos, ...listaCompletaEventosVisibles];
+    let tarea = false;
+    combinedList = combinedList.filter(evento => !evento.date);
+
+    const uniqueAsignaturas = Array.from(
+        new Set(combinedList.map(evento => evento.name + evento.subject_id))
+    ).map(uniqueKey => combinedList.find(evento => evento.name + evento.subject_id === uniqueKey));
+
+    useEffect(() => {
+        if (uniqueAsignaturas.length > 0 && !selectedAsignaturaId) {
+            setSelectedAsignaturaId(uniqueAsignaturas[0]?.subject_id);
+            setSelectedAsignatura(uniqueAsignaturas[0]?.name || "");
+        }
+    }, [uniqueAsignaturas, selectedAsignaturaId]);
+
+    console.log(listaCompletaEventos);
+    console.log(user);
 
 
     const filteredGrupos = Array.from(new Set(
@@ -29,6 +49,19 @@ const ModalEditarHorarios = ({ isOpen, onOpenChange, listaCompletaEventos }) => 
             .filter(evento => evento.name === selectedAsignatura)
             .map(evento => evento.group_name)
     ));
+
+    const filteredGruposFull = Array.from(new Set(
+        combinedList
+            .filter(evento => evento.name === selectedAsignatura)
+            .map(evento => evento.group_name)
+    ));
+
+    useEffect(() => {
+        if (filteredGruposFull.length > 0 && !selectedGrupo && initialLoad) {
+            setSelectedGrupo(filteredGruposFull[0]);
+            setInitialLoad(false);
+        }
+    }, [filteredGruposFull, selectedGrupo, initialLoad]);
 
     const filteredHorarios = listaCompletaEventos.filter(evento =>
         evento.name === selectedAsignatura && evento.group_name === selectedGrupo
@@ -44,39 +77,77 @@ const ModalEditarHorarios = ({ isOpen, onOpenChange, listaCompletaEventos }) => 
     const handleSubmit = async () => {
         const horaInicioMinima = "08:00";
         const horaFinalMaxima = "21:00";
+        console.log("Tipo de evento:", tipo);
 
-        if (!nombreActividad || !horaInicio || !horaFin || !fecha) {
-            setError("Por favor, complete todos los campos obligatorios (nombre, horas y fecha).");
-            window.scrollTo({ top: 0, behavior: "smooth" });
-            return;
+        if (tipo === "academico") {
+            if (!selectedAsignatura || !selectedGrupo) {
+                setError("Escoga una asignatura y un grupo para crear el evento y publicarlo.");
+                window.scrollTo({ top: 0, behavior: "smooth" });
+                return;
+            }
+            if (!horaInicio || !horaFin || !fecha) {
+                setError("Por favor, complete todos los campos obligatorios ( horas y fecha).");
+                window.scrollTo({ top: 0, behavior: "smooth" });
+                return;
+            }
+
+            if (horaInicio < horaInicioMinima) {
+                setError("La hora de inicio debe ser después de las 08:00.");
+                window.scrollTo({ top: 0, behavior: "smooth" });
+                return;
+            }
+
+            if (horaFin > horaFinalMaxima) {
+                setError("La hora de finalización debe ser antes de las 21:00.");
+                window.scrollTo({ top: 0, behavior: "smooth" });
+                return;
+            }
+
+            if (horaInicio >= horaFin) {
+                setError("La hora de inicio debe ser anterior a la hora de finalización.");
+                window.scrollTo({ top: 0, behavior: "smooth" });
+                return;
+            }
+            await createAcademicEventAndPublish(selectedAsignatura, fecha, fecha, selectedGrupo, 0, nombreActividad, "Examen", espacioReservado, horaInicio, horaFin, selectedAsignaturaId);
+        } else if (tarea === true) {
+            if (!selectedAsignatura || !selectedGrupo) {
+                setError("Escoga una asignatura y un grupo para crear el evento y publicarlo.");
+                window.scrollTo({ top: 0, behavior: "smooth" });
+                return;
+            }
+            if (!descripcion || !horaFin || !fecha) {
+                setError("Por favor, complete todos los campos obligatorios (tarea, hora limite y fecha).");
+                window.scrollTo({ top: 0, behavior: "smooth" });
+                return;
+            }
+            await createAcademicEventAndPublish(selectedAsignatura, fecha, fecha, selectedGrupo, 0, descripcion, "Entrega", espacioReservado, horaFin, horaFin, selectedAsignaturaId);
+        } else {
+            if (!nombreActividad || !horaInicio || !horaFin || !fecha) {
+                setError("Por favor, complete todos los campos obligatorios (nombre, horas y fecha).");
+                window.scrollTo({ top: 0, behavior: "smooth" });
+                return;
+            }
+
+            if (horaInicio < horaInicioMinima) {
+                setError("La hora de inicio debe ser después de las 08:00.");
+                window.scrollTo({ top: 0, behavior: "smooth" });
+                return;
+            }
+
+            if (horaFin > horaFinalMaxima) {
+                setError("La hora de finalización debe ser antes de las 21:00.");
+                window.scrollTo({ top: 0, behavior: "smooth" });
+                return;
+            }
+
+            if (horaInicio >= horaFin) {
+                setError("La hora de inicio debe ser anterior a la hora de finalización.");
+                window.scrollTo({ top: 0, behavior: "smooth" });
+                return;
+            }
+            await createCustomEvent(nombreActividad, descripcion, espacioReservado, fecha, horaInicio, horaFin, user.id);
         }
 
-        if (horaInicio < horaInicioMinima) {
-            setError("La hora de inicio debe ser después de las 08:00.");
-            window.scrollTo({ top: 0, behavior: "smooth" });
-            return;
-        }
-
-        if (horaFin > horaFinalMaxima) {
-            setError("La hora de finalización debe ser antes de las 21:00.");
-            window.scrollTo({ top: 0, behavior: "smooth" });
-            return;
-        }
-
-        if (horaInicio >= horaFin) {
-            setError("La hora de inicio debe ser anterior a la hora de finalización.");
-            window.scrollTo({ top: 0, behavior: "smooth" });
-            return;
-        }
-
-        console.log("Nombre de la actividad:", nombreActividad);
-        console.log("Hora de inicio:", horaInicio);
-        console.log("Hora de finalización:", horaFin);
-        console.log("Espacio reservado:", espacioReservado);
-        console.log("Descripción:", descripcion);
-        console.log("Fecha:", fecha);
-
-        await createCustomEvent(nombreActividad, descripcion, espacioReservado, fecha, horaInicio, horaFin, user.id);
         window.location.reload();
     };
 
@@ -103,10 +174,10 @@ const ModalEditarHorarios = ({ isOpen, onOpenChange, listaCompletaEventos }) => 
 
     return (
         <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
-            <ModalContent style={{ transform: "scale(0.95)", overflow: "hidden" }}>
+            <ModalContent style={{ transform: "scale(0.95)", overflow: "visible" }}>
                 {(onClose) => (
                     <>
-                        <ModalBody style={{ transform: "scale(0.9)", maxHeight: "100vh", overflow: "auto" }}>
+                        <ModalBody style={{ transform: "scale(0.9)", maxHeight: "100vh", overflow: "visible", overflowY: "auto" }}>
                             <div className="tabs-org">
                                 <Tabs color="primary" variant="underlined" defaultSelectedKey="Asignatura">
                                     <Tab className="text-center text-xl" key="Asignatura" title="Asignatura">
@@ -178,6 +249,72 @@ const ModalEditarHorarios = ({ isOpen, onOpenChange, listaCompletaEventos }) => 
                                                 {error}
                                             </p>
                                         )}
+                                        {/* Solo visible para el rol "teacher" */}
+                                        {user?.role === "teacher" && (
+                                            <>
+                                                <div className="mb-4">
+                                                    <h2 className="text-2xl font-bold">Tipo</h2>
+                                                    <select
+                                                        value={tipo}
+                                                        onChange={(e) => setTipo(e.target.value)}
+                                                        className="w-full p-2 border rounded-md"
+                                                    >
+                                                        <option value="personal">Personal</option>
+                                                        <option value="academico">Académico</option>
+                                                    </select>
+                                                </div>
+
+                                                {/* Mostrar asignatura y grupo solo si el tipo es académico */}
+                                                {tipo === "academico" && (
+                                                    <>
+                                                        <div className="mb-4">
+                                                            <h2 className="text-2xl font-bold">Asignatura</h2>
+                                                            <select
+                                                                value={selectedAsignaturaId}
+                                                                onChange={(e) => {
+                                                                    const selectedId = e.target.value;
+                                                                    const selectedOption = combinedList.find(evento => evento.subject_id === parseInt(selectedId)); setSelectedAsignaturaId(e.target.value);
+                                                                    setSelectedAsignatura(selectedOption?.name || "");
+                                                                    setSelectedGrupo(null);
+                                                                }}
+                                                                className="w-full p-2 border rounded-md"
+                                                            >
+                                                                <option value="" disabled>
+                                                                    Seleccione la asignatura
+                                                                </option>
+                                                                {uniqueAsignaturas.map(asignatura => (
+                                                                    <option key={asignatura.name + asignatura.subject_id} value={asignatura.subject_id}>
+                                                                        {asignatura.name}
+                                                                    </option>
+                                                                ))}
+                                                            </select>
+                                                        </div>
+
+                                                        <div className="mb-4">
+                                                            <h2 className="text-2xl font-bold">Grupo</h2>
+                                                            <select
+                                                                value={selectedGrupo || filteredGruposFull[0]}
+                                                                onChange={(e) => {
+                                                                    const grupoSeleccionado = e.target.value;
+                                                                    console.log("Grupo seleccionado:", grupoSeleccionado);
+                                                                    setSelectedGrupo(grupoSeleccionado);
+                                                                }}
+                                                                className="w-full p-2 border rounded-md"
+                                                            >
+                                                                <option value="" disabled>
+                                                                    Seleccione el grupo
+                                                                </option>
+                                                                {filteredGruposFull.map(grupo => (
+                                                                    <option key={grupo} value={grupo}>
+                                                                        {grupo}
+                                                                    </option>
+                                                                ))}
+                                                            </select>
+                                                        </div>
+                                                    </>
+                                                )}
+                                            </>
+                                        )}
 
                                         <div className="mb-4">
                                             <h2 className="text-2xl font-bold">Nombre de la actividad:</h2>
@@ -223,7 +360,6 @@ const ModalEditarHorarios = ({ isOpen, onOpenChange, listaCompletaEventos }) => 
                                             </div>
                                         </div>
 
-
                                         <div className="mb-4">
                                             <h2 className="text-2xl font-bold">Lugar</h2>
                                             <input
@@ -234,28 +370,123 @@ const ModalEditarHorarios = ({ isOpen, onOpenChange, listaCompletaEventos }) => 
                                                 onChange={(e) => setEspacioReservado(e.target.value)}
                                             />
                                         </div>
-
-                                        <div className="mb-4">
-                                            <h2 className="text-2xl font-bold">Descripción</h2>
-                                            <textarea
-                                                className="border p-2 w-full"
-                                                placeholder="Ingrese una descripción"
-                                                value={descripcion}
-                                                onChange={(e) => setDescripcion(e.target.value)}
-                                            ></textarea>
-                                        </div>
-
+                                        {tipo !== "academico" && (
+                                            <div className="mb-4">
+                                                <h2 className="text-2xl font-bold">Descripción</h2>
+                                                <textarea
+                                                    className="border p-2 w-full"
+                                                    placeholder="Ingrese una descripción"
+                                                    value={descripcion}
+                                                    onChange={(e) => setDescripcion(e.target.value)}
+                                                ></textarea>
+                                            </div>
+                                        )}
                                         <Button color="primary" onPress={handleSubmit}>
-                                            Guardar en el calendario
+                                            Guardar evento
                                         </Button>
                                     </Tab>
+                                    {/* Solo visible para el rol "teacher" */}
+                                    {user?.role === "teacher" && (
+                                        <Tab className="text-center text-xl" key="Crear tarea" title="Crear tarea">
+                                            {/* Mensaje de error en color secundario */}
+                                            {error && (
+                                                <p style={{ color: "var(--color-second)", textAlign: "center" }}>
+                                                    {error}
+                                                </p>
+                                            )}
+                                            <div className="mb-4">
+                                                <h2 className="text-2xl font-bold">Asignatura</h2>
+                                                <select
+                                                    value={selectedAsignaturaId}
+                                                    onChange={(e) => {
+                                                        const selectedId = e.target.value;
+                                                        const selectedOption = combinedList.find(evento => evento.subject_id === parseInt(selectedId)); setSelectedAsignaturaId(e.target.value);
+                                                        setSelectedAsignatura(selectedOption?.name || "");
+                                                        setSelectedGrupo(null);
+                                                    }}
+                                                    className="w-full p-2 border rounded-md"
+                                                >
+                                                    <option value="" disabled>
+                                                        Seleccione la asignatura
+                                                    </option>
+                                                    {uniqueAsignaturas.map(asignatura => (
+                                                        <option key={asignatura.name + asignatura.subject_id} value={asignatura.subject_id}>
+                                                            {asignatura.name}
+                                                        </option>
+                                                    ))}
+                                                </select>
+                                            </div>
+
+                                            <div className="mb-4">
+                                                <h2 className="text-2xl font-bold">Grupo</h2>
+                                                <select
+                                                    value={selectedGrupo || filteredGruposFull[0]}
+                                                    onChange={(e) => {
+                                                        const grupoSeleccionado = e.target.value;
+                                                        console.log("Grupo seleccionado:", grupoSeleccionado);
+                                                        setSelectedGrupo(grupoSeleccionado);
+                                                    }}
+                                                    className="w-full p-2 border rounded-md"
+                                                >
+                                                    <option value="" disabled>
+                                                        Seleccione el grupo
+                                                    </option>
+                                                    {filteredGruposFull.map(grupo => (
+                                                        <option key={grupo} value={grupo}>
+                                                            {grupo}
+                                                        </option>
+                                                    ))}
+                                                </select>
+                                            </div>
+
+                                            <div className="mb-4">
+                                                <h2 className="text-2xl font-bold">Fecha y Hora</h2>
+                                                <div>
+                                                    <label className="block text-lg font-semibold">Fecha</label>
+                                                    <input
+                                                        type="date"
+                                                        className="border p-2 mb-4"
+                                                        value={fecha}
+                                                        onChange={(e) => setFecha(e.target.value)}
+                                                    />
+                                                </div>
+
+                                                <div>
+                                                    <label className="block text-lg font-semibold">Hora Limite</label>
+                                                    <input
+                                                        type="time"
+                                                        className="border p-2"
+                                                        value={horaFin}
+                                                        onChange={(e) => setHoraFin(e.target.value)}
+                                                    />
+                                                </div>
+                                            </div>
+
+                                            <div className="mb-4">
+                                                <h2 className="text-2xl font-bold">Tarea</h2>
+                                                <textarea
+                                                    className="border p-2 w-full"
+                                                    placeholder="Ingrese la tarea"
+                                                    value={descripcion}
+                                                    onChange={(e) => setDescripcion(e.target.value)}
+                                                ></textarea>
+                                            </div>
+                                            <Button color="primary"
+                                                onPress={() => {
+                                                    tarea = true;
+                                                    handleSubmit();
+                                                }}>
+                                                Guardar tarea
+                                            </Button>
+                                        </Tab>
+                                    )}
                                 </Tabs>
                             </div>
                         </ModalBody>
                     </>
                 )}
             </ModalContent>
-        </Modal>
+        </Modal >
     );
 };
 
