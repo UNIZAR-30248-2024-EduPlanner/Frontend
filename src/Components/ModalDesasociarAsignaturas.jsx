@@ -1,4 +1,4 @@
-import { Button, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter } from "@nextui-org/react";
+import { Button, Modal, ModalContent, ModalBody, ModalFooter } from "@nextui-org/react";
 import { useState } from "react";
 import { unenrollStudent } from "../supabase/student/student.js";
 import PropTypes from 'prop-types';
@@ -32,9 +32,10 @@ const ModalDesasociarAsignaturas = ({ isOpen, onOpenChange, asignaturas, empty }
   const confirmarDesasociacion = async () => {
     if (user){
       for (const asignaturaId of selectedAsignaturas) {
-    
+        console.log("Desasociando asignatura");
         // Desasociar cada asignatura seleccionada
         const asignatura = asignaturas.find((a) => a.id === asignaturaId);
+        console.log(user.nip, asignatura.subject_code);
         await unenrollStudent(user.nip, asignatura.subject_code);
       }
       // Limpiar las asignaturas seleccionadas y cerrar el modal
