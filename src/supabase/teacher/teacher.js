@@ -1,6 +1,7 @@
 import { supabase } from '../supabaseClient.js';
 import { getAcademicEventsBySubject } from '../academicEvent/academicEvent';
 import { createCustomAcademicEvent, deleteCustomAcademicEvent } from '../customAcademicEvent/customAcademicEvent';
+import { getStudentIdByNip } from '../student/student';
 
 export const registerArrayTeachers = async (teachers, organization_id) => {
   try {
@@ -240,5 +241,192 @@ export const getTeacherIdByNip = async (nip) => {
   } catch (err) {
     console.error('Ha ocurrido un error:', err);
     return { data: null, error: err };
+  }
+}
+
+export const letTeacherAssociateStudentToSubject = async (teacherNip, studentNip, subjectCode) => {
+  // Obtener el ID del profesor
+  const teacherId = await getTeacherIdByNip(teacherNip);
+  console.log(teacherId);
+  if (!teacherId.data) {
+    return { data: null, error: 'El profesor no existe' };
+  }
+
+  // Obtener el ID del estudiante
+  const studentId = await getStudentIdByNip(studentNip);
+  console.log(studentId);
+  if (!studentId.data) {
+    return { data: null, error: 'El estudiante no existe' };
+  }
+
+  // Obtener el ID de la asignatura
+  const subject = await supabase
+    .from('subjects')
+    .select('id')
+    .eq('subject_code', subjectCode)
+    .single().select();
+
+  console.log(subject);
+
+  if (subject.error) {
+    console.error('Error al obtener el ID de la asignatura:', subject.error);
+    return { data: null, error: subject.error };
+  }
+
+  // Comprobar si el profesor tiene asignada la asignatura
+  const teaching = await supabase
+    .from('teachings')
+    .select('subject_id')
+    .eq('teacher_id', teacherId.data)
+    .eq('subject_id', subject.data.id)
+    .single();
+
+  if (teaching.error) {
+    console.error('Error al obtener la asignatura del profesor:', teaching.error);
+    return { data: null, error: teaching.error };
+  } else {
+    // Asignar la asignatura al estudiante
+    const { data, error } = await supabase
+      .from('enrollments')
+      .insert([{ student_id: studentId.data, subject_id: subject.data.id }]).select();
+
+    if (error) {
+      console.error('Error al insertar la asignatura al estudiante:', error);
+      return { data: null, error };
+    }
+
+    console.log('Asignatura insertada al estudiante correctamente:', data);
+    return { data, error: null };
+  }
+}
+
+export const letTeacherAssociateArrayStudentsToSubject = async (teacherNip, studentNips, subjectCode) => {
+  try {
+    // Matricular al estudiante en cada asignatura utilizando la función matriculateStudent
+    for (const student of studentNips) {
+      const result = await letTeacherAssociateStudentToSubject(teacherNip, student, subjectCode);
+
+      if (result.error) {
+        console.error(`Error al asignar al alumno en la asignatura:`, result.error);
+        return { data: null, error: result.error };
+      }
+    }
+
+    console.log('Alumnos asignados correctamente en la asignatura');
+    return { data: `Alumnos asignados en la asignatura`, error: null };
+  } catch (err) {
+    console.error('Ha ocurrido un error al asignar al alumno en la asignatura:', err);
+    return { data: null, error: err };
+  }
+}
+
+
+
+export const letTeacherUnAssociateStudentFromSubject = async (teacherNip, studentNip, subjectCode) => {
+  // Obtener el ID del profesor
+  const teacherId = await getTeacherIdByNip(teacherNip);
+  console.log(teacherId);
+  if (!teacherId.data) {
+    return { data: null, error: 'El profesor no existe' };
+  }
+
+  // Obtener el ID del estudiante
+  const studentId = await getStudentIdByNip(studentNip);
+  console.log(studentId);
+  if (!studentId.data) {
+    return { data: null, error: 'El estudiante no existe' };
+  }
+
+  // Obtener el ID de la asignatura
+  const subject = await supabase
+    .from('subjects')
+    .select('id')
+    .eq('subject_code', subjectCode)
+    .single().select();
+
+  console.log(subject);
+
+  if (subject.error) {
+    console.error('Error al obtener el ID de la asignatura:', subject.error);
+    return { data: null, error: subject.error };
+  }
+
+  // Comprobar si el profesor tiene asignada la asignatura
+  const teaching = await supabase
+    .from('teachings')
+    .select('subject_id')
+    .eq('teacher_id', teacherId.data)
+    .eq('subject_id', subject.data.id)
+    .single();
+
+  if (teaching.error) {
+    console.error('Error al obtener la asignatura del profesor:', teaching.error);
+    return { data: null, error: teaching.error };
+  } else {
+    // Asignar la asignatura al estudiante
+    const { data, error } = await supabase
+      .from('enrollments')
+      .delete()
+      .eq('student_id', studentId.data)
+      .eq('subject_id', subject.data.id)
+      .select();
+
+    if (error) {
+      console.error('Error al eliminar la asignatura al estudiante:', error);
+      return { data: null, error };
+    }
+
+    console.log('Asignatura eliminada al estudiante correctamente:', data);
+    return { data, error: null };
+  }
+}
+
+export const getStudentsAssignedToSubject = async (teacherNip, subjectCode) => {
+  // Obtener el ID del profesor
+  const teacherId = await getTeacherIdByNip(teacherNip);
+  console.log(teacherId);
+  if (!teacherId.data) {
+    return { data: null, error: 'El profesor no existe' };
+  }
+
+  // Obtener el ID de la asignatura
+  const subject = await supabase
+    .from('subjects')
+    .select('id')
+    .eq('subject_code', subjectCode)
+    .single().select();
+
+  console.log(subject);
+
+  if (subject.error) {
+    console.error('Error al obtener el ID de la asignatura:', subject.error);
+    return { data: null, error: subject.error };
+  }
+
+  // Comprobar si el profesor tiene asignada la asignatura
+  const teaching = await supabase
+    .from('teachings')
+    .select('subject_id')
+    .eq('teacher_id', teacherId.data)
+    .eq('subject_id', subject.data.id)
+    .single();
+
+  if (teaching.error) {
+    console.error('Error al obtener la asignatura del profesor:', teaching.error);
+    return { data: null, error: teaching.error };
+  } else {
+    // Obtener los estudiantes matriculados en la asignatura
+    const { data, error } = await supabase
+      .from('enrollments')
+      .select('student_id')
+      .eq('subject_id', subject.data.id);
+
+    if (error) {
+      console.error('Error al obtener los estudiantes matriculados en la asignatura:', error);
+      return { data: null, error };
+    }
+
+    console.log('Estudiantes matriculados en la asignatura obtenidos correctamente:', data);
+    return { data, error: null };
   }
 }

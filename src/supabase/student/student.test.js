@@ -147,6 +147,17 @@ describe('Student API Tests', () => {
     expect(result).not.toBeNull();
   });
 
+  it('should get students info by subject', async () => {
+    const result = await f.getStudentsBySubject(323);
+    expect(result).not.toBeNull();
+  });
+
+  it('should get subjects info by student', async () => {
+    await f.matriculateStudentOnMultipleSubjects(111111, [99995, 99996]);
+    const result = await f.getSubjectsInfoByStudent(2346);
+    expect(result).not.toBeNull();
+  });
+
   it('should unenroll an student from a subject', async () => {
     const result = await f.unenrollStudent(testArrayStudents[0].nip, 99995);
     expect(result.error).toBeNull(); // Verifica que no haya error
@@ -189,6 +200,7 @@ describe('Student API Tests', () => {
 
     await deleteAcademicEvent(academicEventPublished.data[0].id);
     await deleteAcademicEvent(academicEventPublished2.data[0].id);
+    await f.unenrollStudentFromMultipleSubjects(111111, [99995, 99996]);
 
     await supabase
       .from('users')
