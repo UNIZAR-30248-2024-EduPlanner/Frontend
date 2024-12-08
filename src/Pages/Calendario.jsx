@@ -366,7 +366,7 @@ const Calendario = () => {
                 <Button color="primary" onClick={openModalTareas}>
                     Ver tareas
                 </Button>
-                <Button color="primary" onClick={openModal}>
+                <Button color="primary ml-[5px]" onClick={openModal}>
                     Personalizar calendario
                 </Button>
                 {user && user.role == "teacher" && (
