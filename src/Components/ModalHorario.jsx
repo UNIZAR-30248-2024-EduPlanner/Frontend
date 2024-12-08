@@ -76,7 +76,7 @@ const ModalHorario = ({ isOpen, onOpenChange, title, date_start, date_finish, pl
                                         setConfirmModalOpen(true);
                                     }}
                                 >
-                                    Quitar evento
+                                    Ocultar evento
                                 </Button>
                                 {user.role === "teacher" && (type === "Creado por profesores" || type === "Examen") && (
                                     <Button

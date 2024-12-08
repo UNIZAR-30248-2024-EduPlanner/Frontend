@@ -28,7 +28,9 @@ describe('ModalEditarEvento', () => {
             place: 'Test Place',
             group: 'Test Group',
             descripcion: 'Test Description',
-            creador: 'user123'
+            creador: 'user123',
+            type: 'Test Type',
+            date: '2023-11-01'
         }
     };
 
