@@ -118,6 +118,8 @@ const Calendario = () => {
                 user_id: e.user_id,
                 id: e.id,
                 date: e.date,
+                type: e.type,
+                starting_date: e.starting_date,
                 height: ((minutosE - minutosS) * alturaPorMinuto).toString() + "vh",
                 width: numSolapes == 0 ? wCol : wCol / numSolapes,
                 top: ((hoursStart - firstHour + 1) * alturaPorHora + minutesStart * alturaPorMinuto).toString() + "vh",
@@ -427,7 +429,8 @@ const Calendario = () => {
                 descripcion={modalData?.description}
                 creador={modalData?.user_id}
                 id={modalData?.id}
-                date={modalData?.date}
+                date={modalData?.date || modalData?.starting_date}
+                type={modalData?.type}
                 onAccept={onOpenChange}
             />
 

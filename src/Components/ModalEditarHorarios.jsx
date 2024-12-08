@@ -108,7 +108,7 @@ const ModalEditarHorarios = ({ isOpen, onOpenChange, listaCompletaEventos, lista
                 window.scrollTo({ top: 0, behavior: "smooth" });
                 return;
             }
-            await createAcademicEventAndPublish(selectedAsignatura, fecha, fecha, selectedGrupo, 0, nombreActividad, "Creado por profesores", espacioReservado, horaInicio, horaFin, selectedAsignaturaId);
+            await createAcademicEventAndPublish(selectedAsignatura, fecha, fecha, selectedGrupo, 0, nombreActividad, "Examen", espacioReservado, horaInicio, horaFin, selectedAsignaturaId);
         } else if (tarea === true) {
             if (!selectedAsignatura || !selectedGrupo) {
                 setError("Escoga una asignatura y un grupo para crear el evento y publicarlo.");

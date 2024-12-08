@@ -4,14 +4,17 @@ import '../css/Components/ModalHorario.css';
 import { useAuth } from "../context/AuthContext";
 import { useState } from "react";
 import ModalEditarEvento from './ModalEditarEvento';
-import ModalComponent from './ModalComponent'; // Importa el modal de confirmación
+import ModalComponent from './ModalComponent';
 import { deleteCustomEvent } from '../supabase/customEvent/customEvent';
 import { editCustomAcademicEventVisibility } from '../supabase/customAcademicEvent/customAcademicEvent';
+import { deleteAcademicEvent } from "../supabase/academicEvent/academicEvent";
 
-const ModalHorario = ({ isOpen, onOpenChange, title, date_start, date_finish, place, group, descripcion, creador, id, date }) => {
+
+const ModalHorario = ({ isOpen, onOpenChange, title, date_start, date_finish, place, group, descripcion, creador, id, date, type }) => {
     const { user } = useAuth();
     const [isEditModalOpen, setEditModalOpen] = useState(false);
-    const [isConfirmModalOpen, setConfirmModalOpen] = useState(false); // Estado para el modal de confirmación
+    const [isConfirmModalOpen, setConfirmModalOpen] = useState(false);
+    const [isConfirmAcademicModalOpen, setConfirmAcademicModalOpen] = useState(false);
 
 
     const eliminarEvento = async () => {
@@ -22,6 +25,14 @@ const ModalHorario = ({ isOpen, onOpenChange, title, date_start, date_finish, pl
         } else {
             await deleteCustomEvent(id);
         }
+        setConfirmModalOpen(false);
+        onOpenChange(false);
+        window.location.reload();
+    };
+
+    const eliminarEventoAcademico = async () => {
+        // Lógica para eliminar el evento de la base de datos
+        await deleteAcademicEvent(id);
         setConfirmModalOpen(false);
         onOpenChange(false);
         window.location.reload();
@@ -49,14 +60,35 @@ const ModalHorario = ({ isOpen, onOpenChange, title, date_start, date_finish, pl
                                 </div>
                             </ModalBody>
                             <ModalFooter>
+                                {user.role === "teacher" && (type === "Creado por profesores" || type === "Examen") && (
+                                    <Button
+                                        color="warning"
+                                        onPress={() => {
+                                            setConfirmAcademicModalOpen(true);
+                                        }}
+                                    >
+                                        Eliminar evento
+                                    </Button>
+                                )}
                                 <Button
                                     color="danger"
                                     onPress={() => {
                                         setConfirmModalOpen(true);
                                     }}
                                 >
-                                    Eliminar del calendario
+                                    Quitar evento
                                 </Button>
+                                {user.role === "teacher" && (type === "Creado por profesores" || type === "Examen") && (
+                                    <Button
+                                        color="primary"
+                                        onPress={() => {
+                                            setEditModalOpen(true);
+                                            onClose();
+                                        }}
+                                    >
+                                        Modificar
+                                    </Button>
+                                )}
                                 {String(creador) === String(user.id) && (
                                     <Button
                                         color="primary"
@@ -65,7 +97,7 @@ const ModalHorario = ({ isOpen, onOpenChange, title, date_start, date_finish, pl
                                             onClose();
                                         }}
                                     >
-                                        Modificar evento
+                                        Modificar
                                     </Button>
                                 )}
                             </ModalFooter>
@@ -83,6 +115,7 @@ const ModalHorario = ({ isOpen, onOpenChange, title, date_start, date_finish, pl
                 place={place}
                 description={descripcion}
                 date={date}
+                type={type}
                 id={id}
             />
 
@@ -92,6 +125,14 @@ const ModalHorario = ({ isOpen, onOpenChange, title, date_start, date_finish, pl
                 title="Confirmar eliminación"
                 texto="¿Estás seguro de que quieres eliminar este evento? Esta acción no se puede deshacer."
                 onAccept={eliminarEvento}
+            />
+
+            <ModalComponent
+                isOpen={isConfirmAcademicModalOpen}
+                onOpenChange={setConfirmAcademicModalOpen}
+                title="Confirmar eliminación"
+                texto="¿Estás seguro de que quieres eliminar este evento? Esta acción no se puede deshacer y se vera reflejado en todos los integrantes de la asignatura."
+                onAccept={eliminarEventoAcademico}
             />
         </>
     );
