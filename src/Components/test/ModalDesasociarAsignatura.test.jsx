@@ -148,4 +148,60 @@ describe('ModalDesasociarAsignaturas', () => {
     });
     */
   });
+
+  it('should not show the confirmation modal if no asignaturas are selected', () => {
+    render(
+      <AuthProvider>
+        <ModalDesasociarAsignaturas {...defaultProps} />
+      </AuthProvider>
+    );
+  
+    // No click on checkboxes
+    const desasociarseButton = screen.queryByRole('button', { name: /Desasociarse/i });
+    expect(desasociarseButton).toBeNull(); // El botón no debe aparecer
+  });
+
+  it('should display a message when no asignaturas are available', () => {
+    const emptyProps = {
+      ...defaultProps,
+      empty: true,
+    };
+  
+    render(
+      <AuthProvider>
+        <ModalDesasociarAsignaturas {...emptyProps} />
+      </AuthProvider>
+    );
+  
+    expect(screen.getByText('No tienes asignaturas asociadas.')).toBeInTheDocument();
+  });
+  
+  it('should retain selected asignaturas after reopening the modal', () => {
+    render(
+      <AuthProvider>
+        <ModalDesasociarAsignaturas {...defaultProps} />
+      </AuthProvider>
+    );
+  
+    const checkboxes = screen.getAllByRole('checkbox');
+    fireEvent.click(checkboxes[0]); // Seleccionar primera asignatura
+  
+    const desasociarseButton = screen.getByRole('button', { name: /Desasociarse/i });
+    fireEvent.click(desasociarseButton);
+  
+    const cancelarButton = screen.getByRole('button', { name: /Cancelar/i });
+    fireEvent.click(cancelarButton); // Cerrar modal de confirmación
+  
+    // Abrir de nuevo el modal
+    render(
+      <AuthProvider>
+        <ModalDesasociarAsignaturas {...defaultProps} />
+      </AuthProvider>
+    );
+  
+    // Verificar que el primer checkbox esté seleccionado
+    expect(checkboxes[0]).toBeChecked();
+  });
+  
+  
 });
