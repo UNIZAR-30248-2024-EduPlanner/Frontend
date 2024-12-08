@@ -12,6 +12,10 @@ import { getFullNonVisibleAcademicEventsForUser } from '../supabase/customAcadem
 import Logout from '../Components/Logout.jsx';
 import { useNavigate } from 'react-router-dom';
 import constants from '../constants/constants.jsx';
+import ModalDesasociarAsignaturas from '../Components/ModalDesasociarAsignaturas.jsx';
+import { getSubjectsByStudentId } from '../supabase/student/student.js';
+import { getSubjectById } from '../supabase/course/course.js';
+import { getUserInfoById } from '../supabase/user/user.js';
 
 const Calendario = () => {
     const { user } = useAuth();
@@ -20,6 +24,9 @@ const Calendario = () => {
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [modalData, setModalData] = useState(null);
+    const [isOpenGestionarAsignaturas, setIsOpenGestionarAsignaturas] = useState(false);
+    const [modalAsignaturasData, setModalAsignaturasData] = useState([]);
+    const [userNip, setUserNip] = useState(null);
 
     // HorariosBD son todos los horarios recuperados de la BD
     const [horariosBD, setHorariosBD] = useState([]);
@@ -264,6 +271,7 @@ const Calendario = () => {
         setDiasSemana(days);
     }
 
+
     useEffect(() => {
         if (user && user.id) {
             getDiasSemana();
@@ -275,6 +283,7 @@ const Calendario = () => {
     useEffect(() => {
         if (mondayWeek && horariosBD) setHorarios(procesarHorarios(horariosBD));
     }, [mondayWeek, horariosBD])
+
 
     // Función para abrir el modal
     const openModal = () => {
@@ -291,11 +300,81 @@ const Calendario = () => {
         setModalData(data);
         onOpen();
     };
-
     if (user) {
         console.log(user);
         console.log(user.type === "teacher");    
     }
+
+    //Funcion para abrir el modal de gestionar asignaturas
+    const openModalGestionarAsignaturas = () => {
+        getUserNip();
+        obtenerAsignaturasDeUsuario(user.id)
+        console.log("Asingaturas de usuario modal :", modalAsignaturasData)
+        setIsOpenGestionarAsignaturas(true);
+    };
+
+    //Funcion para cerrar el modal de gestionar asignaturas
+    const closeModalGestionarAsignaturas = () => {
+        setIsOpenGestionarAsignaturas(false);
+    };
+
+    const getUserNip = async () => {
+        const { data: userData, error: userError } = await getUserInfoById(user.id);
+        if (userError) {
+          console.error("Error al obtener la información del usuario:", userError);
+          return;
+        }
+        setUserNip(userData.nip);
+    }
+
+    // Función para obtener las asignaturas de un estudiante
+    const obtenerAsignaturasDeUsuario = async (studentId) => {
+        try {
+          // Paso 1: Obtener los subject_id asociados al estudiante
+          const { data: enrollmentData, error: enrollmentError } = await getSubjectsByStudentId(studentId);
+      
+          if (enrollmentError) {
+            console.error("Error al obtener las asignaturas del estudiante:", enrollmentError);
+            return;
+          }
+      
+          if (!enrollmentData || enrollmentData.length === 0) {
+            console.log("El estudiante no tiene asignaturas asociadas.");
+            setModalAsignaturasData([]); // Guardar una lista vacía si no hay asignaturas
+            return;
+          }
+      
+          // Paso 2: Obtener la información completa de cada asignatura
+          const subjectPromises = enrollmentData.map(async (enrollment) => {
+            const { data: subjectData, error: subjectError } = await getSubjectById(enrollment.subject_id);
+      
+            if (subjectError) {
+              console.error(`Error al obtener la información de la asignatura con ID ${enrollment.subject_id}:`, subjectError);
+              return null; // Retornar null si hay un error
+            }
+      
+            return subjectData;
+          });
+      
+          // Ejecutar todas las promesas y filtrar valores nulos (errores)
+          const subjects = (await Promise.all(subjectPromises)).filter((subject) => subject !== null);
+          console.log("Asignaturas cargadas correctamente:", subjects);
+          // Paso 3: Guardar las asignaturas en el estado
+          
+          
+          if (subjects && subjects.length > 0) {
+            console.log("Asignaturas válidas encontradas para el usuario");
+            setModalAsignaturasData(subjects);
+          } else {
+            console.log("No se encontraron asignaturas válidas para el usuario.");
+            setModalAsignaturasData([]); // Si no hay asignaturas válidas, mantener el estado vacío
+          }
+        
+
+        } catch (err) {
+          console.error("Ha ocurrido un error al obtener las asignaturas:", err);
+        }
+      };
 
     return (
         <div className="calendario">
@@ -331,6 +410,13 @@ const Calendario = () => {
                     //     </DropdownMenu>
                     // </Dropdown>
                 )}
+
+                {user && user.role == "student" && (
+                    <Button color="primary" onClick={openModalGestionarAsignaturas}>
+                    Gestionar asignaturas
+                    </Button>
+                )}
+                
             </div>
             <div className="mes-tit flex">
                 <h1 className="mes-tit"> {monthYear} </h1>
@@ -418,9 +504,14 @@ const Calendario = () => {
                 onOpenChange={closeModal}
                 listaCompletaEventos={horariosrecu}
             />
+
+            <ModalDesasociarAsignaturas
+                isOpen={isOpenGestionarAsignaturas}
+                onOpenChange={closeModalGestionarAsignaturas}
+                asignaturas={modalAsignaturasData}
+                empty = {modalAsignaturasData?.length === 0}
+            />
         </div>
-
-
     )
 }
 
