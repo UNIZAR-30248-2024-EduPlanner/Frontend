@@ -74,7 +74,7 @@ describe('ModalHorario', () => {
             </AuthProvider>
         );
 
-        fireEvent.click(screen.getByRole('button', { name: "Quitar evento" }));
+        fireEvent.click(screen.getByRole('button', { name: "Ocultar evento" }));
         fireEvent.click(screen.getByRole('button', { name: "Aceptar" }));
     });
 });
