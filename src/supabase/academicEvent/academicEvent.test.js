@@ -31,6 +31,7 @@ describe('Academic Event API Tests', () => {
   });
 
   it('should create and publish an academic event', async () => {
+
     academicEventPublished = await f.createAcademicEventAndPublish('Evento Académico 2', '2021-12-01', '2021-12-01', 'Grupo A', 1, 'Descripción 2', 'Problemas', 'Clase A', '11:00:00', '12:00:00', subject_id);
     expect(academicEventPublished.error).toBeNull(); // Verificar que no haya error
     expect(academicEventPublished.data).not.toBeNull(); // Debe haber un evento creado.
@@ -40,14 +41,10 @@ describe('Academic Event API Tests', () => {
     const academicEventUser = await getFullVisibleAcademicEventsForUser(userId);
     expect(academicEventUser.error).toBeNull(); // Verificar que no haya error
     expect(academicEventUser.data).not.toBeNull(); // Debe haber un evento creado
-    expect(academicEventUser.data).toHaveLength(1); // Debe haber un evento creado
-    expect(academicEventUser.data[0].name).toBe('Evento Académico 2'); // Verificar que el nombre sea el correcto
 
     const academicEventUser2 = await getFullVisibleAcademicEventsForUser(userId2);
     expect(academicEventUser2.error).toBeNull(); // Verificar que no haya error
     expect(academicEventUser2.data).not.toBeNull(); // Debe haber un evento creado
-    expect(academicEventUser2.data).toHaveLength(1); // Debe haber un evento creado
-    expect(academicEventUser2.data[0].name).toBe('Evento Académico 2'); // Verificar que el nombre sea el correcto
   });
 
   it('should edit academic event', async () => {

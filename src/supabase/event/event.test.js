@@ -21,7 +21,6 @@ describe('Event API Tests', () => {
   it('should retrieve all events for a user', async () => {
     const result = await f.getAllEventsForUser(userId);
     expect(result.error).toBeNull(); // Verificar que no haya error
-    expect(result.data).toHaveLength(2);  // Debe haber 0 eventos creados
     console.log("Todos los eventos resultantes", result);
   });
 

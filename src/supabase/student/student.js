@@ -245,7 +245,7 @@ export const getStudentsBySubject = async (subject_id) => {
     students.data.map(async student => {
       const studentData = await supabase
         .from('users')
-        .select('nip', 'name', 'email')
+        .select('name')
         .eq('id', student.student_id).select();
 
       return studentData.data[0];
@@ -254,3 +254,30 @@ export const getStudentsBySubject = async (subject_id) => {
 
   console.log('Estudiantes obtenidos correctamente:', studentsData);
 }
+
+export const getSubjectsInfoByStudent = async (student_id) => {
+  try {
+    const subjects = await supabase
+      .from('enrollments')
+      .select('subject_id')
+      .eq('student_id', student_id);
+
+    console.log('subjects', subjects);
+
+    const subjectsData = await Promise.all(
+      subjects.data.map(async subject => {
+        const subjectData = await supabase
+          .from('subjects')
+          .select('subject_code', 'name', 'description')
+          .eq('id', subject.subject_id).select();
+        return subjectData.data[0];
+      })
+    );
+
+    console.log('Asignaturas obtenidas correctamente:', subjectsData);
+    return { data: subjectsData, error: null };
+  } catch (err) {
+    console.error('Ha ocurrido un error:', err);
+    return { data: null, error: err };
+  }
+};
