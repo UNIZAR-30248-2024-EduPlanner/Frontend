@@ -276,7 +276,7 @@ export const getSubjectsInfoByStudent = async (student_id) => {
       subjects.data.map(async subject => {
         const subjectData = await supabase
           .from('subjects')
-          .select('subject_code', 'name', 'description')
+          .select('subject_code', 'name', 'description') // TODO: Que devuelva todos los campos necesarios
           .eq('id', subject.subject_id).select();
         return subjectData.data[0];
       })

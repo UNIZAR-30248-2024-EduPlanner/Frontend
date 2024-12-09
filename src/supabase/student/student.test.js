@@ -1,7 +1,7 @@
 import * as f from './student.js';
 import { supabase } from '../supabaseClient.js';
 import { createAcademicEventAndPublish, deleteAcademicEvent } from '../academicEvent/academicEvent.js';
-import { getFullVisibleAcademicEventsForUser } from '../customAcademicEvent/customAcademicEvent.js';
+import { deleteCustomAcademicEvent, getFullVisibleAcademicEventsForUser } from '../customAcademicEvent/customAcademicEvent.js';
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 
 const testArrayStudents = [
@@ -193,10 +193,7 @@ describe('Student API Tests', () => {
   // Limpiar datos después de las pruebas
   afterAll(async () => {
 
-    await supabase
-      .from('custom_academic_event')
-      .delete()
-      .eq('user_id', testArrayStudents[0].nip);
+    await deleteCustomAcademicEvent(academicEventPublished.data[0].id);
 
     await deleteAcademicEvent(academicEventPublished.data[0].id);
     await deleteAcademicEvent(academicEventPublished2.data[0].id);
