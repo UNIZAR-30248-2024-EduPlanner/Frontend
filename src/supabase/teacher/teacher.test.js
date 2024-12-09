@@ -135,7 +135,7 @@ describe('Teacher API Tests', () => {
   });
 
   it('should get the teachers of a subject', async () => {
-    const result = await f.getTeachersBySubjectId(99995);
+    const result = await f.getTeachersBySubjectCode(99995);
     expect(result.error).toBeNull(); // Verifica que no haya error
   });
 
