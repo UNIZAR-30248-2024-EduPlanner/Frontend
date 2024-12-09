@@ -51,7 +51,29 @@ describe('ModalEditarHorarios', () => {
                 place: 'Aula 3',
                 description: 'Descripción 3'
             }
-        ]
+        ],
+        listaCompletaEventosVisibles: [
+            {
+                id: 'event4',
+                name: 'Asignatura 3',
+                group_name: 'Grupo 1',
+                start: '14:00',
+                end: '16:00',
+                date: '2023-11-04',
+                place: 'Aula 4',
+                description: 'Descripción 4'
+            },
+            {
+                id: 'event5',
+                name: 'Asignatura 2',
+                group_name: 'Grupo 1',
+                start: '12:00',
+                end: '14:00',
+                date: '2023-11-03',
+                place: 'Aula 3',
+                description: 'Descripción 3'
+            }
+        ],
     };
 
     it('should render the modal with correct content', () => {

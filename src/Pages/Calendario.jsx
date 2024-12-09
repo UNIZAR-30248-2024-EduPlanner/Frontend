@@ -2,16 +2,22 @@ import '../css/Calendario.css'
 import { FaRegArrowAltCircleLeft, FaRegArrowAltCircleRight } from "react-icons/fa";
 import { Button, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, Tooltip } from '@nextui-org/react'
 import { useEffect, useState } from 'react'
-import { calcularSolapes, convertirAHorasEnMinutos, getContrastColor, isInWeek, numberToMonth } from '../Components/CalendarioFunctions.jsx';
+import { calcularSolapes, convertirAHorasEnMinutos, getAntiContrastColor, getAuxColor, getContrastColor, isInWeek, numberToMonth } from '../Components/CalendarioFunctions.jsx';
 import { useDisclosure } from "@nextui-org/react";
 import ModalComponent from "../Components/ModalHorario";
 import ModalComponentcreate from "../Components/ModalEditarHorarios";
+import ModalTareas from '../Components/ModalTareas.jsx';
 import { getAllEventsForUser } from '../supabase/event/event.js';
 import { useAuth } from "../context/AuthContext";
 import { getFullNonVisibleAcademicEventsForUser } from '../supabase/customAcademicEvent/customAcademicEvent.js';
 import Logout from '../Components/Logout.jsx';
+import { GrNotes } from "react-icons/gr";
 import { useNavigate } from 'react-router-dom';
 import constants from '../constants/constants.jsx';
+import ModalDesasociarAsignaturas from '../Components/ModalDesasociarAsignaturas.jsx';
+import { getSubjectsByStudentId } from '../supabase/student/student.js';
+import { getSubjectById } from '../supabase/course/course.js';
+import { getUserInfoById } from '../supabase/user/user.js';
 
 const Calendario = () => {
     const { user } = useAuth();
@@ -19,10 +25,17 @@ const Calendario = () => {
 
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isModalTareasOpen, setIsModalTareasOpen] = useState(false);
     const [modalData, setModalData] = useState(null);
+    const [isOpenGestionarAsignaturas, setIsOpenGestionarAsignaturas] = useState(false);
+    const [modalAsignaturasData, setModalAsignaturasData] = useState([]);
+    const [userNip, setUserNip] = useState(null);
 
     // HorariosBD son todos los horarios recuperados de la BD
     const [horariosBD, setHorariosBD] = useState([]);
+
+    // HorariosBD son todos las tareas recuperados de la BD
+    const [tareas, setTareas] = useState([]);
 
     // Horarios son los horarios procesados para la actual semana
     const [horarios, setHorarios] = useState([]);
@@ -102,7 +115,7 @@ const Calendario = () => {
 
             const minutosS = convertirAHorasEnMinutos(e.start)
             const minutosE = convertirAHorasEnMinutos(e.end)
-    
+            
             res.push({
                 name: e.name,
                 start: e.start,
@@ -113,6 +126,8 @@ const Calendario = () => {
                 user_id: e.user_id,
                 id: e.id,
                 date: e.date,
+                type: e.type,
+                starting_date: e.starting_date,
                 height: ((minutosE - minutosS) * alturaPorMinuto).toString() + "vh",
                 width: numSolapes == 0 ? wCol : wCol / numSolapes,
                 top: ((hoursStart - firstHour + 1) * alturaPorHora + minutesStart * alturaPorMinuto).toString() + "vh",
@@ -126,12 +141,14 @@ const Calendario = () => {
     };
 
     const getHorarios = async () => {
-
         // Se piden los horarios a la BD
-        const horariosRes = await getAllEventsForUser(user.id);
+        let horariosRes = await getAllEventsForUser(user.id);
         const horariosRecuperar = await getFullNonVisibleAcademicEventsForUser(user.id);
         if (horariosRes.error) return console.error("ERROR: recuperando los horarios");
 
+        const ListaTareas = horariosRes.data.filter(evento => evento.type === "Entrega");
+        setTareas(ListaTareas);
+        horariosRes.data = horariosRes.data.filter(evento => evento.type !== "Entrega");
         setHorariosBD(horariosRes.data);
 
         horariosRes.data.forEach(evento => {
@@ -154,39 +171,6 @@ const Calendario = () => {
         // setHorarios(procesarHorarios(horariosRes.data));
         setHorariosrecu(horariosRecuperar.data);
     }
-
-    /*const horariosAux = [
-        {
-            id: "test1", name: "Matemáticas II", starting_date: "2024-11-4", end_date: null, group_name: "Grupo D", periodicity: null, description: "srvwwe", start: "8:00", end: "10:00", subject_id: "1", type: null, place: "Aula B.1",
-        },
-        {
-            id: "test2", name: "Matemáticas I", starting_date: "2024-11-4", end_date: null, group_name: "Grupo A", periodicity: null, description: "srvwwe", start: "8:00", end: "10:00", subject_id: "2", type: null, place: "Aula A.11",
-        },
-        {
-            id: "test3", name: "Programación I", starting_date: "2024-11-4", end_date: null, group_name: "Grupo E", periodicity: null, description: "srvwwe", start: "8:00", end: "10:00", subject_id: "3", type: null, place: "Laboratorio C.3",
-        },
-        {
-            id: "test4", name: "Programación I", starting_date: "2024-11-4", end_date: null, group_name: "Grupo E", periodicity: null, description: "srvwwe", start: "8:00", end: "10:00", subject_id: "4", type: null, place: "Laboratorio C.3",
-        },
-        {
-            id: "test5", name: "FAE", starting_date: "2024-11-4", end_date: null, group_name: "Grupo F", periodicity: null, description: null, start: "10:00", end: "12:00", subject_id: "5", type: null, place: "Aula D.4",
-        },
-        {
-            id: "test6", name: "IC", starting_date: "2024-11-4", end_date: null, group_name: "Grupo G", periodicity: null, description: null, start: "10:00", end: "12:00", subject_id: "6", type: null, place: "Aula E.5",
-        },
-        {
-            id: "test7", name: "Matemáticas II", starting_date: "2024-11-4", end_date: null, group_name: "Grupo D", periodicity: null, description: null, start: "10:00", end: "12:00", subject_id: "37", type: null, place: "Aula B.1",
-        },
-        {
-            id: "test8", name: "Matemáticas I", starting_date: "2024-11-4", end_date: null, group_name: "Grupo A", periodicity: null, description: null, start: "10:00", end: "12:00", subject_id: "8", type: null, place: "Aula A.11",
-        },
-        {
-            id: "test9", name: "Matemáticas II", starting_date: "2024-11-4", end_date: null, group_name: "Grupo D", periodicity: null, description: null, start: "12:00", end: "13:00", subject_id: "9", type: null, place: "Aula B.1",
-        },
-        {
-            id: "test10", name: "Matemáticas II", starting_date: "2024-11-4", end_date: null, group_name: "Grupo D", periodicity: null, description: null, start: "13:00", end: "14:00", subject_id: "11", type: null, place: "Aula B.1",
-        }
-    ]; */
 
     // Función que obtiene el día de la semana a partir de una fecha en formato "YYYY-MM-DD"
     const obtenerDiaSemana = (fechaStr) => {
@@ -220,11 +204,11 @@ const Calendario = () => {
             newMonday.setDate(newMonday.getDate() - 7);
         }
         newMonday.setHours(0, 0, 0, 0); // Establece la hora en 00:00:00
-
         setMondayWeek(newMonday);
 
         // Extraemos el mes y año
-        setMonthYear(numberToMonth(newMonday.getMonth()) + " " + newMonday.getFullYear())
+        const my = numberToMonth(newMonday.getMonth()) + " " + newMonday.getFullYear();
+        setMonthYear(my)
 
         // Array para almacenar solo los números de los días de la semana desde lunes a domingo
         const days = [];
@@ -244,9 +228,9 @@ const Calendario = () => {
 
         // Calcular el lunes de esta semana
         const monday = new Date(today);
+
         monday.setDate(today.getDate() - (dayOfWeek === 0 ? 6 : dayOfWeek - 1));
         monday.setHours(0, 0, 0, 0); // Establece la hora en 00:00:00
-
         setMondayWeek(monday)
 
         // Extraemos el mes y año
@@ -264,17 +248,18 @@ const Calendario = () => {
         setDiasSemana(days);
     }
 
+
     useEffect(() => {
         if (user && user.id) {
             getDiasSemana();
-
             getHorarios();
         }
-    }, [user, ]);
+    }, [user,]);
 
     useEffect(() => {
         if (mondayWeek && horariosBD) setHorarios(procesarHorarios(horariosBD));
     }, [mondayWeek, horariosBD])
+
 
     // Función para abrir el modal
     const openModal = () => {
@@ -292,49 +277,119 @@ const Calendario = () => {
         onOpen();
     };
 
+    const openModalTareas = () => {
+        setIsModalTareasOpen(true);
+    };
+
+    const closeModalTareas = () => {
+        setIsModalTareasOpen(false);
+    };
     if (user) {
         console.log(user);
-        console.log(user.type === "teacher");    
+        console.log(user.type === "teacher");
     }
+
+    //Funcion para abrir el modal de gestionar asignaturas
+    const openModalGestionarAsignaturas = () => {
+        getUserNip();
+        obtenerAsignaturasDeUsuario(user.id)
+        console.log("Asingaturas de usuario modal :", modalAsignaturasData)
+        setIsOpenGestionarAsignaturas(true);
+    };
+
+    //Funcion para cerrar el modal de gestionar asignaturas
+    const closeModalGestionarAsignaturas = () => {
+        setIsOpenGestionarAsignaturas(false);
+    };
+
+    const getUserNip = async () => {
+        const { data: userData, error: userError } = await getUserInfoById(user.id);
+        if (userError) {
+            console.error("Error al obtener la información del usuario:", userError);
+            return;
+        }
+        setUserNip(userData.nip);
+    }
+
+    // Función para obtener las asignaturas de un estudiante
+    const obtenerAsignaturasDeUsuario = async (studentId) => {
+        try {
+            // Paso 1: Obtener los subject_id asociados al estudiante
+            const { data: enrollmentData, error: enrollmentError } = await getSubjectsByStudentId(studentId);
+
+            if (enrollmentError) {
+                console.error("Error al obtener las asignaturas del estudiante:", enrollmentError);
+                return;
+            }
+
+            if (!enrollmentData || enrollmentData.length === 0) {
+                console.log("El estudiante no tiene asignaturas asociadas.");
+                setModalAsignaturasData([]); // Guardar una lista vacía si no hay asignaturas
+                return;
+            }
+
+            // Paso 2: Obtener la información completa de cada asignatura
+            const subjectPromises = enrollmentData.map(async (enrollment) => {
+                const { data: subjectData, error: subjectError } = await getSubjectById(enrollment.subject_id);
+
+                if (subjectError) {
+                    console.error(`Error al obtener la información de la asignatura con ID ${enrollment.subject_id}:`, subjectError);
+                    return null; // Retornar null si hay un error
+                }
+
+                return subjectData;
+            });
+
+            // Ejecutar todas las promesas y filtrar valores nulos (errores)
+            const subjects = (await Promise.all(subjectPromises)).filter((subject) => subject !== null);
+            console.log("Asignaturas cargadas correctamente:", subjects);
+            // Paso 3: Guardar las asignaturas en el estado
+
+
+            if (subjects && subjects.length > 0) {
+                console.log("Asignaturas válidas encontradas para el usuario");
+                setModalAsignaturasData(subjects);
+            } else {
+                console.log("No se encontraron asignaturas válidas para el usuario.");
+                setModalAsignaturasData([]); // Si no hay asignaturas válidas, mantener el estado vacío
+            }
+
+
+        } catch (err) {
+            console.error("Ha ocurrido un error al obtener las asignaturas:", err);
+        }
+    };
 
     return (
         <div className="calendario">
-            <Logout />
             <div className="personalizar flex">
-                <Button color="primary" onClick={openModal}>
+                <Button color="primary" onClick={openModalTareas}>
+                    Ver tareas
+                </Button>
+                <Button className="ml-[5px]" color="primary" onClick={openModal}>
                     Personalizar calendario
                 </Button>
                 {user && user.role == "teacher" && (
-                    <Button 
-                      color="primary"
-                      onClick={() => navigate(constants.root + "ProfesorMatriculas")}
-                      className="ml-[5px]"
+                    <Button
+                        color="primary"
+                        onClick={() => navigate(constants.root + "ProfesorMatriculas")}
+                        className="ml-[5px]"
                     >
                         Gestionar matrículas
-                    </Button>
-                
-                    // <Dropdown>
-                    //     <DropdownTrigger>
-                    //       <Button 
-                    //         variant="bordered" 
-                    //       >
-                    //         Open Menu
-                    //       </Button>
-                    //     </DropdownTrigger>
-                    //     <DropdownMenu aria-label="Static Actions">
-                    //       <DropdownItem key="new">New file</DropdownItem>
-                    //       <DropdownItem key="copy">Copy link</DropdownItem>
-                    //       <DropdownItem key="edit">Edit file</DropdownItem>
-                    //       <DropdownItem key="delete" className="text-danger" color="danger">
-                    //         Delete file
-                    //       </DropdownItem>
-                    //     </DropdownMenu>
-                    // </Dropdown>
+                    </Button>                
                 )}
+
+                {user && user.role == "student" && (
+                    <Button color="primary" onClick={openModalGestionarAsignaturas}>
+                        Gestionar asignaturas
+                    </Button>
+                )}
+
             </div>
             <div className="mes-tit flex">
                 <h1 className="mes-tit"> {monthYear} </h1>
             </div>
+            <Logout/>
             <div className="relative">
                 <div className="flex bg-primary text-white text-[1.5rem] items-center font-bold">
                     <div className="first-col">
@@ -384,7 +439,14 @@ const Calendario = () => {
                         height: `${h.height}`,
                         width: `${h.width}vw`,
                         color: `${h.textColor}`,
-                        backgroundColor: `${h.color}`,
+                        background: h.type === "Practicas"
+                        ? `repeating-linear-gradient(
+                            45deg, 
+                            ${h.color}, 
+                            ${h.color} 10px, 
+                            ${getAuxColor(h.color)} 10px, 
+                            ${getAuxColor(h.color)} 20px)`
+                        : `${h.color}`,
                         borderWidth: "1px",
                         borderColor: "black",
                         overflow: "hidden"
@@ -393,7 +455,18 @@ const Calendario = () => {
                         //onClick={() => console.log(`Start: ${h.start}, End: ${h.end}, Name: ${h.name}`)}
                         onClick={() => handleOpenModal(h)}
                     >
-                        <p className="ml-[5px] font-bold"> {h.start} - {h.end} </p>
+                        <div className="flex items-center">
+                            <p className="ml-[5px] font-bold"> {h.start} - {h.end} </p>
+                            {h.type === "Examen" && (
+                                <div style={{
+                                    color: getContrastColor(h.color),
+                                    marginLeft: "10px",
+                                    fontWeight: "bold"
+                                }}>
+                                    <GrNotes/>
+                                </div>
+                            )}
+                        </div>
                         <p className="ml-[5px]"> {h.name} </p>
                     </div>
                 ))}
@@ -409,7 +482,8 @@ const Calendario = () => {
                 descripcion={modalData?.description}
                 creador={modalData?.user_id}
                 id={modalData?.id}
-                date={modalData?.date}
+                date={modalData?.date || modalData?.starting_date}
+                type={modalData?.type}
                 onAccept={onOpenChange}
             />
 
@@ -417,10 +491,21 @@ const Calendario = () => {
                 isOpen={isModalOpen}
                 onOpenChange={closeModal}
                 listaCompletaEventos={horariosrecu}
+                listaCompletaEventosVisibles={horariosBD}
+            />
+            <ModalTareas
+                isOpen={isModalTareasOpen}
+                onOpenChange={closeModalTareas}
+                listaTareas={tareas}
+            />
+
+            <ModalDesasociarAsignaturas
+                isOpen={isOpenGestionarAsignaturas}
+                onOpenChange={closeModalGestionarAsignaturas}
+                asignaturas={modalAsignaturasData}
+                empty={modalAsignaturasData?.length === 0}
             />
         </div>
-
-
     )
 }
 

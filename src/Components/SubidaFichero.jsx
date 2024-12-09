@@ -8,6 +8,7 @@ import { getStudentIdByNip, registerArrayStudents } from "../supabase/student/st
 import { assignSubjectToStudents, assignSubjectToTeachers } from "../supabase/course/course";
 import { getTeacherIdByNip } from "../supabase/teacher/teacher";
 import { registerArrayTeachers } from "../supabase/teacher/teacher";
+import { letTeacherAssociateArrayStudentsToSubject, registerArrayTeachers } from "../supabase/teacher/teacher";
 import { registerArrayCourses, registerArraySubject } from "../supabase/course/course";
 import { useAuth } from "../context/AuthContext";
 import ModalComponent from "./ModalComponent";
@@ -15,13 +16,13 @@ import ModalComponent from "./ModalComponent";
 
 // Referencia: https://github.com/NelsonCode/drag-and-drop-files-react/blob/master/src/components/DragArea/index.js
 
-const SubidaFichero = ({ type, lista, setLista, code = -1, organization_id = -1}) => {
+const SubidaFichero = ({ type, lista, setLista, teacherNip, subjectCode, organization_id = -1}) => {
     const [errores, setErrores] = useState([]);
     const navigate = useNavigate();
     const [error, setError] = useState("");
-    const { user } = useAuth()
+    const { user } = useAuth();
 
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+    const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
     const readFile = (e) => {
         setErrores([])
@@ -201,7 +202,6 @@ const SubidaFichero = ({ type, lista, setLista, code = -1, organization_id = -1}
     }
 
     const create = async (lista) => {
-        // TODO:  llamada a funcion crear
         setError(""); // Limpiar cualquier mensaje de error anterior
         console.log(lista);
 
@@ -264,20 +264,28 @@ const SubidaFichero = ({ type, lista, setLista, code = -1, organization_id = -1}
             const students = lista.filter(item => item.role === "student").map(student => student.nip);
             const teachers = lista.filter(item => item.role === "teacher").map(teacher => teacher.nip);
 
-            let res = assignSubjectToTeachers(teachers, code, organization_id);
+            let res = assignSubjectToTeachers(teachers, subjectCode, organization_id);
             if (res.error) {
                 setError("Hubo un error en el registro: " + res.error.message);
                 window.scrollTo({ top: 0, behavior: "smooth" });
                 return;
             }
 
-            res = assignSubjectToStudents(students, code, organization_id);
+            res = assignSubjectToStudents(students, subjectCode, organization_id);
             if (res.error) {
                 setError("Hubo un error en el registro: " + res.error.message);
                 window.scrollTo({ top: 0, behavior: "smooth" });
                 return;
             }
 
+        } else if (type == "nips") {
+            // Llamada a la API para matricular un array de alumnos
+            const res = await letTeacherAssociateArrayStudentsToSubject(teacherNip, lista, subjectCode);
+            if (res.error) {
+                setError("Hubo un error en el registro: " + res.error);
+                window.scrollTo({ top: 0, behavior: "smooth" });
+                return;
+            }
         }
         navigate(-1)
     }
@@ -300,7 +308,7 @@ const SubidaFichero = ({ type, lista, setLista, code = -1, organization_id = -1}
                     className="file-upload-input"
                     data-testid="file-input"
                     type="file"
-                    onChange={(e) => type === "asignaturas" ? readFileSubjects(e) : "matriculas" ? readFileMatriculas(e) : readFile(e)}
+                    onChange={(e) => type === "asignaturas" ? readFileSubjects(e) : type === "nips" ? readFileNips(e) : "matriculas" ? readFileMatriculas(e) : readFile(e)}
                 />
                 <div className="text-information">
                     {lista.length > 0 ? (
@@ -394,9 +402,15 @@ const SubidaFichero = ({ type, lista, setLista, code = -1, organization_id = -1}
             </div>
             {lista.length > 0 && errores.length == 0 && (
                 <div className="crear-button">
-                    <Button name="create-list" size="lg" color="primary" onClick={() => onOpen()}>
-                        Crear la lista
-                    </Button>
+                    {type === "nips" ? (
+                        <Button name="create-list" size="lg" color="primary" onClick={() => onOpen()}>
+                            Matricular
+                        </Button>
+                    ) : (
+                        <Button name="create-list" size="lg" color="primary" onClick={() => onOpen()}>
+                            Crear la lista
+                        </Button>
+                    )}
                 </div>
             )}
             <ModalComponent

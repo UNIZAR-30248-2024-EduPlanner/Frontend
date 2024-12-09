@@ -244,6 +244,70 @@ export const getTeacherIdByNip = async (nip) => {
   }
 }
 
+export const getTeacherById = async (teacher_id) => {
+  try {
+    const { data, error } = await supabase
+      .from('users')
+      .select('*')
+      .eq('id', teacher_id)
+      .eq('role', 'teacher')
+      .single();
+
+    if (error) {
+      console.error('Error al obtener el profesor:', error);
+      return { data: null, error };
+    }
+
+    console.log('Profesor obtenido correctamente:', data);
+    return { data, error: null };
+  } catch (err) {
+    console.error('Ha ocurrido un error:', err);
+    return { data: null, error: err };
+  }
+}
+
+
+export const getTeachersBySubjectCode = async (subject_code) => {
+  try {
+    // Obtener el ID de la asignatura
+    const subject = await supabase
+      .from('subjects')
+      .select('id')
+      .eq('subject_code', subject_code)
+      .single().select();
+
+    // Primero obtenemos la lista de teacher_id del profesor
+    const { data: teachingData, error: teachingError } = await supabase
+      .from('teachings')
+      .select('teacher_id')
+      .eq('subject_id', subject.data.id);
+
+    if (teachingError) {
+      console.error('Error al obtener los profesores de la asignatura:', teachingError);
+      return { data: null, error: teachingError };
+    }
+
+    // Extraer la informacion de los profesores por su ID de teachingData
+    const teachers = await Promise.all(teachingData.map(async (teacher) => {
+      const result = await getTeacherById(teacher.teacher_id);
+      return result.data;
+    }));
+
+    if (teachers.length === 0) {
+      console.log('La asignatura no tiene profesores asociados.');
+      return { data: [], error: null };
+    }
+
+    console.log('Profesores de la asignatura obtenidos correctamente:', teachers);
+
+    return { data: teachers, error: null };
+  } catch (err) {
+    console.error('Ha ocurrido un error:', err);
+    return { data: null, error: err };
+  }
+}
+
+
 export const letTeacherAssociateStudentToSubject = async (teacherNip, studentNip, subjectCode) => {
   // Obtener el ID del profesor
   const teacherId = await getTeacherIdByNip(teacherNip);

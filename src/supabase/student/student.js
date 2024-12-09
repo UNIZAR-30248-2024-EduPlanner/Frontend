@@ -258,7 +258,8 @@ export const getStudentIdByNipAndOrganization = async (nip, organization_id) => 
 }
 
 export const getStudentsBySubject = async (subject_id) => {
-  const students = await supabase
+  try {
+    const students = await supabase
     .from('enrollments')
     .select('student_id')
     .eq('subject_id', subject_id);
@@ -270,12 +271,18 @@ export const getStudentsBySubject = async (subject_id) => {
         .select('name')
         .eq('id', student.student_id).select();
 
-      return studentData.data[0];
-    })
-  );
-  
-  console.log('Estudiantes obtenidos correctamente:', studentsData);
-  return { data: studentsData, error: null };
+        return studentData.data[0];
+      })
+    );
+
+    console.log('Estudiantes obtenidos correctamente:', studentsData);
+
+    return {data: studentsData, error: null};
+
+  } catch (err) {
+    return {data: null, error: err};
+
+  }
 }
 
 export const getSubjectsInfoByStudent = async (student_id) => {
@@ -291,7 +298,7 @@ export const getSubjectsInfoByStudent = async (student_id) => {
       subjects.data.map(async subject => {
         const subjectData = await supabase
           .from('subjects')
-          .select('subject_code', 'name', 'description')
+          .select('subject_code', 'name', 'description') // TODO: Que devuelva todos los campos necesarios
           .eq('id', subject.subject_id).select();
         return subjectData.data[0];
       })

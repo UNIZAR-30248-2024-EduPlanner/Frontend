@@ -102,6 +102,3 @@ const AlumnoMenu = () => {
 };
 
 export default AlumnoMenu;
-
-
-

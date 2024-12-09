@@ -63,7 +63,7 @@ describe('ModalHorario', () => {
             </AuthProvider>
         );
 
-        fireEvent.click(screen.getByRole('button', { name: "Modificar evento" }));
+        fireEvent.click(screen.getByRole('button', { name: "Modificar" }));
         expect(screen.getByRole('button', { name: "Guardar en el calendario" })).toBeTruthy();
     });
 
@@ -74,7 +74,7 @@ describe('ModalHorario', () => {
             </AuthProvider>
         );
 
-        fireEvent.click(screen.getByRole('button', { name: "Eliminar del calendario"}));
+        fireEvent.click(screen.getByRole('button', { name: "Ocultar evento" }));
         fireEvent.click(screen.getByRole('button', { name: "Aceptar" }));
     });
 });

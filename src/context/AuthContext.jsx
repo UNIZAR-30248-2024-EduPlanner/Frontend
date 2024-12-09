@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import constants from "../constants/constants";
-import { getOrganizationById, getUserInfoByNIP, loginOrganization, registerOrganization } from "../supabase/organization/organization";
+import { getOrganizationById, getOrganizationIdByName, getUserInfoByNIP, loginOrganization, registerOrganization } from "../supabase/organization/organization";
 import { loginCourse } from "../supabase/course/course";
 import { getUserInfoById, loginUser } from "../supabase/user/user";
 
@@ -25,8 +25,19 @@ export const AuthProvider = ({ children }) => {
 
 
     const register = async (name, nip, pass) => {
-        const res = await registerOrganization(name, nip, pass)
+        let res = await registerOrganization(name, nip, pass);
+        console.log(res);
+        if (res.error) return res;
+
+        const id = await getOrganizationIdByName(name); // se recupera el id de la organizacion
+        if (id == null) return;
+
+        // Llamada a la API para conseguir la info del usuario logueado
+        res = await getOrganizationById(id);
         if (res.error) return res
+
+        localStorage.setItem("user", res.data.id);  // Si user es un objeto
+        localStorage.setItem("type", constants.organizacion)
 
         setUser(res.data)
         setType(constants.organizacion)
