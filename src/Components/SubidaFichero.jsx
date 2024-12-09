@@ -7,7 +7,6 @@ import "../css/Components/SubidaFichero.css";
 import { getStudentIdByNip, registerArrayStudents } from "../supabase/student/student";
 import { assignSubjectToStudents, assignSubjectToTeachers } from "../supabase/course/course";
 import { getTeacherIdByNip } from "../supabase/teacher/teacher";
-import { registerArrayTeachers } from "../supabase/teacher/teacher";
 import { letTeacherAssociateArrayStudentsToSubject, registerArrayTeachers } from "../supabase/teacher/teacher";
 import { registerArrayCourses, registerArraySubject } from "../supabase/course/course";
 import { useAuth } from "../context/AuthContext";
@@ -245,13 +244,11 @@ const SubidaFichero = ({ type, lista, setLista, teacherNip, subjectCode, organiz
             for (const item of updatedList) {
                 let id = (await getStudentIdByNip(item.nip)).data || undefined;
                 if (id !== null && id !== undefined) {
-                    console.log("ALUMNO OBTENIDO: ", id);
                     item.role = "student";
                 } else {
                     // Si no lo encuentra, comprueba si es un profesor
-                    id = (await getTeacherIdByNip(item.nip)).data;
+                    id = (await getTeacherIdByNip(item.nip)).data || undefined;
                     if (id !== null && id !== undefined) {
-                        console.log("PROFESOR OBTENIDO: ", id);
                         item.role = "teacher";
                     } else {
                         setError("Hubo un error en el registro: NIP no corresponde a ningún alumno o profesor");

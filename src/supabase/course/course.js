@@ -366,7 +366,7 @@ export const assignSubjectToTeachers = async (teachers, subjectCode, organizatio
             return { data: null, error: subject.error };
         }
         // Obtener el ID de cada profesor dado su NIP
-        const teachersWithSubjectId = teachers.map(async teacher => {
+        const teachersWithSubjectId = await Promise.all(teachers.map(async teacher => {
             const teacherData = await supabase
                 .from('users')
                 .select('id')
@@ -381,11 +381,11 @@ export const assignSubjectToTeachers = async (teachers, subjectCode, organizatio
             }
 
             return { teacher_id: teacherData.data.id, subject_id: subject.data.id };
-        });
+        }));
 
         const { error } = await supabase
             .from('teachings')
-            .insert(await Promise.all(teachersWithSubjectId));
+            .insert(teachersWithSubjectId.filter(item => item.data !== null));
 
         if (error) {
             console.error('Error al insertar los profesores en la asignatura:', error);

@@ -8,7 +8,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import '../../css/Curso/CursoMatriculados.css';
 import ModalComponent from '../../Components/ModalComponent.jsx';
 import { getStudentsBySubject, unenrollStudent } from '../../supabase/student/student.js';
-import { unassignSubjectFromTeacher } from '../../supabase/teacher/teacher.js';
+import { getTeachersBySubjectCode, unassignSubjectFromTeacher } from '../../supabase/teacher/teacher.js';
 
 const CursoMatriculados = () => {
     const { user } = useAuth();
@@ -19,11 +19,8 @@ const CursoMatriculados = () => {
     const [profesores, setProfesores] = useState([]);
     const [sortConfigAlumnos, setSortConfigAlumnos] = useState({ key: null, direction: 'asc' });
     const [sortConfigProfesores, setSortConfigProfesores] = useState({ key: null, direction: 'asc' });
-    const [search, setSearch] = useState('');
-    const [alumnoToDelete, setAlumnoToDelete] = useState('');
-    const [profesorToDelete, setProfesorToDelete] = useState('');
+    const [userToUnenroll, setUserToUnenroll] = useState('');
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
-    const { isOpenProfesor, onOpenProfesor, onOpenChangeProfesor } = useDisclosure();
 
     useEffect(() => {
         if (user && user.id) {
@@ -33,26 +30,23 @@ const CursoMatriculados = () => {
 
     const getMatriculados = async () => {
         const alumnosRecu = (await getStudentsBySubject(subject_id)).data || [];
-        const profesoresRecu = [];      
+        const profesoresRecu = (await getTeachersBySubjectCode(codigo)).data || []; 
+        
+        alumnosRecu.forEach(alumno => alumno.role = 'student');
+        profesoresRecu.forEach(profesor => profesor.role = 'teacher');
+
         setAlumnos(alumnosRecu);
         setProfesores(profesoresRecu);
     }
 
-    const deleteMatriculado = async (nip) => {
-        const res = await unenrollStudent(nip, codigo);
+    const deleteMatriculado = async (user) => {
+        const nip = user.nip;
+        const role = user.role;
+        const res = role === 'student' ? await unenrollStudent(nip, codigo) : await unassignSubjectFromTeacher(nip, codigo);
         if (res.error) {
             console.log(error)
         } else {
-            setAlumnos(alumnos.filter(alumno => alumno.nip !== nip));
-        }
-    }
-
-    const deleteAsignado = async (nip) => {
-        const res = unassignSubjectFromTeacher(nip, codigo);
-        if (res.error) {
-            console.log(error)
-        } else {
-            setProfesores(profesores.filter(profesor => profesor.nip !== nip));
+            role === 'student' ? setAlumnos(alumnos.filter(alumno => alumno.nip !== nip)) : setProfesores(profesores.filter(profesor => profesor.nip !== nip));
         }
     }
 
@@ -114,24 +108,16 @@ const CursoMatriculados = () => {
                                     <React.Fragment key={profesor.nip}>
                                     <tr>
                                         <td>{profesor.nip}</td>
-                                        <td>{profesor.nombre}</td>
+                                        <td>{profesor.name}</td>
                                         <td>
                                             <button 
                                                 className='delete' 
                                                 onClick={() => {
-                                                    setProfesorToDelete(profesor.nip);
-                                                    onOpenProfesor();
+                                                    setUserToUnenroll(profesor);
+                                                    onOpen();
                                                 }}>X</button>
                                         </td>
                                     </tr>
-                                    <ModalComponent
-                                        isOpen={isOpenProfesor}
-                                        onOpenChange={onOpenChangeProfesor}
-                                        title="Desasignar profesor"
-                                        texto="¿Estás seguro de que quieres desasignar a este profesor?"
-                                        onAccept={() => {
-                                            deleteAsignado(profesorToDelete);
-                                        }} />
                                     </React.Fragment>
                                 ))}
                             </tbody>
@@ -165,7 +151,7 @@ const CursoMatriculados = () => {
                                             <button 
                                                 className='delete' 
                                                 onClick={() => {
-                                                    setAlumnoToDelete(alumno.nip);
+                                                    setUserToUnenroll(alumno);
                                                     onOpen();
                                                 }}>X</button>
                                         </td>
@@ -173,10 +159,10 @@ const CursoMatriculados = () => {
                                     <ModalComponent
                                         isOpen={isOpen}
                                         onOpenChange={onOpenChange}
-                                        title="Desmatricular alumno"
-                                        texto="¿Estás seguro de que quieres desmatricular a este alumno?"
+                                        title="Desmatricular usuario"
+                                        texto="¿Estás seguro de que quieres desmatricular a este usuario?"
                                         onAccept={() => {
-                                            deleteMatriculado(alumnoToDelete);
+                                            deleteMatriculado(userToUnenroll);
                                         }} />
                                     </React.Fragment>
                                 ))}

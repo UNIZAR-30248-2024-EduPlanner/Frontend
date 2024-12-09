@@ -244,6 +244,29 @@ export const getTeacherIdByNip = async (nip) => {
   }
 }
 
+export const getTeacherIdByNipAndOrganization = async (nip, organization_id) => {
+  try {
+    const { data, error } = await supabase
+      .from('users')
+      .select('id, name')
+      .eq('nip', nip)
+      .eq('organization_id', organization_id)
+      .eq('role', 'teacher')
+      .single();
+
+    if (error) {
+      console.error('Error al obtener el ID del profesor:', error);
+      return { data: null, error };
+    }
+
+    console.log('ID del profesor obtenido correctamente:', data);
+    return { data: data, error: null };
+  } catch (err) {
+    console.error('Ha ocurrido un error:', err);
+    return { data: null, error: err };
+  }
+}
+
 export const getTeacherById = async (teacher_id) => {
   try {
     const { data, error } = await supabase

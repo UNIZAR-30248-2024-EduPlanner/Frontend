@@ -5,7 +5,7 @@ import { Button } from "@nextui-org/react";
 import { FaMagnifyingGlass } from "react-icons/fa6";
 import SubidaFichero from "../../Components/SubidaFichero";
 import { getStudentIdByNip, getStudentIdByNipAndOrganization } from "../../supabase/student/student";
-import { getTeacherIdByNip } from "../../supabase/teacher/teacher";
+import { getTeacherIdByNip, getTeacherIdByNipAndOrganization } from "../../supabase/teacher/teacher";
 import { assignSubjectToStudent, assignSubjectToTeacher } from "../../supabase/course/course";
 import FlechaVolver from "../../Components/FlechaVolver";
 import Logout from "../../Components/Logout";
@@ -20,27 +20,41 @@ const CursoMatriculadosAñadir = () => {
     const [foundItem, setFoundItem] = useState({});
     const [show, setShow] = useState(false);
     const [found, setFound] = useState(false);
+    const [foundError, setFoundError] = useState(false);
 
     const type = "matriculas";
 
 
     const searchAlumnoOrProfesor = async () => {
-        let id = (await getStudentIdByNipAndOrganization(nip, organization_id)).data;
-        if (id !== null && id !== undefined) {
+        
+        // Verificar que nip es un valor numérico positivo
+        setFoundError(false);
+        if (isNaN(nip) || nip === "" || parseInt(nip) < 0) {
+            setFound(false);
+            setFoundError(true);
+            setShow(true);
+            return;
+        }
+
+        // Verificar si el nip pertenece a un alumno o profesor
+        let res = (await getStudentIdByNipAndOrganization(nip, organization_id)).data;
+        if (res !== null && res !== undefined) {
             setFound(true);
             setFoundItem({
-                id: id,
+                id: res.id,
+                name: res.name,
                 nip: nip,
-                role: "alumno",
+                role: res.role,
             });
         } else {
-            id = (await getTeacherIdByNip(nip)).data;
-            if (id !== null && id !== undefined) {
+            res = (await getTeacherIdByNipAndOrganization(nip, organization_id)).data;
+            if (res !== null && res !== undefined) {
                 setFound(true);
                 setFoundItem({
-                    id: id,
+                    id: res.id,
+                    name: res.name,
                     nip: nip,
-                    role: "profesor",
+                    role: res.role,
                 });
             } else {
                 setFound(false);
@@ -50,7 +64,7 @@ const CursoMatriculadosAñadir = () => {
     }
 
     const addAlumnoOrProfesor = async () => {
-        const res = foundItem.role === "alumno" ? 
+        const res = foundItem.role === "student" ? 
             await assignSubjectToStudent(foundItem.nip, codigo, organization_id) : 
             await assignSubjectToTeacher(foundItem.nip, codigo, organization_id);
         if (res.error) {
@@ -89,14 +103,16 @@ const CursoMatriculadosAñadir = () => {
                 {show && (
                     found ? (
                     <div className="found">
-                        <p>Se ha encontrado un {foundItem.role} con ID {foundItem.id} y NIP {foundItem.nip}</p>
+                        <p>
+                            Se ha encontrado al {foundItem.role === "student" ? " alumno " : " profesor "} {foundItem.name} con NIP {nip}.
+                        </p>
                         <Button size="md" color="primary" className="add" onClick={addAlumnoOrProfesor}>
                             Añadir
                         </Button>
                     </div>
                     ) : (
                         <div className="not-found">
-                            {nip === "" ? (
+                            {isNaN(nip) || parseInt(nip) < 0 ? (
                                 <p>Especifique un NIP válido de un alumno o profesor</p>
                             ) : (
                                 <p>No se ha encontrado ningún alumno o profesor con el NIP {nip}.</p>
@@ -117,7 +133,7 @@ const CursoMatriculadosAñadir = () => {
                             type={type} 
                             lista={lista} 
                             setLista={setLista} 
-                            code={codigo}
+                            subjectCode={codigo}
                             organization_id={organization_id} 
                         />
                     </div>
