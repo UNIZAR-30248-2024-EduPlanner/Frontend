@@ -1,59 +1,70 @@
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { Input } from "@nextui-org/input";
 import { Button } from "@nextui-org/react";
 import { FaMagnifyingGlass } from "react-icons/fa6";
 import SubidaFichero from "../../Components/SubidaFichero";
+import { getStudentIdByNip, getStudentIdByNipAndOrganization } from "../../supabase/student/student";
+import { getTeacherIdByNip } from "../../supabase/teacher/teacher";
+import { assignSubjectToStudent, assignSubjectToTeacher } from "../../supabase/course/course";
 import FlechaVolver from "../../Components/FlechaVolver";
 import Logout from "../../Components/Logout";
 import '../../css/Curso/CursoMatriculadosAñadir.css';
 
 const CursoMatriculadosAñadir = () => {
     const location = useLocation();
-    const { nombre, codigo, subject_id, organization_id } = location.state || {};
-    const [type, setType] = useState("matriculas");
+    const navigate = useNavigate();
+    const { nombre, codigo, organization_id } = location.state || {};
     const [lista, setLista] = useState([]);
     const [nip, setNip] = useState("");
     const [foundItem, setFoundItem] = useState({});
     const [show, setShow] = useState(false);
     const [found, setFound] = useState(false);
 
+    const type = "matriculas";
 
-    const searchAlumnoOrProfesor = () => {
-        // Busca por profesor y si no encuentra a nadie, busca por alumno
-        // Si encuentra uno, lo añade
-        // Si no encuentra a nadie, muestra un mensaje de error
-        if (nip === "1") {
+
+    const searchAlumnoOrProfesor = async () => {
+        let id = (await getStudentIdByNipAndOrganization(nip, organization_id)).data;
+        if (id !== null && id !== undefined) {
             setFound(true);
             setFoundItem({
-                nombre: "Jorge Pérez",
-                nip: 145829,
-                tipo: "alumno",
-            });
-        } else if (nip === "2") {
-            setFound(true);
-            setFoundItem({
-                nombre: "María García",
-                nip: 145830,
-                tipo: "profesor",
+                id: id,
+                nip: nip,
+                role: "alumno",
             });
         } else {
-            setFound(false);
+            id = (await getTeacherIdByNip(nip)).data;
+            if (id !== null && id !== undefined) {
+                setFound(true);
+                setFoundItem({
+                    id: id,
+                    nip: nip,
+                    role: "profesor",
+                });
+            } else {
+                setFound(false);
+            }
         }
         setShow(true);
     }
 
-    const addAlumnoOrProfesor = () => {
-        // Añade al alumno o profesor encontrado a la lista de matriculados
-        // Si ya está en la lista, muestra un mensaje de error
-        console.log("Añadido");
+    const addAlumnoOrProfesor = async () => {
+        const res = foundItem.role === "alumno" ? 
+            await assignSubjectToStudent(foundItem.nip, codigo, organization_id) : 
+            await assignSubjectToTeacher(foundItem.nip, codigo, organization_id);
+        if (res.error) {
+            console.log(res.error);
+        } else {
+            navigate(-1)
+        }
     }
 
     return (
         <>
             <FlechaVolver />
             <Logout />
-            <h1 className="cur-crear-tit"> Añadir profesores o alumnos </h1>
+            <h1 className="cur-crear-tit"> Añadir matrículas a {nombre}</h1>
             <div className="cur-crear-container">
                 <div className="cur-crear-uno">
                     <h2>Buscar por NIP/NIA</h2>
@@ -78,7 +89,7 @@ const CursoMatriculadosAñadir = () => {
                 {show && (
                     found ? (
                     <div className="found">
-                        <p>Se ha encontrado al {foundItem.tipo} {foundItem.nombre} con el NIP {foundItem.nip}</p>
+                        <p>Se ha encontrado un {foundItem.role} con ID {foundItem.id} y NIP {foundItem.nip}</p>
                         <Button size="md" color="primary" className="add" onClick={addAlumnoOrProfesor}>
                             Añadir
                         </Button>
@@ -102,7 +113,13 @@ const CursoMatriculadosAñadir = () => {
                                 NIP/NIA; <br />
                             </span>
                         </p>
-                        <SubidaFichero type={type} lista={lista} setLista={setLista} />
+                        <SubidaFichero 
+                            type={type} 
+                            lista={lista} 
+                            setLista={setLista} 
+                            code={codigo}
+                            organization_id={organization_id} 
+                        />
                     </div>
             </div>
         </>

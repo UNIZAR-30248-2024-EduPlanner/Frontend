@@ -1,10 +1,14 @@
 import React, { useEffect, useState } from 'react';
+import { useDisclosure } from '@nextui-org/react';
 import FlechaVolver from '../../Components/FlechaVolver.jsx';
 import { FaCirclePlus } from "react-icons/fa6";
 import Logout from "../../Components/Logout";
 import { useAuth } from "../../context/AuthContext";
 import { useLocation, useNavigate } from "react-router-dom";
 import '../../css/Curso/CursoMatriculados.css';
+import ModalComponent from '../../Components/ModalComponent.jsx';
+import { getStudentsBySubject, unenrollStudent } from '../../supabase/student/student.js';
+import { unassignSubjectFromTeacher } from '../../supabase/teacher/teacher.js';
 
 const CursoMatriculados = () => {
     const { user } = useAuth();
@@ -16,6 +20,10 @@ const CursoMatriculados = () => {
     const [sortConfigAlumnos, setSortConfigAlumnos] = useState({ key: null, direction: 'asc' });
     const [sortConfigProfesores, setSortConfigProfesores] = useState({ key: null, direction: 'asc' });
     const [search, setSearch] = useState('');
+    const [alumnoToDelete, setAlumnoToDelete] = useState('');
+    const [profesorToDelete, setProfesorToDelete] = useState('');
+    const { isOpen, onOpen, onOpenChange } = useDisclosure();
+    const { isOpenProfesor, onOpenProfesor, onOpenChangeProfesor } = useDisclosure();
 
     useEffect(() => {
         if (user && user.id) {
@@ -24,54 +32,28 @@ const CursoMatriculados = () => {
     }, [user.id]);
 
     const getMatriculados = async () => {
-        // Mockeamos matriculados
-        const mockAlumnos = [
-            { nip: 123, nombre: 'Juan Pérez' },
-            { nip: 456, nombre: 'María López' },
-            { nip: 789, nombre: 'Carlos García' },
-            { nip: 101, nombre: 'Ana Martínez' },
-            { nip: 112, nombre: 'Luis Rodríguez' },
-            { nip: 131, nombre: 'Sofía Fernández' },
-            { nip: 415, nombre: 'Miguel Sánchez' },
-            { nip: 161, nombre: 'Lucía Ramírez' },
-            { nip: 718, nombre: 'Javier Torres' },
-            { nip: 192, nombre: 'Elena Díaz' },
-            { nip: 202, nombre: 'Diego Morales' },
-            { nip: 212, nombre: 'Paula Cruz' },
-            { nip: 232, nombre: 'Andrés Ortiz' },
-            { nip: 242, nombre: 'Laura Gómez' },
-            { nip: 252, nombre: 'Fernando Ruiz' },
-            { nip: 262, nombre: 'Clara Jiménez' },
-            { nip: 272, nombre: 'Adrián Herrera' },
-            { nip: 282, nombre: 'Isabel Mendoza' },
-        ];
-        const mockProfesores = [
-            { nip: 301, nombre: 'Roberto Álvarez' },
-            { nip: 302, nombre: 'Marta Castillo' },
-            { nip: 303, nombre: 'Alejandro Vega' },
-            { nip: 304, nombre: 'Patricia Navarro' },
-            { nip: 305, nombre: 'Francisco Rivas' },
-            { nip: 306, nombre: 'Carmen Soto' },
-            { nip: 307, nombre: 'José Peña' },
-            { nip: 308, nombre: 'Teresa Campos' },
-            { nip: 309, nombre: 'Manuel Gil' },
-            { nip: 310, nombre: 'Silvia Romero' },
-            { nip: 311, nombre: 'Antonio Vargas' },
-            { nip: 312, nombre: 'Laura Ibáñez' },
-            { nip: 313, nombre: 'Enrique León' },
-            { nip: 314, nombre: 'Pilar Serrano' },
-            { nip: 315, nombre: 'Alberto Fuentes' },
-            { nip: 316, nombre: 'Rosa Aguilar' },
-            { nip: 317, nombre: 'David Paredes' },
-            { nip: 318, nombre: 'Julia Montes' },
-        ];
-        setAlumnos(mockAlumnos);
-        setProfesores(mockProfesores);
+        const alumnosRecu = (await getStudentsBySubject(subject_id)).data || [];
+        const profesoresRecu = [];      
+        setAlumnos(alumnosRecu);
+        setProfesores(profesoresRecu);
     }
 
     const deleteMatriculado = async (nip) => {
-        setAlumnos(alumnos.filter(alumno => alumno.nip !== nip));
-        setProfesores(profesores.filter(profesor => profesor.nip !== nip));
+        const res = await unenrollStudent(nip, codigo);
+        if (res.error) {
+            console.log(error)
+        } else {
+            setAlumnos(alumnos.filter(alumno => alumno.nip !== nip));
+        }
+    }
+
+    const deleteAsignado = async (nip) => {
+        const res = unassignSubjectFromTeacher(nip, codigo);
+        if (res.error) {
+            console.log(error)
+        } else {
+            setProfesores(profesores.filter(profesor => profesor.nip !== nip));
+        }
     }
 
     const sortData = (data, key, direction) => {
@@ -91,25 +73,12 @@ const CursoMatriculados = () => {
         }
     };
 
-    // Funcion para solo aceptar digitos en la busqueda
-    const handleSearchChange = (e) => {
-        const value = e.target.value;
-        if (/^\d*$/.test(value)) {
-            setSearch(value);
-        }
-    };
-
-    const searchByNIP = (nip) => {
-        //Deberá buscar en la base de datos si existe el nip y si es profesor o alumno
-    }
-
     const navigateToAddMatriculados = () => {
         navigate(
             `${location.pathname}/Añadir`, 
             { state: { 
                 nombre: nombre,
                 codigo: codigo,
-                subject_id: subject_id,
                 organization_id: user.organization_id
             } 
         }); 
@@ -141,14 +110,29 @@ const CursoMatriculados = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {profesores.map(profesor => (
-                                    <tr key={profesor.nip}>
+                                {Array.isArray(profesores) && profesores.map(profesor => (
+                                    <React.Fragment key={profesor.nip}>
+                                    <tr>
                                         <td>{profesor.nip}</td>
                                         <td>{profesor.nombre}</td>
                                         <td>
-                                            <button className='delete' onClick={() => deleteMatriculado(profesor.nip)}>X</button>
+                                            <button 
+                                                className='delete' 
+                                                onClick={() => {
+                                                    setProfesorToDelete(profesor.nip);
+                                                    onOpenProfesor();
+                                                }}>X</button>
                                         </td>
                                     </tr>
+                                    <ModalComponent
+                                        isOpen={isOpenProfesor}
+                                        onOpenChange={onOpenChangeProfesor}
+                                        title="Desasignar profesor"
+                                        texto="¿Estás seguro de que quieres desasignar a este profesor?"
+                                        onAccept={() => {
+                                            deleteAsignado(profesorToDelete);
+                                        }} />
+                                    </React.Fragment>
                                 ))}
                             </tbody>
                         </table>
@@ -172,14 +156,29 @@ const CursoMatriculados = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {alumnos.map(alumno => (
-                                    <tr key={alumno.nip}>
+                                {Array.isArray(alumnos) && alumnos.map(alumno => (
+                                    <React.Fragment key={alumno.nip}>
+                                    <tr>
                                         <td>{alumno.nip}</td>
-                                        <td>{alumno.nombre}</td>
+                                        <td>{alumno.name}</td>
                                         <td>
-                                            <button className='delete' onClick={() => deleteMatriculado(alumno.nip)}>X</button>
+                                            <button 
+                                                className='delete' 
+                                                onClick={() => {
+                                                    setAlumnoToDelete(alumno.nip);
+                                                    onOpen();
+                                                }}>X</button>
                                         </td>
                                     </tr>
+                                    <ModalComponent
+                                        isOpen={isOpen}
+                                        onOpenChange={onOpenChange}
+                                        title="Desmatricular alumno"
+                                        texto="¿Estás seguro de que quieres desmatricular a este alumno?"
+                                        onAccept={() => {
+                                            deleteMatriculado(alumnoToDelete);
+                                        }} />
+                                    </React.Fragment>
                                 ))}
                             </tbody>
                         </table>

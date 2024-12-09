@@ -2,7 +2,6 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import SubidaFichero from '../SubidaFichero';
 
-const mockList = vi.fn();
 const mockContext = vi.fn();
 const mockNavigate = vi.fn();
 vi.mock('react-router-dom', () => {
@@ -24,25 +23,55 @@ vi.mock('../../context/AuthContext', () => {
 
 describe("SubidaFichero Component Tests", () => {
     it("should render the component", () => {
+        const mockList = vi.fn();
         render(<SubidaFichero type="alumnos" lista={mockList} setLista={(l) => {lista = l}} />);
         const inputElement = document.querySelector(".text-information");
 
         expect(inputElement).toBeInTheDocument();
     });
 
-    it("should charge and proccess students file", async () => {
+    it("should charge and proccess subjects file", async () => {
+        const mockList = vi.fn();
         const setListaMock = vi.fn();
-        const file = new File(["Juan Perez;123456;password;"], "test.csv", {
-          type: "text/csv",
-        });
+        const file = new File(["Matematicas;123;"], 'test.csv', { type: 'text/csv' });
 
-        render(<SubidaFichero type="alumnos" lista={[]} setLista={setListaMock} />);
+        render(<SubidaFichero type="asignaturas" lista={mockList} setLista={setListaMock} />);
 
         const input = screen.getByTestId("file-input");
         fireEvent.change(input, { target: { files: [file] } });
 
         await waitFor(() => {
-            expect(setListaMock).toHaveBeenCalledWith([{ name: "Juan Perez", nip: 123456, pass: "password" },]);
+            expect(setListaMock).toHaveBeenCalledWith([{ subject_code: 123, name: "Matematicas" }]);
+        });
+    });
+
+    it("should charge and proccess students file", async () => {
+        const mockList = vi.fn();
+        const setListaMock = vi.fn();
+        const file = new File(["Alumno;888888;password;"], 'test.csv', { type: 'text/csv' });
+
+        render(<SubidaFichero type="alumnos" lista={mockList} setLista={setListaMock} />);
+
+        const input = screen.getByTestId("file-input");
+        fireEvent.change(input, { target: { files: [file] } });
+
+        await waitFor(() => {
+            expect(setListaMock).toHaveBeenCalled();
+        });
+    });
+
+    it("should charge and proccess enrollements file", async () => {
+        const mockList = vi.fn();
+        const setListaMock = vi.fn();
+        const file = new File(["123456;"], "test.csv", {type: "text/csv",});
+
+        render(<SubidaFichero type="matriculas" lista={mockList} setLista={setListaMock} />);
+
+        const input = screen.getByTestId("file-input");
+        fireEvent.change(input, { target: { files: [file] } });
+
+        await waitFor(() => {
+            expect(setListaMock).toHaveBeenCalledWith([{ nip: 123456 }]);
         });
     });
 

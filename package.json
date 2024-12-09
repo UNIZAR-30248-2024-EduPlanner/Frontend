@@ -9,6 +9,8 @@
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "test": "vitest",
+    "test:front": "vitest --watch src/Components/test/*.test.jsx",
+    "test:supabase": "vitest --watch src/supabase/**/*.test.js",
     "e2e": "cypress open",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d dist"

@@ -4,7 +4,9 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../constants/constants";
 import "../css/Components/SubidaFichero.css";
-import { registerArrayStudents } from "../supabase/student/student";
+import { getStudentIdByNip, registerArrayStudents } from "../supabase/student/student";
+import { assignSubjectToStudents, assignSubjectToTeachers } from "../supabase/course/course";
+import { getTeacherIdByNip } from "../supabase/teacher/teacher";
 import { registerArrayTeachers } from "../supabase/teacher/teacher";
 import { registerArrayCourses, registerArraySubject } from "../supabase/course/course";
 import { useAuth } from "../context/AuthContext";
@@ -13,7 +15,7 @@ import ModalComponent from "./ModalComponent";
 
 // Referencia: https://github.com/NelsonCode/drag-and-drop-files-react/blob/master/src/components/DragArea/index.js
 
-const SubidaFichero = ({ type, lista, setLista }) => {
+const SubidaFichero = ({ type, lista, setLista, code = -1, organization_id = -1}) => {
     const [errores, setErrores] = useState([]);
     const navigate = useNavigate();
     const [error, setError] = useState("");
@@ -167,7 +169,6 @@ const SubidaFichero = ({ type, lista, setLista }) => {
                 // Eliminamos comillas y dividimos por ';'
                 if (line !== "") {
                     const fields = line.split(";");
-                    console.log(fields);
 
                     // Validar que haya exactamente 2 campos
                     if (fields.length === 2) {
@@ -238,13 +239,45 @@ const SubidaFichero = ({ type, lista, setLista }) => {
                 return;
             }
         } else if (type == "matriculas") {
-            // Llamada a la API para asignar profesores y alumnos a una asignatura
-            const res = {error: {message: "No implementado"}};
+            // Recorrer la lista para ver si es profesor o alumno o no existe
+            const updatedList = [...lista];
+
+            for (const item of updatedList) {
+                let id = (await getStudentIdByNip(item.nip)).data || undefined;
+                if (id !== null && id !== undefined) {
+                    console.log("ALUMNO OBTENIDO: ", id);
+                    item.role = "student";
+                } else {
+                    // Si no lo encuentra, comprueba si es un profesor
+                    id = (await getTeacherIdByNip(item.nip)).data;
+                    if (id !== null && id !== undefined) {
+                        console.log("PROFESOR OBTENIDO: ", id);
+                        item.role = "teacher";
+                    } else {
+                        setError("Hubo un error en el registro: NIP no corresponde a ningún alumno o profesor");
+                        window.scrollTo({ top: 0, behavior: "smooth" });
+                        return;
+                    }
+                }
+            }
+            
+            const students = lista.filter(item => item.role === "student").map(student => student.nip);
+            const teachers = lista.filter(item => item.role === "teacher").map(teacher => teacher.nip);
+
+            let res = assignSubjectToTeachers(teachers, code, organization_id);
             if (res.error) {
                 setError("Hubo un error en el registro: " + res.error.message);
                 window.scrollTo({ top: 0, behavior: "smooth" });
                 return;
             }
+
+            res = assignSubjectToStudents(students, code, organization_id);
+            if (res.error) {
+                setError("Hubo un error en el registro: " + res.error.message);
+                window.scrollTo({ top: 0, behavior: "smooth" });
+                return;
+            }
+
         }
         navigate(-1)
     }
