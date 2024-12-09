@@ -185,7 +185,7 @@ const SubidaFichero = ({ type, lista, setLista, teacherNip, subjectCode }) => {
                         }
 
                         // Si todas las validaciones pasan, agregamos el objeto a los datos procesados
-                        parsedData.push({ nip: nipParsed });
+                        parsedData.push(nipParsed);
                     } else {
                         erroresEncontrados.push(`Línea ${index + 1}: Número incorrecto de campos.`);
                     }
@@ -315,7 +315,7 @@ const SubidaFichero = ({ type, lista, setLista, teacherNip, subjectCode }) => {
                                     <tbody>
                                         {lista.map((item, index) => (
                                             <tr key={index}>
-                                                <td>{item.nip}</td>
+                                                <td>{item}</td>
                                             </tr>
                                         ))}
                                     </tbody>
