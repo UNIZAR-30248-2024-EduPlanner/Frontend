@@ -287,17 +287,18 @@ export const getTeachersBySubjectCode = async (subject_code) => {
       return { data: null, error: teachingError };
     }
 
-    console.log('Profesores de la asignatura obtenidos correctamente:', teachingData);
-
     // Extraer la informacion de los profesores por su ID de teachingData
-    const teachers = teachingData.map(teacher => {
-      return getTeacherById(teacher.teacher_id);
-    });
+    const teachers = await Promise.all(teachingData.map(async (teacher) => {
+      const result = await getTeacherById(teacher.teacher_id);
+      return result.data;
+    }));
 
     if (teachers.length === 0) {
       console.log('La asignatura no tiene profesores asociados.');
       return { data: [], error: null };
     }
+
+    console.log('Profesores de la asignatura obtenidos correctamente:', teachers);
 
     return { data: teachers, error: null };
   } catch (err) {
