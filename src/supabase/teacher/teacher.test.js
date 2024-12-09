@@ -134,6 +134,11 @@ describe('Teacher API Tests', () => {
     expect(resultAcademicEvents.error).toBeNull(); // Verifica que no haya error
   });
 
+  it('should get the teachers of a subject', async () => {
+    const result = await f.getTeachersBySubjectId(99995);
+    expect(result.error).toBeNull(); // Verifica que no haya error
+  });
+
   // Prueba para obtener las asignaturas de un profesor
   it('should get the subjects of a teacher', async () => {
     const teacherId = (await f.getTeacherIdByNip(testArrayTeachers[1].nip));
