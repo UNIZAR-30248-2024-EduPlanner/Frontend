@@ -1,4 +1,3 @@
-import { wait } from "@testing-library/user-event/dist/cjs/utils/index.js";
 import constants from "../../src/constants/constants";
 
 describe('E2E Flow: Show Schedule', () => {

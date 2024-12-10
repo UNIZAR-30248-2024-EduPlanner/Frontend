@@ -23,3 +23,11 @@
 //
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
+
+Cypress.Commands.add('getSupabaseConfig', () => {
+    return {
+      url: Cypress.env('SUPABASE_URL'),
+      anonKey: Cypress.env('SUPABASE_ANON_KEY'),
+    };
+  });
+  

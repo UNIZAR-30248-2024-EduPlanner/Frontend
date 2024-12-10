@@ -26,6 +26,15 @@ export const registerOrganization = async (name, nip, pass) => {
     }
 };
 
+export const eliminateOrganization = async (organizationId) => {
+    const { data, error } = await supabase
+        .from('organization')
+        .delete()
+        .eq('id', organizationId);
+
+    return { data, error };
+}
+
 // Función para iniciar sesión (login) de la organización
 export const loginOrganization = async (id, nip, pass) => {
     try {
