@@ -45,6 +45,23 @@ describe("SubidaFichero Component Tests", () => {
         });
     });
 
+    it("should show error message when subjects file has incorrect number of fields", async () => {
+        const setListaMock = vi.fn();
+        const file = new File(["Matematicas;123;extra;"], "test.csv", {
+          type: "text/csv",
+        });
+    
+        render(<SubidaFichero type="asignaturas" lista={[]} setLista={setListaMock} />);
+    
+        const input = screen.getByTestId("file-input");
+        fireEvent.change(input, { target: { files: [file] } });
+    
+        await waitFor(() => {
+            const errorList = screen.getByRole("list");
+            expect(errorList).toHaveTextContent("Número incorrecto de campos");
+        });
+    });
+
     it("should charge and proccess students file", async () => {
         const mockList = vi.fn();
         const setListaMock = vi.fn();
@@ -57,21 +74,6 @@ describe("SubidaFichero Component Tests", () => {
 
         await waitFor(() => {
             expect(setListaMock).toHaveBeenCalled();
-        });
-    });
-
-    it("should charge and proccess enrollements file", async () => {
-        const mockList = vi.fn();
-        const setListaMock = vi.fn();
-        const file = new File(["123456;"], "test.csv", {type: "text/csv",});
-
-        render(<SubidaFichero type="matriculas" lista={mockList} setLista={setListaMock} />);
-
-        const input = screen.getByTestId("file-input");
-        fireEvent.change(input, { target: { files: [file] } });
-
-        await waitFor(() => {
-            expect(setListaMock).toHaveBeenCalledWith([{ nip: 123456 }]);
         });
     });
 
@@ -91,4 +93,68 @@ describe("SubidaFichero Component Tests", () => {
             expect(errorList).toHaveTextContent("Número incorrecto de campos");
         });
       });
+
+    it("should charge and proccess nips file", async () => {
+        const mockList = vi.fn();
+        const setListaMock = vi.fn();
+        const file = new File(["123456;"], "test.csv", {type: "text/csv",});
+
+        render(<SubidaFichero type="nips" lista={mockList} setLista={setListaMock} />);
+
+        const input = screen.getByTestId("file-input");
+        fireEvent.change(input, { target: { files: [file] } });
+
+        await waitFor(() => {
+            expect(setListaMock).toHaveBeenCalledWith([{ nip: 123456 }]);
+        });
+    });
+
+    it("should show error message when nips file has incorrect number of fields", async () => {
+        const setListaMock = vi.fn();
+        const file = new File(["123456;extra;"], "test.csv", {
+            type: "text/csv",
+            });
+        
+        render(<SubidaFichero type="nips" lista={[]} setLista={setListaMock} />);
+
+        const input = screen.getByTestId("file-input");
+        fireEvent.change(input, { target: { files: [file] } });
+
+        await waitFor(() => {
+            const errorList = screen.getByRole("list");
+            expect(errorList).toHaveTextContent("Número incorrecto de campos");
+        });
+    });
+
+    it("should charge and proccess enrollements file", async () => {
+        const mockList = vi.fn();
+        const setListaMock = vi.fn();
+        const file = new File(["123456;"], "test.csv", {type: "text/csv",});
+
+        render(<SubidaFichero type="matriculas" lista={mockList} setLista={setListaMock} />);
+
+        const input = screen.getByTestId("file-input");
+        fireEvent.change(input, { target: { files: [file] } });
+
+        await waitFor(() => {
+            expect(setListaMock).toHaveBeenCalledWith([{ nip: 123456 }]);
+        });
+    });
+
+    it("should show error message when enrollements file is empty", async () => {
+        const setListaMock = vi.fn();
+        const file = new File([";"], "test.csv", {
+            type: "text/csv",
+            });
+        
+        render(<SubidaFichero type="matriculas" lista={[]} setLista={setListaMock} />);
+
+        const input = screen.getByTestId("file-input");
+        fireEvent.change(input, { target: { files: [file] } });
+
+        await waitFor(() => {
+            const errorList = screen.getByRole("list");
+            expect(errorList).toHaveTextContent("NIP/NIA debe ser un número entero");
+        });
+    });
 });

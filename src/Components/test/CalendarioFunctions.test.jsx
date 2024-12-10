@@ -1,5 +1,15 @@
 import { describe, expect, it } from 'vitest';
-import { convertirAHorasEnMinutos, coincidenHorarios, calcularSolapes, getContrastColor, monthToNumber, numberToMonth, isInWeek } from '../CalendarioFunctions';
+import { 
+    convertirAHorasEnMinutos, 
+    numberToMonth, 
+    monthToNumber, 
+    calcularSolapes, 
+    coincidenHorarios, 
+    getContrastColor, 
+    getAntiContrastColor,
+    hexToRgb,
+    getAuxColor, 
+    isInWeek } from '../CalendarioFunctions';
 
 describe('CalendarioFunctions', () => {
     describe('convertirAHorasEnMinutos', () => {
@@ -89,8 +99,73 @@ describe('CalendarioFunctions', () => {
         });
     });
 
+    describe('getAntiContrastColors', () => {
+        it('should return black', () => {
+            expect(getAntiContrastColor("#165912")).toBe('black');
+        });
+
+        it('should return white', () => {
+            expect(getAntiContrastColor("#e4a2f1")).toBe('white');
+        });
+    });
+
+    describe('hexToRgb', () => {
+        it('should convert hexadecimal to rgb format', () => {
+            expect(hexToRgb("#ff0000")).toEqual({ r: 255, g: 0, b: 0 });
+        });
+    });
+
+    describe('getAuxColor', () => {
+        it('should darken the color by the default percentage', () => {
+            expect(getAuxColor("#ff0000")).toBe("#cc0000");
+        });
+    
+        it('should darken the color by 50%', () => {
+            expect(getAuxColor("#00ff00", 50)).toBe("#007f00");
+        });
+    
+        it('should darken the color by 10%', () => {
+            expect(getAuxColor("#0000ff", 10)).toBe("#0000e5");
+        });
+    
+        it('should handle black color correctly', () => {
+            expect(getAuxColor("#000000")).toBe("#000000");
+        });
+    
+        it('should handle white color correctly', () => {
+            expect(getAuxColor("#ffffff")).toBe("#cccccc");
+        });
+    });
+
     describe('isInWeek', () => {
         const monday = new Date(2024, 11, 2, 0, 0, 0, 0);
+
+        it('should return error when incorrect periodicity', () => {
+            const horario = {
+                starting_date: new Date(2024, 11, 31, 0, 0, 0, 0),
+                end_date: new Date(2024, 11, 5, 23, 59, 59, 59),
+                periodicity: 0
+            }
+            expect(isInWeek(horario, monday)).toBe(false);
+        });
+
+        it('should return error when incorrect starting date', () => {
+            const horario = {
+                starting_date: null,
+                end_date: new Date(2024, 11, 5, 23, 59, 59, 59),
+                periodicity: 7
+            }
+            expect(isInWeek(horario, monday)).toBe(false);
+        });
+
+        it('should return error when incorrect end date', () => {
+            const horario = {
+                starting_date: new Date(2024, 11, 2, 23, 59, 59, 59),
+                end_date: null,
+                periodicity: 7
+            }
+            expect(isInWeek(horario, monday)).toBe(false);
+        });
 
         it('should return isInWeek', () => {
             const horario = {
@@ -116,6 +191,11 @@ describe('CalendarioFunctions', () => {
             "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio",
             "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
         ];
+
+        it('should return error when incorrect month number', () => {
+            expect(numberToMonth(-1)).toBe("");
+            expect(numberToMonth(12)).toBe("");
+        });
 
         it('should return correct month number', () => {
             for (let i = 0; i < meses.length; i++) {
