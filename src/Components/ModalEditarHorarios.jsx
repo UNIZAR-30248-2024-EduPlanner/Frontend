@@ -23,6 +23,7 @@ const ModalEditarHorarios = ({ isOpen, onOpenChange, listaCompletaEventos, lista
     const [fecha, setFecha] = useState("");
     const [error, setError] = useState("");
     const [tipo, setTipo] = useState("");
+    const [categoria, setCategoria] = useState("");
     const [selectedAsignaturaId, setSelectedAsignaturaId] = useState(null);
     const [initialLoad, setInitialLoad] = useState(true);
     let combinedList = [...listaCompletaEventos, ...listaCompletaEventosVisibles];
@@ -108,7 +109,7 @@ const ModalEditarHorarios = ({ isOpen, onOpenChange, listaCompletaEventos, lista
                 window.scrollTo({ top: 0, behavior: "smooth" });
                 return;
             }
-            await createAcademicEventAndPublish(selectedAsignatura, fecha, fecha, selectedGrupo, 0, nombreActividad, "Examen", espacioReservado, horaInicio, horaFin, selectedAsignaturaId);
+            await createAcademicEventAndPublish(selectedAsignatura, fecha, fecha, selectedGrupo, 0, nombreActividad, categoria, espacioReservado, horaInicio, horaFin, selectedAsignaturaId);
         } else if (tarea === true) {
             if (!selectedAsignatura || !selectedGrupo) {
                 setError("Escoga una asignatura y un grupo para crear el evento y publicarlo.");
@@ -267,6 +268,17 @@ const ModalEditarHorarios = ({ isOpen, onOpenChange, listaCompletaEventos, lista
                                                 {/* Mostrar asignatura y grupo solo si el tipo es académico */}
                                                 {tipo === "academico" && (
                                                     <>
+                                                        <div className="mb-4">
+                                                            <h2 className="text-2xl font-bold">Categoria</h2>
+                                                            <select
+                                                                value={categoria}
+                                                                onChange={(e) => setCategoria(e.target.value)}
+                                                                className="w-full p-2 border rounded-md"
+                                                            >
+                                                                <option value="Examen">Examen</option>
+                                                                <option value="Creado por profesores">Evento extra</option>
+                                                            </select>
+                                                        </div>
                                                         <div className="mb-4">
                                                             <h2 className="text-2xl font-bold">Asignatura</h2>
                                                             <select
