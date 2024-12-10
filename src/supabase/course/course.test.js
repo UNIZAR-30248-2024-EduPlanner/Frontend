@@ -36,16 +36,19 @@ const testArrayCourses = [
 const testSubject = {
   name: 'Subject Test',
   subject_code: 66688,
+  color: '#000000',
 };
 
 const testArraySubjects = [
   {
     name: 'Subject Test 2',
     subject_code: 66689,
+    color: '#000000',
   },
   {
     name: 'Subject Test 3',
     subject_code: 66690,
+    color: '#000000',
   },
 ];
 
@@ -124,7 +127,7 @@ describe('Course API Tests', () => {
   });
 
   it('should retrieve all subjects for the course', async () => {
-    const createResult = await f.createSubject(testSubject.name, testSubject.subject_code, course_id);
+    const createResult = await f.createSubject(testSubject.name, testSubject.subject_code, '#000000', course_id);
     expect(createResult.error).toBeNull();
 
     const subjects = await f.getAllSubjects(course_id);
@@ -135,17 +138,17 @@ describe('Course API Tests', () => {
   });
 
   it('should create a new subject', async () => {
-    const result = await f.createSubject('Subject Test 3', 789123, course_id);
+    const result = await f.createSubject('Subject Test 4', 789123, '#000000', course_id);
     expect(result.error).toBeNull();
   });
 
   it('should not create a subject with an existing subject code', async () => {
-    const result = await f.createSubject('Subject Test 4', 789123, course_id);
+    const result = await f.createSubject('Subject Test 5', 789123, '#000000', course_id);
     expect(result.error).not.toBeNull();
   });
 
   it('should not create a subject with an invalid course ID', async () => {
-    const result = await f.createSubject('Subject Test 5', 7894, 999999999);
+    const result = await f.createSubject('Subject Test 6', 7894, '#000000', 999999999);
     expect(result.error).not.toBeNull();
   });
 
