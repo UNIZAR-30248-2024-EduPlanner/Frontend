@@ -72,7 +72,7 @@ describe('E2E Flow: E-1 Entry', () => {
         cy.url().should("include", "/OrganizacionMenu");
     });
 
-    it('should login with new Student and logout', () => {
+    it('should login with new Student', () => {
         // Login with new Student
         cy.get("button").contains("Iniciar sesión").click();
         cy.url().should("include", "/IniciarSesion");
@@ -84,7 +84,7 @@ describe('E2E Flow: E-1 Entry', () => {
         cy.url().should("include", "/Calendario");
     });
 
-    it('should login with new Teacher and logout', () => {
+    it('should login with new Teacher', () => {
         // Login with new Teacher
         cy.get("button").contains("Iniciar sesión").click();
         cy.url().should("include", "/IniciarSesion");
@@ -96,7 +96,7 @@ describe('E2E Flow: E-1 Entry', () => {
         cy.url().should("include", "/Calendario");
     });
 
-    it('should login with new Course and logout', () => {
+    it('should login with new Course', () => {
         // Login with new Course
         cy.get("button").contains("Iniciar sesión").click();
         cy.url().should("include", "/IniciarSesion");
