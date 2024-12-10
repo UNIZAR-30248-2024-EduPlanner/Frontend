@@ -147,7 +147,7 @@ const SubidaFichero = ({ type, lista, setLista, teacherNip, subjectCode, organiz
         }
     }
 
-    const readFileMatriculas = (e) => {
+    const readFileNips = (e) => {
         setErrores([])
         setLista([])
 
@@ -305,7 +305,7 @@ const SubidaFichero = ({ type, lista, setLista, teacherNip, subjectCode, organiz
                     className="file-upload-input"
                     data-testid="file-input"
                     type="file"
-                    onChange={(e) => type === "asignaturas" ? readFileSubjects(e) : type === "nips" ? readFileNips(e) : "matriculas" ? readFileMatriculas(e) : readFile(e)}
+                    onChange={(e) => type === "asignaturas" ? readFileSubjects(e) : (type === "nips" || type === "matriculas") ? readFileNips(e) : readFile(e)}
                 />
                 <div className="text-information">
                     {lista.length > 0 ? (
@@ -358,6 +358,22 @@ const SubidaFichero = ({ type, lista, setLista, teacherNip, subjectCode, organiz
                                         ))}
                                     </tbody>
                                 </table>
+                            ) : type === "nips" ? (
+                                // Tabla para nips
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th className="campo">NIP/NIA</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {lista.map((item, index) => (
+                                            <tr key={index}>
+                                                <td>{item}</td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
                             ) : (
                                 // Otra tabla para un tipo diferente
                                 <table>
@@ -399,7 +415,7 @@ const SubidaFichero = ({ type, lista, setLista, teacherNip, subjectCode, organiz
             </div>
             {lista.length > 0 && errores.length == 0 && (
                 <div className="crear-button">
-                    {type === "nips" ? (
+                    {type === "nips" || type === "matriculas" ? (
                         <Button name="create-list" size="lg" color="primary" onClick={() => onOpen()}>
                             Matricular
                         </Button>
