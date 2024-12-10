@@ -4,7 +4,9 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../constants/constants";
 import "../css/Components/SubidaFichero.css";
-import { registerArrayStudents } from "../supabase/student/student";
+import { getStudentIdByNip, registerArrayStudents } from "../supabase/student/student";
+import { assignSubjectToStudents, assignSubjectToTeachers } from "../supabase/course/course";
+import { getTeacherIdByNip } from "../supabase/teacher/teacher";
 import { letTeacherAssociateArrayStudentsToSubject, registerArrayTeachers } from "../supabase/teacher/teacher";
 import { registerArrayCourses, registerArraySubject } from "../supabase/course/course";
 import { useAuth } from "../context/AuthContext";
@@ -13,11 +15,11 @@ import ModalComponent from "./ModalComponent";
 
 // Referencia: https://github.com/NelsonCode/drag-and-drop-files-react/blob/master/src/components/DragArea/index.js
 
-const SubidaFichero = ({ type, lista, setLista, teacherNip, subjectCode }) => {
+const SubidaFichero = ({ type, lista, setLista, teacherNip, subjectCode, organization_id = -1}) => {
     const [errores, setErrores] = useState([]);
     const navigate = useNavigate();
     const [error, setError] = useState("");
-    const { user } = useAuth()
+    const { user } = useAuth();
 
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
@@ -168,7 +170,7 @@ const SubidaFichero = ({ type, lista, setLista, teacherNip, subjectCode }) => {
                 if (line !== "") {
                     const fields = line.split(";");
 
-                    // Validar que haya exactamente 1 campos
+                    // Validar que haya exactamente 2 campos
                     if (fields.length === 2) {
                         const [nip, vacio] = fields;
 
@@ -182,10 +184,10 @@ const SubidaFichero = ({ type, lista, setLista, teacherNip, subjectCode }) => {
                         if (isNaN(nipParsed)) {
                             erroresEncontrados.push(`Línea ${index + 1}: NIP/NIA debe ser un número entero.`);
                             return;
-                        }
+                        } 
 
-                        // Si todas las validaciones pasan, agregamos el objeto a los datos procesados
-                        parsedData.push(nipParsed);
+                        // Si todas la validación pasa, agregamos el objeto a los datos procesados
+                        parsedData.push({ nip: nipParsed });
                     } else {
                         erroresEncontrados.push(`Línea ${index + 1}: Número incorrecto de campos.`);
                     }
@@ -235,6 +237,44 @@ const SubidaFichero = ({ type, lista, setLista, teacherNip, subjectCode }) => {
                 window.scrollTo({ top: 0, behavior: "smooth" });
                 return;
             }
+        } else if (type == "matriculas") {
+            // Recorrer la lista para ver si es profesor o alumno o no existe
+            const updatedList = [...lista];
+
+            for (const item of updatedList) {
+                let id = (await getStudentIdByNip(item.nip)).data || undefined;
+                if (id !== null && id !== undefined) {
+                    item.role = "student";
+                } else {
+                    // Si no lo encuentra, comprueba si es un profesor
+                    id = (await getTeacherIdByNip(item.nip)).data || undefined;
+                    if (id !== null && id !== undefined) {
+                        item.role = "teacher";
+                    } else {
+                        setError("Hubo un error en el registro: NIP no corresponde a ningún alumno o profesor");
+                        window.scrollTo({ top: 0, behavior: "smooth" });
+                        return;
+                    }
+                }
+            }
+            
+            const students = lista.filter(item => item.role === "student").map(student => student.nip);
+            const teachers = lista.filter(item => item.role === "teacher").map(teacher => teacher.nip);
+
+            let res = assignSubjectToTeachers(teachers, subjectCode, organization_id);
+            if (res.error) {
+                setError("Hubo un error en el registro: " + res.error.message);
+                window.scrollTo({ top: 0, behavior: "smooth" });
+                return;
+            }
+
+            res = assignSubjectToStudents(students, subjectCode, organization_id);
+            if (res.error) {
+                setError("Hubo un error en el registro: " + res.error.message);
+                window.scrollTo({ top: 0, behavior: "smooth" });
+                return;
+            }
+
         } else if (type == "nips") {
             // Llamada a la API para matricular un array de alumnos
             const res = await letTeacherAssociateArrayStudentsToSubject(teacherNip, lista, subjectCode);
@@ -265,9 +305,7 @@ const SubidaFichero = ({ type, lista, setLista, teacherNip, subjectCode }) => {
                     className="file-upload-input"
                     data-testid="file-input"
                     type="file"
-                    onChange={(e) => type === "asignaturas" ? readFileSubjects(e) 
-                                   : type === "nips" ? readFileNips(e) 
-                                   : readFile(e)}
+                    onChange={(e) => type === "asignaturas" ? readFileSubjects(e) : (type === "nips" || type === "matriculas") ? readFileNips(e) : readFile(e)}
                 />
                 <div className="text-information">
                     {lista.length > 0 ? (
@@ -304,8 +342,24 @@ const SubidaFichero = ({ type, lista, setLista, teacherNip, subjectCode }) => {
                                         ))}
                                     </tbody>
                                 </table>
+                            ) : type === "matriculas" ? (
+                                // Tabla para matriculas
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th className="campo">NIP/NIA</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {lista.map((item, index) => (
+                                            <tr key={index}>
+                                                <td>{item.nip}</td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
                             ) : type === "nips" ? (
-                                // Tabla para asignaturas
+                                // Tabla para nips
                                 <table>
                                     <thead>
                                         <tr>
@@ -361,7 +415,7 @@ const SubidaFichero = ({ type, lista, setLista, teacherNip, subjectCode }) => {
             </div>
             {lista.length > 0 && errores.length == 0 && (
                 <div className="crear-button">
-                    {type === "nips" ? (
+                    {type === "nips" || type === "matriculas" ? (
                         <Button name="create-list" size="lg" color="primary" onClick={() => onOpen()}>
                             Matricular
                         </Button>

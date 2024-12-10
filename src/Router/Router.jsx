@@ -8,15 +8,16 @@ import CursoModificar from "../Pages/Curso/CursoModificar"
 import OrganizacionCrear from "../Pages/Organizacion/OrganizacionCrear"
 import OrganizacionModificar from "../Pages/Organizacion/OrganizacionModificar"
 import CrearOrganizacion from "../Pages/login/CrearOrganizacion"
-import AlumnoMenu from "../Pages/Alumno/AlumnoMenu"
 import CalendarioAsignatura from "../Pages/Curso/CalendarioAsignatura"
 import CalendarioAsignaturaCrear from "../Pages/Curso/CalendarioAsignaturaCrear"
+import CursoMatriculados from "../Pages/Curso/CursoMatriculados"
 import IniciarSesion from "../Pages/login/IniciarSesion"
 import { ProtectedRouter, ProtectedUser } from "./ProtectedRouter"
 import { AuthProvider, useAuth } from "../context/AuthContext"
 import { useEffect } from "react"
 import Calendario from "../Pages/Calendario"
 import ProfesorMatriculas from "../Pages/Profesor/ProfesorMatriculas"
+import CursoMatriculadosAñadir from "../Pages/Curso/CursoMatriculadosAñadir"
 import GestionarMatriculas from "../Pages/Profesor/GestionarMatriculas"
 import MatricularAlumnos from "../Pages/Profesor/MatricularAlumnos"
 
@@ -64,6 +65,8 @@ const AppRoutes = () => {
                     <Route path={constants.root + "CursoMenu"} element={<CursoMenu />} />
                     <Route path={constants.root + "CursoCrear/:type"} element={<CursoCrear />} />
                     <Route path={constants.root + "CursoCrear/:type/Calendario"} element={<CalendarioAsignaturaCrear />} />
+                    <Route path={constants.root + "CursoModificar/:type/:id/:nombreViejo/:nipViejo/Matriculas"} element={<CursoMatriculados />} />
+                    <Route path={constants.root + "CursoModificar/:type/:id/:nombreViejo/:nipViejo/Matriculas/Añadir"} element={<CursoMatriculadosAñadir />} />
                     <Route path={constants.root + "CursoModificar/:type/:id/:nombreViejo/:nipViejo"} element={<CursoModificar />} />
                     <Route path={constants.root + "CursoModificar/:type/:id/:nombreViejo/:nipViejo/Calendario"} element={<CalendarioAsignatura />} />
                 </Route>

@@ -54,6 +54,17 @@ const CursoModificar = () => {
         navigate(-1)
     }
 
+    const matriculas = () => {
+        navigate(
+            `${location.pathname}/Matriculas`, 
+            { state: { 
+                nombre: nombreViejo,
+                codigo: nipViejo,
+                subject_id: id
+            } 
+        }); 
+    }
+
     const calendar = () => {
         navigate(
             `${location.pathname}/Calendario`, 
@@ -109,6 +120,9 @@ const CursoModificar = () => {
                 <div className="botones">
                     <Button size="lg" color="primary" onClick={calendar}>
                         Modificar calendario
+                    </Button>
+                    <Button size="lg" color="primary" onClick={matriculas}>
+                        Gestionar matrículas
                     </Button>
                     <Button size="lg" color="primary" onClick={update}>
                         Modificar

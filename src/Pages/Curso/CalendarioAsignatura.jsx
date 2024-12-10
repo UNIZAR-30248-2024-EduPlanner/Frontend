@@ -365,7 +365,7 @@ const CalendarioAsignatura = () => {
     return (
         <div className="calendario">
             <div className="header">
-                <FlechaVolver />
+                <FlechaVolver isSave={true}/>
                 <div className="mes-tit flex">
                     <h1 className="mes-tit"> {monthYear} </h1>
                 </div>

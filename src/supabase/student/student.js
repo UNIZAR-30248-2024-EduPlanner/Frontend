@@ -235,6 +235,28 @@ export const getStudentIdByNip = async (nip) => {
   }
 }
 
+export const getStudentIdByNipAndOrganization = async (nip, organization_id) => {
+  try {
+    const { data, error } = await supabase
+      .from('users')
+      .select('id, name, role')
+      .eq('nip', nip)
+      .eq('organization_id', organization_id)
+      .eq('role', 'student');
+
+    if (error) {
+      console.error('Error al obtener el ID del estudiante:', error);
+      return { data: null, error }; // Retorna el error
+    }
+
+    console.log('ID del estudiante obtenido correctamente:', data);
+    return { data: data[0], error: null }; // Retorna los datos sin error
+  } catch (err) {
+    console.error('Ha ocurrido un error:', err);
+    return { data: null, error: err }; // Retorna el error
+  }
+}
+
 export const getStudentsBySubject = async (subject_id) => {
   try {
     const students = await supabase
