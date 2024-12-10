@@ -23,6 +23,7 @@
 //
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
+import constants from "../../src/constants/constants";
 
 // Use of supabase functions
 Cypress.Commands.add('getSupabaseConfig', () => {
@@ -55,6 +56,12 @@ Cypress.Commands.add("loginAsUser", (type, mockOrganization, mockUser) => {
   cy.get("input[name='password']").type(mockUser.password);
   cy.get("button").contains("Enviar").click();
   type === 'cursos' ? cy.url().should("include", "CursoMenu") : cy.url().should("include", "/Calendario");
+});
+
+// Logout
+Cypress.Commands.add("logout", () => {
+  cy.get('[data-testid="logout"]').click();
+  cy.url().should("include", `http://localhost:5173${constants.root}`);
 });
 
 // Create User as Organization (only works for single user in list)
@@ -99,4 +106,38 @@ Cypress.Commands.add("deleteUserAsOrganization", (type) => {
   cy.get("button.trash").click();
   cy.get("button").contains("Aceptar").click();
   cy.url().should("include", `/OrganizacionMenu`);
+});
+
+// Create Subject as Course (only works for single user in list)
+Cypress.Commands.add("createSubjectAsCourse", (mockData) => {
+  cy.get(".create-button").should("exist").click();
+  cy.url().should("include", `/CursoCrear/asignaturas`);
+  
+  // Fill the form and create a new user
+  cy.get("input[name='name']").type(mockData.name);
+  cy.get("input[name='nip']").type(mockData.code);
+  cy.get("button").contains("Crear").click();
+  cy.get("button").contains("Aceptar").click();
+  cy.url().should("include", "/CursoMenu");
+});
+
+// Edit Subject as Course (only works for single user in list)
+Cypress.Commands.add("editSubjectAsCourse", (mockData) => {
+  const editName = mockData.name + " editado";
+
+  cy.get("button.edit").click();
+  cy.url().should("include", `/CursoModificar/asignaturas`);
+  
+  // Fill the form and create a new user
+  cy.get("input[name='name']").clear();
+  cy.get("input[name='name']").type(editName);
+  cy.get("button").contains("Modificar").click();
+  cy.url().should("include", "/CursoMenu");
+});
+
+// Delete Subject as Course (only works for single user in list)
+Cypress.Commands.add("deleteSubjectAsCourse", () => {
+  cy.get("button.trash").click();
+  cy.get("button").contains("Aceptar").click();
+  cy.url().should("include", `/CursoMenu`);
 });

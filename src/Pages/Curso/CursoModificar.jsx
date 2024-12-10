@@ -95,6 +95,7 @@ const CursoModificar = () => {
                 )}
                 <Input
                     size="lg"
+                    name="name"
                     type="name"
                     labelPlacement="outside"
                     color="primary"
@@ -107,6 +108,7 @@ const CursoModificar = () => {
                 />
                 <Input
                     size="lg"
+                    name="nip"
                     type="name"
                     color="primary"
                     labelPlacement="outside"
@@ -119,7 +121,7 @@ const CursoModificar = () => {
                 />
                 <div className="botones">
                     <Button size="lg" color="primary" onClick={calendar}>
-                        Modificar calendario
+                        Gestionar calendario
                     </Button>
                     <Button size="lg" color="primary" onClick={matriculas}>
                         Gestionar matrículas

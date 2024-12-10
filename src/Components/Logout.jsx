@@ -19,6 +19,7 @@ const Logout = () => {
         <div className="logout">
             <Tooltip content="Logout">
                 <Button 
+                  data-testid="logout"
                   className="logout-container bg-transparent"
                   onClick={() => handleClick()}
                   size="lg"
