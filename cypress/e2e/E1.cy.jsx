@@ -28,88 +28,25 @@ describe('E2E Flow: E-1 Entry', () => {
     });
 
     it('should login with new Organization and create new Student, Teacher and Course', () => {
-        // Login with new Organization
-        cy.get("button").contains("Iniciar sesión").click();
-        cy.url().should("include", "/IniciarSesion");
-        cy.get("select").first().select('Organizacion');
-        cy.get("select").eq(1).select(mockOrganization.name);
-        cy.get("input[name='nia/nip']").type(mockOrganization.nip);
-        cy.get("input[name='password']").type(mockOrganization.password);
-        cy.get("button").contains("Enviar").click();
-        cy.url().should("include", "/OrganizacionMenu");
-        // Create new Student
-        cy.get("div.tabs-org").contains("Alumnos").click();
-        cy.get(".create-button").should("exist").click();
-        cy.url().should("include", "/OrganizacionCrear/alumnos");
-        // Fill the form and create a new student
-        cy.get("input[name='name']").type(mockStudent.name);
-        cy.get("input[name='nip/nia']").type(mockStudent.nip);
-        cy.get("input[name='password']").type(mockStudent.password);
-        cy.get("button").contains("Crear").click();
-        cy.get("button").contains("Aceptar").click();
-        cy.url().should("include", "/OrganizacionMenu");
-        // Create new Teacher
-        cy.get("div.tabs-org").contains("Profesores").click();
-        cy.get(".create-button").should("exist").click();
-        cy.url().should("include", "/OrganizacionCrear/profesores");
-        // Fill the form and create new teacher
-        cy.get("input[name='name']").type(mockTeacher.name);
-        cy.get("input[name='nip/nia']").type(mockTeacher.nip);
-        cy.get("input[name='password']").type(mockTeacher.password);
-        cy.get("button").contains("Crear").click();
-        cy.get("button").contains("Aceptar").click();
-        cy.url().should("include", "/OrganizacionMenu");
-        // Create new Course
-        cy.get("div.tabs-org").contains("Cursos").click();
-        cy.get(".create-button").should("exist").click();
-        cy.url().should("include", "/OrganizacionCrear/cursos");
-        // Fill the form and create new course
-        cy.get("input[name='name']").type(mockCourse.name);
-        cy.get("input[name='nip/nia']").type(mockCourse.nip);
-        cy.get("input[name='password']").type(mockCourse.password);
-        cy.get("button").contains("Crear").click();
-        cy.get("button").contains("Aceptar").click();
-        cy.url().should("include", "/OrganizacionMenu");
+        cy.loginAsOrganization(mockOrganization);
+        cy.createUserAsOrganization('alumnos', mockStudent);
+        cy.createUserAsOrganization('profesores', mockTeacher);
+        cy.createUserAsOrganization('cursos', mockCourse);
     });
 
     it('should login with new Student', () => {
-        // Login with new Student
-        cy.get("button").contains("Iniciar sesión").click();
-        cy.url().should("include", "/IniciarSesion");
-        cy.get("select").first().select('Alumno');
-        cy.get("select").eq(1).select(mockOrganization.name);
-        cy.get("input[name='nia/nip']").type(mockStudent.nip);
-        cy.get("input[name='password']").type(mockStudent.password);
-        cy.get("button").contains("Enviar").click();
-        cy.url().should("include", "/Calendario");
+        cy.loginAsUser('alumnos', mockOrganization, mockStudent);
     });
 
     it('should login with new Teacher', () => {
-        // Login with new Teacher
-        cy.get("button").contains("Iniciar sesión").click();
-        cy.url().should("include", "/IniciarSesion");
-        cy.get("select").first().select('Profesor');
-        cy.get("select").eq(1).select(mockOrganization.name);
-        cy.get("input[name='nia/nip']").type(mockTeacher.nip);
-        cy.get("input[name='password']").type(mockTeacher.password);
-        cy.get("button").contains("Enviar").click();
-        cy.url().should("include", "/Calendario");
+        cy.loginAsUser('profesores', mockOrganization, mockTeacher);
     });
 
     it('should login with new Course', () => {
-        // Login with new Course
-        cy.get("button").contains("Iniciar sesión").click();
-        cy.url().should("include", "/IniciarSesion");
-        cy.get("select").first().select('Curso');
-        cy.get("select").eq(1).select(mockOrganization.name);
-        cy.get("input[name='nia/nip']").type(mockCourse.nip);
-        cy.get("input[name='password']").type(mockCourse.password);
-        cy.get("button").contains("Enviar").click();
-        cy.url().should("include", "/CursoMenu");
+        cy.loginAsUser('cursos', mockOrganization, mockCourse);
     });
 
     after(() => {
-        //login como organización y elimina los usuarios previamente creados
         cy.getSupabaseConfig().then(async ({ url, anonKey }) => {
             expect(url).to.exist;
             expect(anonKey).to.exist;
