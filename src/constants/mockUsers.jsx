@@ -1,36 +1,36 @@
-const mockOrganizacion = {
+const mockOrganization = {
     name: "Organizacion Tester",
     nip: "000000001",
     password: "orgpassword"
 };
 
-const mockOrganizacionToCreate = {
+const mockOrganizationToCreate = {
     name: 'Organizacion E-1',
     nip: '986456001',
     password: 'passwordSegura123',
 }
 
-const mockAlumno = {
+const mockStudent = {
     name: "Ander Doe",
     nip: "740098244",
     password: "alumnopassword"
 };
 
-const mockProfesor = {
+const mockTeacher = {
     name: "Marta Casas",
     nip: "714652310",
     password: "profesorpassword"
 };
 
-const mockCurso = {
+const mockCourse = {
     name: "Grado en testing de software",
     nip: "756009456",
     password: "cursopassword"
 };
 
-const mockAsignatura = {
+const mockSubject = {
     name: "Testing e2e",
     code: "756009888"
 };
 
-export { mockOrganizacion, mockOrganizacionToCreate, mockAlumno, mockProfesor, mockCurso, mockAsignatura };
+export { mockOrganization, mockOrganizationToCreate, mockStudent, mockTeacher, mockCourse, mockSubject };
