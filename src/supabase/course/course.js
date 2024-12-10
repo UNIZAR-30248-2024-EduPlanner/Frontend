@@ -99,7 +99,7 @@ export const getAllSubjects = async (courseId) => {
 export const createSubject = async (subjectName, subjectCode, color, courseId) => {
     const { data, error } = await supabase
         .from('subjects')
-        .insert([{ name: subjectName, subject_code: subjectCode, color: color, course_id: courseId }]);
+        .insert([{ name: subjectName, subject_code: subjectCode, course_id: courseId, color: color }]);
 
     return { data, error }; // Devolver tanto 'data' como 'error' para una respuesta consistente
 };
