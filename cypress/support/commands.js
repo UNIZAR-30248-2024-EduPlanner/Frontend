@@ -90,4 +90,13 @@ Cypress.Commands.add("editUserAsOrganization", (type, mockData) => {
   cy.get("button").contains("Modificar").click();
   cy.url().should("include", "/OrganizacionMenu");
 });
-  
+
+// Delete User as Organization (only works for single user in list)
+Cypress.Commands.add("deleteUserAsOrganization", (type) => {
+  const tab = type.charAt(0).toUpperCase() + type.slice(1);
+
+  cy.get("div.tabs-org").contains(tab).click();
+  cy.get("button.trash").click();
+  cy.get("button").contains("Aceptar").click();
+  cy.url().should("include", `/OrganizacionMenu`);
+});

@@ -1,6 +1,5 @@
 import constants from "../../src/constants/constants";
 import * as mocks from '../../src/constants/mockUsers';
-import { eliminateCourse, eliminateStudent, eliminateTeacher, getOrganizationIdByName, getUserIdByNIP } from "../../src/supabase/organization/organization";
 
 describe('E2E Flow: E-2 Entry', () => {
 
@@ -27,18 +26,10 @@ describe('E2E Flow: E-2 Entry', () => {
         cy.editUserAsOrganization('cursos', mockCourse);
     });
 
-    after(() => {
-        cy.getSupabaseConfig().then(async ({ url, anonKey }) => {
-            expect(url).to.exist;
-            expect(anonKey).to.exist;
-            // Lógica con Supabase
-            const organization_id = await getOrganizationIdByName(mockOrganization.name);
-            const teacher_id = await getUserIdByNIP(mockTeacher.nip, organization_id);
-            await eliminateTeacher(teacher_id);
-            const student_id = await getUserIdByNIP(mockStudent.nip, organization_id);
-            await eliminateStudent(student_id);
-            const course_id = await getUserIdByNIP(mockCourse.nip, organization_id);
-            await eliminateCourse(course_id);
-          });
-    })
+    it('should login with Tester Organization and delete new Student, Teacher and Course', () => {
+        cy.loginAsOrganization(mockOrganization);
+        cy.deleteUserAsOrganization('alumnos');
+        cy.deleteUserAsOrganization('profesores');
+        cy.deleteUserAsOrganization('cursos');
+    });
 });
