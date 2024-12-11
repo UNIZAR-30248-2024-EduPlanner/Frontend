@@ -30,7 +30,7 @@ const CalendarioAsignaturaCrear = () => {
 
     const firstHour = 8;
     const lastHour = 21;
-    const nameDays = ["L", "M", "X", "J", "V", "S", "D"];
+    const nameDays = ["Lunes ", "Martes ", "Miércoles ", "Jueves ", "Viernes ", "Sábado ", "Domingo "];
     const alturaPorHora = 7; // Altura por hora en vh
     const alturaPorMinuto = 7 / 60; // Altura por minuto en vh
 
@@ -99,7 +99,7 @@ const CalendarioAsignaturaCrear = () => {
 
     // Función que obtiene el día de la semana a partir de una fecha en formato "YYYY-MM-DD"
     const obtenerDiaSemana = (fechaStr) => {
-        const diasSemanaAbreviados = ['D', 'L', 'M', 'X', 'J', 'V', 'S'];
+        const diasSemanaAbreviados = ['Domingo ', 'Lunes ', 'Martes ', 'Miércoles ', 'Jueves ', 'Viernes ', 'Sábado '];
         const [anio, mes, dia] = fechaStr.split("-").map(Number);
         const fecha = new Date(anio, mes - 1, dia);
         return diasSemanaAbreviados[fecha.getDay()];

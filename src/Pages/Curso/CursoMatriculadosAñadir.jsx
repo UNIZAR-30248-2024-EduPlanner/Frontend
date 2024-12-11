@@ -78,7 +78,7 @@ const CursoMatriculadosAñadir = () => {
         <>
             <FlechaVolver />
             <Logout />
-            <h1 className="cur-crear-tit"> Añadir matrículas a {nombre}</h1>
+            <h1 className="cur-crear-tit font-bold"> Añadir matrículas a {nombre}</h1>
             <div className="cur-crear-container">
                 <div className="cur-crear-uno">
                     <h2>Buscar por NIP/NIA</h2>

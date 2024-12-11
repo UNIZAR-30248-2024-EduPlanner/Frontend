@@ -107,7 +107,7 @@ const CursoCrear = () => {
         <>
             <FlechaVolver />
             <Logout />
-            <h1 className="cur-crear-tit"> Crear {type} </h1>
+            <h1 className="cur-crear-tit font-bold"> Crear {type} </h1>
             <div className="cur-crear-container">
                 <div className="cur-crear-uno">
                     <h2 className="cur-crear-tit"> Crea una {typeSingular}</h2>

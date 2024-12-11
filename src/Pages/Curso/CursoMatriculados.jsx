@@ -82,7 +82,7 @@ const CursoMatriculados = () => {
         <>
             <FlechaVolver isSave={true}/>
             <Logout/>
-            <div className='title-container'>
+            <div className='title-container font-bold'>
                 <h2>Matriculados en {nombre}</h2>
             </div>
             <div className="container">

@@ -39,7 +39,7 @@ const CursoMenu = () => {
     return (
         <div>
             <Logout/>
-            <h1 className="cur-menu-tit"> Bienvenido, {cursoName}</h1>
+            <h1 className="cur-menu-tit font-bold"> Bienvenido, {cursoName}</h1>
             <div className="cur-container">
                 <Tabs
                     color="primary"

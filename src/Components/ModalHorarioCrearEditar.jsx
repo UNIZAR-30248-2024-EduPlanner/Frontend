@@ -129,11 +129,11 @@ const ModalHorarioCrearEditar = ({
     }
 
     return (
-        <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+        <Modal isOpen={isOpen} onOpenChange={onOpenChange} size="2xl">
             <ModalContent>
                 {(onClose) => (
                     <>
-                        <ModalHeader className="modal-header">{title}</ModalHeader>
+                        <ModalHeader className="text-primary justify-center text-3xl">{title}</ModalHeader>
                         <hr className="separator" />
                         <ModalBody>
                         <div className="mb-4">

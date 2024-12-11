@@ -80,7 +80,7 @@ const CursoModificar = () => {
         <>
             <FlechaVolver />
             <Logout/>
-            <h1 className="cur-mod-tit"> Modificar {typeSingular} </h1>
+            <h1 className="cur-mod-tit font-bold"> Modificar {typeSingular} </h1>
             <div className="cur-mod-form space-y-20">
                 {/* Mensaje de error */}
                 {error && (
@@ -118,13 +118,15 @@ const CursoModificar = () => {
                     onChange={(e) => setNip(e.target.value)}
                 />
                 <div className="botones">
+                    <div className="flex space-x-3">
                     <Button size="lg" color="primary" onClick={calendar}>
                         Modificar calendario
                     </Button>
                     <Button size="lg" color="primary" onClick={matriculas}>
                         Gestionar matrículas
                     </Button>
-                    <Button size="lg" color="primary" onClick={update}>
+                </div>
+                    <Button className="mt-[30px] font-bold" size="lg" color="primary" onClick={update}>
                         Modificar
                     </Button>
                 </div>

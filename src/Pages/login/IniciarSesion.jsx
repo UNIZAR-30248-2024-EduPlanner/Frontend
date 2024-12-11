@@ -81,7 +81,7 @@ const IniciarSesion = () => {
             <div className="mod-org-form space-y-20">
 
                 {/* Select para elegir la opción */}
-                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginBottom: "20px" }}>
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
                     <label>Seleccione qué tipo de usuario es:</label>
                     <select
                         value={role}
@@ -105,7 +105,7 @@ const IniciarSesion = () => {
                 </div>
 
                 {/* Select para elegir la organización */}
-                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginBottom: "20px" }}>
+                <div className="mt-0" style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
                     <label>Seleccione su organización:</label>
                     <select
                         value={organization}

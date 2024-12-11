@@ -8,6 +8,7 @@ import SubidaFichero from "../../Components/SubidaFichero";
 import { getSubjectById } from "../../supabase/course/course";
 import { letTeacherAssociateStudentToSubject } from "../../supabase/teacher/teacher";
 import { useAuth } from "../../context/AuthContext";
+import { matriculateStudent } from "../../supabase/student/student";
 
 const MatricularAlumnos = () => {
     const { id } = useParams(); // id de la asignatura
@@ -45,8 +46,12 @@ const MatricularAlumnos = () => {
         }
 
         // Si llega aquí, se matricula al alumno
-        const res = await letTeacherAssociateStudentToSubject(user.nip, nip, subject.subject_code);
-        if (res.error) setError(res.error);
+        // const res = await letTeacherAssociateStudentToSubject(user.nip, nip, subject.subject_code);
+        const res = await matriculateStudent(nip, subject.subject_code);
+        if (res.error) {
+            setError(res.error);
+            return;
+        }
 
         navigate(-1);
     }

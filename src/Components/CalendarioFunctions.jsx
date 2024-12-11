@@ -137,14 +137,6 @@ export const monthToNumber = (month) => {
     return monthMap[month]
 }
 
-const dayToNumber = (day) => {
-    const dayMap = {
-        L: 0, M: 1, X: 2, J: 3, V: 4, S: 5, D: 6
-    };
-
-    return dayMap[day];
-}
-
 // h es un horario
 // monday es un tipo Date, el lunes de la semana actual
 // monthYear es el mes y año de monday
