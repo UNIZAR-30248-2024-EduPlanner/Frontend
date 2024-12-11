@@ -116,6 +116,7 @@ export const assignSubjectToTeacher = async (nip, subjectCode) => {
   //Crear un evento personalizado en el alumno para cada evento academico de la asignatura
   for (let event of academicEvents.data) {
     const customEvent = await createCustomAcademicEvent(teacher.data.id, event.id);
+
     if (customEvent.error) {
       console.error('Error al crear el evento personalizado:', customEvent.error);
       return { data: null, error: customEvent.error }; // Retorna el error
@@ -406,7 +407,6 @@ export const letTeacherAssociateArrayStudentsToSubject = async (teacherNip, stud
     return { data: null, error: err };
   }
 }
-
 
 
 export const letTeacherUnAssociateStudentFromSubject = async (teacherNip, studentNip, subjectCode) => {
