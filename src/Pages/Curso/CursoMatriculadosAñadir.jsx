@@ -4,9 +4,8 @@ import { Input } from "@nextui-org/input";
 import { Button } from "@nextui-org/react";
 import { FaMagnifyingGlass } from "react-icons/fa6";
 import SubidaFichero from "../../Components/SubidaFichero";
-import { getStudentIdByNip, getStudentIdByNipAndOrganization } from "../../supabase/student/student";
-import { getTeacherIdByNip, getTeacherIdByNipAndOrganization } from "../../supabase/teacher/teacher";
-import { assignSubjectToStudent, assignSubjectToTeacher } from "../../supabase/course/course";
+import {getStudentIdByNipAndOrganization, matriculateStudent } from "../../supabase/student/student";
+import {getTeacherIdByNipAndOrganization, assignSubjectToTeacher } from "../../supabase/teacher/teacher";
 import FlechaVolver from "../../Components/FlechaVolver";
 import Logout from "../../Components/Logout";
 import '../../css/Curso/CursoMatriculadosAñadir.css';
@@ -65,8 +64,8 @@ const CursoMatriculadosAñadir = () => {
 
     const addAlumnoOrProfesor = async () => {
         const res = foundItem.role === "student" ? 
-            await assignSubjectToStudent(foundItem.nip, codigo, organization_id) : 
-            await assignSubjectToTeacher(foundItem.nip, codigo, organization_id);
+            await matriculateStudent(foundItem.nip, codigo) : 
+            await assignSubjectToTeacher(foundItem.nip, codigo);
         if (res.error) {
             console.log(res.error);
         } else {
