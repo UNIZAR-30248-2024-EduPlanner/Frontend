@@ -64,24 +64,17 @@ const Calendario = () => {
     const alturaPorHora = 7; // Altura por hora en vh
     const alturaPorMinuto = 7 / 60; // Altura por minuto en vh
 
-    // const getAllItems = async () => {
-    //     console.log(user)
-    //     const horariosAux = await getAllEventsForUser(user.id)
-    //     if (horariosAux.error) sethorariosAux(horariosAux.data)
-    //     else sethorariosAux(horariosAux.data)
-    // }
-
-    // Devuelve el color de la asignatura <name> y si no está genera un color aleatorio
-    // para esa asignatura y lo guarda en el vector colores
-
-    const getColor = (name) => {
+    // const getColor = async (name) => {
+    const getColor = async (name, subj_id) => {
         const elem = colores.find((e) => e.name == name);
 
         if (elem) {
             return elem.color;
         } else {
-            // Genera un color hexadecimal aleatorio
-            const color = `#${Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0')}`;
+            const res = await getSubjectById(subj_id);
+            if (res.error) return console.error("Error al recuperar la asignatura");
+            console.log("res.data", res.data)
+            const color = res.data.color;
 
             // Añade el nuevo color al array `colores`
             setColores((prev) => [...prev, { name, color }]);
@@ -97,8 +90,8 @@ const Calendario = () => {
 
         const aux = h.filter((v) => isInWeek(v, mondayWeek, monthYear));
 
-        aux.map((e, idx) => {
-
+        aux.map(async (e, idx) => {
+            console.log(e)
             const [hoursStart, minutesStart] = e.start.split(":").map(part => parseInt(part, 10));
 
             // Imprimir el índice encontrado para depuración
@@ -111,7 +104,7 @@ const Calendario = () => {
             const [numSolapes, position] = calcularSolapes(aux, idx);
 
             // Color de la asignatura
-            const color = getColor(e.name)
+            const color = await getColor(e.name, e.subject_id);
 
             const minutosS = convertirAHorasEnMinutos(e.start)
             const minutosE = convertirAHorasEnMinutos(e.end)
@@ -380,7 +373,11 @@ const Calendario = () => {
                 )}
 
                 {user && user.role == "student" && (
-                    <Button color="primary" onClick={openModalGestionarAsignaturas}>
+                    <Button 
+                      color="primary" 
+                      onClick={openModalGestionarAsignaturas}
+                      className="ml-[5px]"
+                    >
                         Gestionar asignaturas
                     </Button>
                 )}

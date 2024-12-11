@@ -38,7 +38,6 @@ const CursoMenu = () => {
 
     return (
         <div>
-            <FlechaVolver />
             <Logout/>
             <h1 className="cur-menu-tit"> Bienvenido, {cursoName}</h1>
             <div className="cur-container">

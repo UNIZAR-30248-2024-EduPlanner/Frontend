@@ -40,7 +40,7 @@ const ModalHorario = ({ isOpen, onOpenChange, title, date_start, date_finish, pl
 
     return (
         <>
-            <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+            <Modal isOpen={isOpen} onOpenChange={onOpenChange} >
                 <ModalContent>
                     {(onClose) => (
                         <>

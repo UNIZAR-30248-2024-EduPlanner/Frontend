@@ -2,11 +2,12 @@ import '../../css/Curso/CalendarioAsignaturaCrear.css';
 import { FaSave, FaRegArrowAltCircleLeft, FaRegArrowAltCircleRight } from "react-icons/fa";
 import { Button, Tooltip } from '@nextui-org/react'
 import { useEffect, useState } from 'react'
-import { calcularSolapes, convertirAHorasEnMinutos, hexToRgb, getContrastColor, isInWeek, numberToMonth } from '../../Components/CalendarioFunctions.jsx';
+import { calcularSolapes, convertirAHorasEnMinutos, getAuxColor, getContrastColor, isInWeek, numberToMonth, randomColor } from '../../Components/CalendarioFunctions.jsx';
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import ModalHorarioCrearEditar from '../../Components/ModalHorarioCrearEditar.jsx';
 import constants from '../../constants/constants.jsx';
+import { GrNotes } from 'react-icons/gr';
 
 const CalendarioAsignaturaCrear = () => {
     const { user } = useAuth();
@@ -21,7 +22,7 @@ const CalendarioAsignaturaCrear = () => {
     const [gruposExistentes, setGruposExistentes] = useState([]);
     const [mondayWeek, setMondayWeek] = useState(null)
     const [monthYear, setMonthYear] = useState(null)
-    const [color, setColor] = useState('#4051B5');  // En caso de fallo en el set, el color por defecto será el principal 
+    const color = localStorage.getItem("color");  // En caso de fallo en el set, el color por defecto será el principal 
     const [idCounter, setIdCounter] = useState(location.state?.calendario?.length+1 || 1);    // Contador para los ids virtuales
 
     const wFirstCol = 5;
@@ -33,24 +34,24 @@ const CalendarioAsignaturaCrear = () => {
     const alturaPorHora = 7; // Altura por hora en vh
     const alturaPorMinuto = 7 / 60; // Altura por minuto en vh
 
-    const generateRandomColor = () => {
-        let color;
-        do {
-            color = '#' + Math.floor(Math.random() * 16777215).toString(16);
-        } while (isColorTooLight(color) || isColorSimilarToWhite(color));
-        return color;
-    };
+    // const generateRandomColor = () => {
+    //     let color;
+    //     do {
+    //         color = '#' + Math.floor(Math.random() * 16777215).toString(16);
+    //     } while (isColorTooLight(color) || isColorSimilarToWhite(color));
+    //     return color;
+    // };
 
-    const isColorTooLight = (hex) => {
-        const { r, g, b } = hexToRgb(hex);
-        const luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b;
-        return luminance > 200;
-    };
+    // const isColorTooLight = (hex) => {
+    //     const { r, g, b } = hexToRgb(hex);
+    //     const luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+    //     return luminance > 200;
+    // };
 
-    const isColorSimilarToWhite = (hex) => {
-        const { r, g, b } = hexToRgb(hex);
-        return r > 240 && g > 240 && b > 240;
-    };
+    // const isColorSimilarToWhite = (hex) => {
+    //     const { r, g, b } = hexToRgb(hex);
+    //     return r > 240 && g > 240 && b > 240;
+    // };
 
     // Da formato a los horarios de la semana. Establece el estilo de los 
     // componentes que permite mostrarlos por pantalla
@@ -204,7 +205,7 @@ const CalendarioAsignaturaCrear = () => {
     useEffect(() => {
         if (user && user.id) {
             getDiasSemana();
-            setColor(generateRandomColor());
+            // setColor(generateRandomColor());
         }
     }, [user.id]);
 
@@ -347,10 +348,11 @@ const CalendarioAsignaturaCrear = () => {
                 <div className="mes-tit flex">
                     <h1 className="mes-tit"> {monthYear} </h1>
                 </div>
-                <div className="personalizar">
+                <div className="absolute top-[1vh] right-[1vw]">
                     <Button 
-                        className="bg-secondary text-primary"
-                        onClick={openModal}>
+                        onClick={openModal}
+                        color="primary"
+                    >
                         + Añadir horario
                     </Button>
                 </div>
@@ -405,7 +407,14 @@ const CalendarioAsignaturaCrear = () => {
                         height: `${h.height}`,
                         width: `${h.width}vw`,
                         color: `${h.textColor}`,
-                        backgroundColor: `${h.color}`,
+                        background: h.type === "Practicas"
+                        ? `repeating-linear-gradient(
+                            45deg, 
+                            ${h.color}, 
+                            ${h.color} 10px, 
+                            ${getAuxColor(h.color)} 10px, 
+                            ${getAuxColor(h.color)} 20px)`
+                        : `${h.color}`,
                         borderWidth: "1px",
                         borderColor: "black",
                         overflow: "hidden"
@@ -415,7 +424,18 @@ const CalendarioAsignaturaCrear = () => {
                         onClick={() => {
                             findHorarioAndOpenModal(h.id);
                         }}>
-                        <p className="ml-[5px] font-bold"> {h.start} - {h.end} </p>
+                        <div className="flex items-center">
+                            <p className="ml-[5px] font-bold"> {h.start} - {h.end} </p>
+                            {h.type === "Examen" && (
+                                <div style={{
+                                    color: getContrastColor(h.color),
+                                    marginLeft: "10px",
+                                    fontWeight: "bold"
+                                }}>
+                                    <GrNotes/>
+                                </div>
+                            )}
+                        </div>
                         <p className="ml-[5px]"> {h.description} </p>
                     </div>
                 ))}
