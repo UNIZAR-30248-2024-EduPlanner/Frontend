@@ -65,7 +65,7 @@ const ModalTareas = ({ isOpen, onOpenChange, listaTareas }) => {
                                             <strong>Fecha de entrega:</strong> {tarea.end_date || "No definida"}
                                         </p>
                                         <p>
-                                            <strong>Hora límite:</strong> {tarea.end_time || "No definida"}
+                                            <strong>Hora límite:</strong> {tarea.end_time.substring(0, 5) || "No definida"}
                                         </p>
                                         {user.role === "teacher" && (
                                             <>

@@ -22,8 +22,9 @@ const ModalEditarHorarios = ({ isOpen, onOpenChange, listaCompletaEventos, lista
     const [descripcion, setDescripcion] = useState("");
     const [fecha, setFecha] = useState("");
     const [error, setError] = useState("");
-    const [tipo, setTipo] = useState("");
-    const [categoria, setCategoria] = useState("");
+    const [error2, setError2] = useState("");
+    const [tipo, setTipo] = useState("personal");
+    const [categoria, setCategoria] = useState("Examen");
     const [selectedAsignaturaId, setSelectedAsignaturaId] = useState(null);
     const [initialLoad, setInitialLoad] = useState(true);
     let combinedList = [...listaCompletaEventos, ...listaCompletaEventosVisibles];
@@ -51,11 +52,14 @@ const ModalEditarHorarios = ({ isOpen, onOpenChange, listaCompletaEventos, lista
             .map(evento => evento.group_name)
     ));
 
-    const filteredGruposFull = Array.from(new Set(
-        combinedList
-            .filter(evento => evento.name === selectedAsignatura)
-            .map(evento => evento.group_name)
-    ));
+    const filteredGruposFull = Array.from(
+        new Set([
+            "General",
+            ...combinedList
+                .filter(evento => evento.name === selectedAsignatura)
+                .map(evento => evento.group_name)
+        ])
+    );
 
     useEffect(() => {
         if (filteredGruposFull.length > 0 && !selectedGrupo && initialLoad) {
@@ -78,10 +82,13 @@ const ModalEditarHorarios = ({ isOpen, onOpenChange, listaCompletaEventos, lista
     const handleSubmit = async () => {
         const horaInicioMinima = "08:00";
         const horaFinalMaxima = "21:00";
+        let grupo;
+        if (selectedGrupo === null) { grupo = "General" } else { grupo = selectedGrupo; }
         console.log("Tipo de evento:", tipo);
+        console.log("Tarea:", tarea);
 
         if (tipo === "academico") {
-            if (!selectedAsignatura || !selectedGrupo) {
+            if (!selectedAsignatura || !grupo) {
                 setError("Escoga una asignatura y un grupo para crear el evento y publicarlo.");
                 window.scrollTo({ top: 0, behavior: "smooth" });
                 return;
@@ -109,19 +116,16 @@ const ModalEditarHorarios = ({ isOpen, onOpenChange, listaCompletaEventos, lista
                 window.scrollTo({ top: 0, behavior: "smooth" });
                 return;
             }
-            await createAcademicEventAndPublish(selectedAsignatura, fecha, fecha, selectedGrupo, 0, nombreActividad, categoria, espacioReservado, horaInicio, horaFin, selectedAsignaturaId);
+            await createAcademicEventAndPublish(selectedAsignatura, fecha, fecha, grupo, 0, nombreActividad, categoria, espacioReservado, horaInicio, horaFin, selectedAsignaturaId);
         } else if (tarea === true) {
-            if (!selectedAsignatura || !selectedGrupo) {
-                setError("Escoga una asignatura y un grupo para crear el evento y publicarlo.");
-                window.scrollTo({ top: 0, behavior: "smooth" });
-                return;
-            }
+            console.log("Creando tarea...", selectedAsignatura, fecha, fecha, grupo, 0, descripcion, "Entrega", espacioReservado, horaFin, horaFin, selectedAsignaturaId);
+
             if (!descripcion || !horaFin || !fecha) {
-                setError("Por favor, complete todos los campos obligatorios (tarea, hora limite y fecha).");
+                setError2("Por favor, complete todos los campos obligatorios (tarea, hora limite y fecha).");
                 window.scrollTo({ top: 0, behavior: "smooth" });
                 return;
             }
-            await createAcademicEventAndPublish(selectedAsignatura, fecha, fecha, selectedGrupo, 0, descripcion, "Entrega", espacioReservado, horaFin, horaFin, selectedAsignaturaId);
+            await createAcademicEventAndPublish(selectedAsignatura, fecha, fecha, grupo, 0, descripcion, "Entrega", espacioReservado, horaFin, horaFin, selectedAsignaturaId);
         } else {
             if (!nombreActividad || !horaInicio || !horaFin || !fecha) {
                 setError("Por favor, complete todos los campos obligatorios (nombre, horas y fecha).");
@@ -403,7 +407,7 @@ const ModalEditarHorarios = ({ isOpen, onOpenChange, listaCompletaEventos, lista
                                             {/* Mensaje de error en color secundario */}
                                             {error && (
                                                 <p style={{ color: "var(--color-second)", textAlign: "center" }}>
-                                                    {error}
+                                                    {error2}
                                                 </p>
                                             )}
                                             <div className="mb-4">
@@ -486,6 +490,7 @@ const ModalEditarHorarios = ({ isOpen, onOpenChange, listaCompletaEventos, lista
                                             <Button color="primary"
                                                 onPress={() => {
                                                     tarea = true;
+                                                    setTipo("");
                                                     handleSubmit();
                                                 }}>
                                                 Guardar tarea
