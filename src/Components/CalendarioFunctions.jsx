@@ -171,7 +171,7 @@ export const isInWeek = (h, monday) => {
         }
     } else {
         const date = new Date(h.date);
-
+        
         return date >= monday && date <= sunday;
     }
 }
