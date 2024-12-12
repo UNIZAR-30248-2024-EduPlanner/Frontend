@@ -355,7 +355,7 @@ const Calendario = () => {
 
     return (
         <div className="calendario">
-            <div className="personalizar flex">
+            <div className="absolute flex top-[1vh] left-[1vh]">
                 <Button color="primary" onClick={openModalTareas}>
                     Ver tareas
                 </Button>
