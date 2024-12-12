@@ -1,4 +1,4 @@
-import { Modal, ModalContent, ModalBody, Button } from "@nextui-org/react";
+import { Modal, ModalContent, ModalBody, Button, ModalHeader } from "@nextui-org/react";
 import { useAuth } from "../context/AuthContext";
 import '../css/Components/ModalEditarHorario.css';
 import { createCustomEvent } from "../supabase/customEvent/customEvent";
@@ -22,7 +22,9 @@ const ModalEditarHorarios = ({ isOpen, onOpenChange, listaCompletaEventos, lista
     const [descripcion, setDescripcion] = useState("");
     const [fecha, setFecha] = useState("");
     const [error, setError] = useState("");
-    const [tipo, setTipo] = useState("");
+    const [error2, setError2] = useState("");
+    const [tipo, setTipo] = useState("personal");
+    const [categoria, setCategoria] = useState("Examen");
     const [selectedAsignaturaId, setSelectedAsignaturaId] = useState(null);
     const [initialLoad, setInitialLoad] = useState(true);
     let combinedList = [...listaCompletaEventos, ...listaCompletaEventosVisibles];
@@ -50,11 +52,14 @@ const ModalEditarHorarios = ({ isOpen, onOpenChange, listaCompletaEventos, lista
             .map(evento => evento.group_name)
     ));
 
-    const filteredGruposFull = Array.from(new Set(
-        combinedList
-            .filter(evento => evento.name === selectedAsignatura)
-            .map(evento => evento.group_name)
-    ));
+    const filteredGruposFull = Array.from(
+        new Set([
+            "General",
+            ...combinedList
+                .filter(evento => evento.name === selectedAsignatura)
+                .map(evento => evento.group_name)
+        ])
+    );
 
     useEffect(() => {
         if (filteredGruposFull.length > 0 && !selectedGrupo && initialLoad) {
@@ -77,10 +82,13 @@ const ModalEditarHorarios = ({ isOpen, onOpenChange, listaCompletaEventos, lista
     const handleSubmit = async () => {
         const horaInicioMinima = "08:00";
         const horaFinalMaxima = "21:00";
+        let grupo;
+        if (selectedGrupo === null) { grupo = "General" } else { grupo = selectedGrupo; }
         console.log("Tipo de evento:", tipo);
+        console.log("Tarea:", tarea);
 
         if (tipo === "academico") {
-            if (!selectedAsignatura || !selectedGrupo) {
+            if (!selectedAsignatura || !grupo) {
                 setError("Escoga una asignatura y un grupo para crear el evento y publicarlo.");
                 window.scrollTo({ top: 0, behavior: "smooth" });
                 return;
@@ -108,19 +116,16 @@ const ModalEditarHorarios = ({ isOpen, onOpenChange, listaCompletaEventos, lista
                 window.scrollTo({ top: 0, behavior: "smooth" });
                 return;
             }
-            await createAcademicEventAndPublish(selectedAsignatura, fecha, fecha, selectedGrupo, 0, nombreActividad, "Examen", espacioReservado, horaInicio, horaFin, selectedAsignaturaId);
+            await createAcademicEventAndPublish(selectedAsignatura, fecha, fecha, grupo, 0, nombreActividad, categoria, espacioReservado, horaInicio, horaFin, selectedAsignaturaId);
         } else if (tarea === true) {
-            if (!selectedAsignatura || !selectedGrupo) {
-                setError("Escoga una asignatura y un grupo para crear el evento y publicarlo.");
-                window.scrollTo({ top: 0, behavior: "smooth" });
-                return;
-            }
+            console.log("Creando tarea...", selectedAsignatura, fecha, fecha, grupo, 0, descripcion, "Entrega", espacioReservado, horaFin, horaFin, selectedAsignaturaId);
+
             if (!descripcion || !horaFin || !fecha) {
-                setError("Por favor, complete todos los campos obligatorios (tarea, hora limite y fecha).");
+                setError2("Por favor, complete todos los campos obligatorios (tarea, hora limite y fecha).");
                 window.scrollTo({ top: 0, behavior: "smooth" });
                 return;
             }
-            await createAcademicEventAndPublish(selectedAsignatura, fecha, fecha, selectedGrupo, 0, descripcion, "Entrega", espacioReservado, horaFin, horaFin, selectedAsignaturaId);
+            await createAcademicEventAndPublish(selectedAsignatura, fecha, fecha, grupo, 0, descripcion, "Entrega", espacioReservado, horaFin, horaFin, selectedAsignaturaId);
         } else {
             if (!nombreActividad || !horaInicio || !horaFin || !fecha) {
                 setError("Por favor, complete todos los campos obligatorios (nombre, horas y fecha).");
@@ -173,16 +178,20 @@ const ModalEditarHorarios = ({ isOpen, onOpenChange, listaCompletaEventos, lista
     };
 
     return (
-        <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+        <Modal isOpen={isOpen} onOpenChange={onOpenChange} size="2xl" >
             <ModalContent style={{ transform: "scale(0.95)", overflow: "visible" }}>
                 {(onClose) => (
                     <>
-                        <ModalBody style={{ transform: "scale(0.9)", maxHeight: "100vh", overflow: "visible", overflowY: "auto" }}>
-                            <div className="tabs-org">
+                        <ModalHeader className="text-center justify-center text-primary text-3xl">
+                            {"Personalizar calendario"}
+                        </ModalHeader>
+                        <hr className="separator" style={{ width: "100%", margin: "0px 0px", border: "1px solid #ccc" }} />
+                        <ModalBody className="mt-0" style={{ transform: "scale(0.9)", maxHeight: "100vh", overflow: "visible", overflowY: "auto" }}>
+                            <div className="tabs-org mt-0">
                                 <Tabs color="primary" variant="underlined" defaultSelectedKey="Asignatura">
-                                    <Tab className="text-center text-xl" key="Asignatura" title="Asignatura">
-                                        <hr className="separator" />
-                                        <div>
+                                    <Tab className="text-start text-xl w-full" key="Asignatura" title="Asignatura">
+                                        <hr className="separator mt-0 mb-[20px] w-full" />
+                                        <div className="mb-[20px]">
                                             <h4 className="large-bold-title">Seleccionar asignatura</h4>
                                             <CheckboxGroup
                                                 label="Asignaturas"
@@ -202,7 +211,7 @@ const ModalEditarHorarios = ({ isOpen, onOpenChange, listaCompletaEventos, lista
                                                     ))}
                                             </CheckboxGroup>
                                         </div>
-                                        <div>
+                                        <div className="mb-[20px]">
                                             <h4 className="large-bold-title">Seleccionar grupo</h4>
                                             <CheckboxGroup
                                                 label="Grupos"
@@ -220,7 +229,7 @@ const ModalEditarHorarios = ({ isOpen, onOpenChange, listaCompletaEventos, lista
                                                 ))}
                                             </CheckboxGroup>
                                         </div>
-                                        <div>
+                                        <div className="mb-[20px]">
                                             <h4 className="large-bold-title">Seleccionar horario</h4>
                                             <CheckboxGroup
                                                 label="Horarios"
@@ -235,15 +244,18 @@ const ModalEditarHorarios = ({ isOpen, onOpenChange, listaCompletaEventos, lista
                                                 ))}
                                             </CheckboxGroup>
                                         </div>
-                                        <Button color="primary" onPress={handleSubmitadd}
-                                            style={{ marginTop: '10px', marginBottom: '10px' }}
-                                        >
-                                            Añadir a calendario
-                                        </Button>
+                                        <div className="flex justify-center">
+                                            <Button color="primary" onPress={handleSubmitadd}
+                                                style={{ marginTop: '10px', marginBottom: '10px' }}
+                                                className="text-[1.1rem]"
+                                            >
+                                                Añadir a calendario
+                                            </Button>
+                                        </div>
                                     </Tab>
-                                    <Tab className="text-center text-xl" key="Crear evento" title="Crear evento">
-                                        <hr className="separator" />
-                                        {/* Mensaje de error en color secundario */}
+                                    <Tab className="text-start text-xl w-full" key="Crear evento" title="Crear evento">
+                                        <hr className="separator mt-0 mb-[20px] w-full" />
+                                    {/* Mensaje de error en color secundario */}
                                         {error && (
                                             <p style={{ color: "var(--color-second)", textAlign: "center" }}>
                                                 {error}
@@ -252,8 +264,8 @@ const ModalEditarHorarios = ({ isOpen, onOpenChange, listaCompletaEventos, lista
                                         {/* Solo visible para el rol "teacher" */}
                                         {user?.role === "teacher" && (
                                             <>
-                                                <div className="mb-4">
-                                                    <h2 className="text-2xl font-bold">Tipo</h2>
+                                                <div className="mb-[20px]">
+                                                    <h2 className="text-2xl font-bold mb-[5px]">Tipo</h2>
                                                     <select
                                                         value={tipo}
                                                         onChange={(e) => setTipo(e.target.value)}
@@ -267,8 +279,19 @@ const ModalEditarHorarios = ({ isOpen, onOpenChange, listaCompletaEventos, lista
                                                 {/* Mostrar asignatura y grupo solo si el tipo es académico */}
                                                 {tipo === "academico" && (
                                                     <>
-                                                        <div className="mb-4">
-                                                            <h2 className="text-2xl font-bold">Asignatura</h2>
+                                                        <div className="mb-[20px]">
+                                                            <h2 className="text-2xl font-bold mb-[5px]">Categoria</h2>
+                                                            <select
+                                                                value={categoria}
+                                                                onChange={(e) => setCategoria(e.target.value)}
+                                                                className="w-full p-2 border rounded-md"
+                                                            >
+                                                                <option value="Examen">Examen</option>
+                                                                <option value="Creado por profesores">Evento extra</option>
+                                                            </select>
+                                                        </div>
+                                                        <div className="mb-[20px]">
+                                                            <h2 className="text-2xl font-bold mb-[5px]">Asignatura</h2>
                                                             <select
                                                                 value={selectedAsignaturaId}
                                                                 onChange={(e) => {
@@ -290,8 +313,8 @@ const ModalEditarHorarios = ({ isOpen, onOpenChange, listaCompletaEventos, lista
                                                             </select>
                                                         </div>
 
-                                                        <div className="mb-4">
-                                                            <h2 className="text-2xl font-bold">Grupo</h2>
+                                                        <div className="mb-[20px]">
+                                                            <h2 className="text-2xl font-bold mb-[5px]">Grupo</h2>
                                                             <select
                                                                 value={selectedGrupo || filteredGruposFull[0]}
                                                                 onChange={(e) => {
@@ -316,8 +339,8 @@ const ModalEditarHorarios = ({ isOpen, onOpenChange, listaCompletaEventos, lista
                                             </>
                                         )}
 
-                                        <div className="mb-4">
-                                            <h2 className="text-2xl font-bold">Nombre de la actividad:</h2>
+                                        <div className="mb-[20px]">
+                                            <h2 className="text-2xl font-bold mb-[5px]">Nombre de la actividad:</h2>
                                             <input
                                                 type="text"
                                                 className="border p-2 w-full"
@@ -327,10 +350,10 @@ const ModalEditarHorarios = ({ isOpen, onOpenChange, listaCompletaEventos, lista
                                             />
                                         </div>
 
-                                        <div className="mb-4">
-                                            <h2 className="text-2xl font-bold">Fecha y Hora</h2>
+                                        <div className="mb-[20px]">
+                                            <h2 className="text-2xl font-bold mb-[5px]">Fecha y Hora</h2>
                                             <div>
-                                                <label className="block text-lg font-semibold">Fecha</label>
+                                                <label className="block text-lg text-black font-semibold">Fecha</label>
                                                 <input
                                                     type="date"
                                                     className="border p-2 mb-4"
@@ -338,9 +361,9 @@ const ModalEditarHorarios = ({ isOpen, onOpenChange, listaCompletaEventos, lista
                                                     onChange={(e) => setFecha(e.target.value)}
                                                 />
                                             </div>
-                                            <div className="flex space-x-4">
+                                            <div className="flex">
                                                 <div>
-                                                    <label className="block text-lg font-semibold">Hora de inicio</label>
+                                                    <label className="block text-lg text-black font-semibold">Hora de inicio</label>
                                                     <input
                                                         type="time"
                                                         className="border p-2"
@@ -348,8 +371,8 @@ const ModalEditarHorarios = ({ isOpen, onOpenChange, listaCompletaEventos, lista
                                                         onChange={(e) => setHoraInicio(e.target.value)}
                                                     />
                                                 </div>
-                                                <div>
-                                                    <label className="block text-lg font-semibold">Hora de finalización</label>
+                                                <div className="ml-[20px]">
+                                                    <label className="block text-lg text-black font-semibold">Hora de finalización</label>
                                                     <input
                                                         type="time"
                                                         className="border p-2"
@@ -360,8 +383,8 @@ const ModalEditarHorarios = ({ isOpen, onOpenChange, listaCompletaEventos, lista
                                             </div>
                                         </div>
 
-                                        <div className="mb-4">
-                                            <h2 className="text-2xl font-bold">Lugar</h2>
+                                        <div className="mb-[20px]">
+                                            <h2 className="text-2xl font-bold mb-[5px]">Lugar</h2>
                                             <input
                                                 type="text"
                                                 className="border p-2 w-full"
@@ -371,8 +394,8 @@ const ModalEditarHorarios = ({ isOpen, onOpenChange, listaCompletaEventos, lista
                                             />
                                         </div>
                                         {tipo !== "academico" && (
-                                            <div className="mb-4">
-                                                <h2 className="text-2xl font-bold">Descripción</h2>
+                                            <div className="mb-[20px]">
+                                                <h2 className="text-2xl font-bold mb-[5px]">Descripción</h2>
                                                 <textarea
                                                     className="border p-2 w-full"
                                                     placeholder="Ingrese una descripción"
@@ -381,21 +404,24 @@ const ModalEditarHorarios = ({ isOpen, onOpenChange, listaCompletaEventos, lista
                                                 ></textarea>
                                             </div>
                                         )}
-                                        <Button color="primary" onPress={handleSubmit}>
-                                            Guardar evento
-                                        </Button>
+                                        <div className="flex justify-center">
+                                            <Button className="text-[1.1rem]" color="primary" onPress={handleSubmit}>
+                                                Guardar evento
+                                            </Button>
+                                        </div>
                                     </Tab>
                                     {/* Solo visible para el rol "teacher" */}
                                     {user?.role === "teacher" && (
-                                        <Tab className="text-center text-xl" key="Crear tarea" title="Crear tarea">
+                                        <Tab className="text-start text-xl w-full" key="Crear tarea" title="Crear tarea">
+                                            <hr className="separator mt-0 mb-[20px] w-full" />
                                             {/* Mensaje de error en color secundario */}
                                             {error && (
                                                 <p style={{ color: "var(--color-second)", textAlign: "center" }}>
-                                                    {error}
+                                                    {error2}
                                                 </p>
                                             )}
-                                            <div className="mb-4">
-                                                <h2 className="text-2xl font-bold">Asignatura</h2>
+                                            <div className="mb-[20px]">
+                                                <h2 className="text-2xl font-bold mb-[5px]">Asignatura</h2>
                                                 <select
                                                     value={selectedAsignaturaId}
                                                     onChange={(e) => {
@@ -417,8 +443,8 @@ const ModalEditarHorarios = ({ isOpen, onOpenChange, listaCompletaEventos, lista
                                                 </select>
                                             </div>
 
-                                            <div className="mb-4">
-                                                <h2 className="text-2xl font-bold">Grupo</h2>
+                                            <div className="mb-[20px]">
+                                                <h2 className="text-2xl font-bold mb-[5px]">Grupo</h2>
                                                 <select
                                                     value={selectedGrupo || filteredGruposFull[0]}
                                                     onChange={(e) => {
@@ -439,20 +465,20 @@ const ModalEditarHorarios = ({ isOpen, onOpenChange, listaCompletaEventos, lista
                                                 </select>
                                             </div>
 
-                                            <div className="mb-4">
-                                                <h2 className="text-2xl font-bold">Fecha y Hora</h2>
+                                            <div className="mb-[20px]">
+                                                <h2 className="text-2xl font-bold mb-[5px]">Fecha y Hora</h2>
                                                 <div>
-                                                    <label className="block text-lg font-semibold">Fecha</label>
+                                                    <label className="block text-lg text-black font-bold">Fecha</label>
                                                     <input
                                                         type="date"
-                                                        className="border p-2 mb-4"
+                                                        className="border p-2 mb-[5px]"
                                                         value={fecha}
                                                         onChange={(e) => setFecha(e.target.value)}
                                                     />
                                                 </div>
 
                                                 <div>
-                                                    <label className="block text-lg font-semibold">Hora Limite</label>
+                                                    <label className="block text-lg text-black font-bold">Hora Limite</label>
                                                     <input
                                                         type="time"
                                                         className="border p-2"
@@ -462,8 +488,8 @@ const ModalEditarHorarios = ({ isOpen, onOpenChange, listaCompletaEventos, lista
                                                 </div>
                                             </div>
 
-                                            <div className="mb-4">
-                                                <h2 className="text-2xl font-bold">Tarea</h2>
+                                            <div className="mb-[20px]">
+                                                <h2 className="text-2xl font-bold mb-[5px]">Tarea</h2>
                                                 <textarea
                                                     className="border p-2 w-full"
                                                     placeholder="Ingrese la tarea"
@@ -471,13 +497,19 @@ const ModalEditarHorarios = ({ isOpen, onOpenChange, listaCompletaEventos, lista
                                                     onChange={(e) => setDescripcion(e.target.value)}
                                                 ></textarea>
                                             </div>
-                                            <Button color="primary"
-                                                onPress={() => {
-                                                    tarea = true;
-                                                    handleSubmit();
-                                                }}>
-                                                Guardar tarea
-                                            </Button>
+                                            <div className="flex justify-center">
+                                                <Button color="primary"
+                                                    onPress={() => {
+                                                        tarea = true;
+                                                        setTipo("");
+                                                        handleSubmit();
+                                                    }}
+                                                    className="text-[1.1rem]"
+                                                >
+                                                    Guardar tarea
+                                                </Button>
+
+                                            </div>
                                         </Tab>
                                     )}
                                 </Tabs>

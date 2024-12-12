@@ -45,6 +45,15 @@ export const calcularSolapes = (lista, idx) => {
 // Colores
 ////////////////////////////////////////////////////////////////////////////////
 
+// Devuelve el color de la asignatura <name> y si no está genera un color aleatorio
+// para esa asignatura y lo guarda en el vector colores
+export const randomColor = () => {
+    // Genera un color hexadecimal aleatorio
+    const color = `#${Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0')}`;
+
+    return color;
+}
+
 // Función que convierte colores en hexadecimal a RGB
 export function hexToRgb(hex) {
     // Eliminar el carácter '#' si está presente
@@ -126,14 +135,6 @@ export const monthToNumber = (month) => {
     };
 
     return monthMap[month]
-}
-
-const dayToNumber = (day) => {
-    const dayMap = {
-        L: 0, M: 1, X: 2, J: 3, V: 4, S: 5, D: 6
-    };
-
-    return dayMap[day];
 }
 
 // h es un horario

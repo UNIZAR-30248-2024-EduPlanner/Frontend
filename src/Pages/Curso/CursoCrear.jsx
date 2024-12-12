@@ -6,13 +6,14 @@ import SubidaFichero from "../../Components/SubidaFichero";
 import FlechaVolver from "../../Components/FlechaVolver";
 import { createSubject, getSubjectIdByCode } from "../../supabase/course/course";
 import { createAcademicEvent } from "../../supabase/academicEvent/academicEvent";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import constants from "../../constants/constants";
 import { useNavigate } from "react-router-dom";
 import {useDisclosure} from "@nextui-org/react";
 import ModalComponent from "../../Components/ModalComponent";
 import Logout from "../../Components/Logout";
+import { randomColor } from "../../Components/CalendarioFunctions";
 
 const CursoCrear = () => {
     const { type } = useParams()
@@ -20,6 +21,7 @@ const CursoCrear = () => {
     const [nombre, setNombre] = useState("")
     const [nip, setNip] = useState("")
     const [error, setError] = useState("");
+    const [color, setColor] = useState(null);
     const typeSingular = type.slice(0, -1)
     const { user } = useAuth();
     const location = useLocation();
@@ -47,7 +49,7 @@ const CursoCrear = () => {
         }
 
         // Llamada a la API para crear una asignatura
-        const res = await createSubject(nombre, nip, user.id)
+        const res = await createSubject(nombre, nip, color, user.id);
         if (res.error) {
             setError("Hubo un error en el registro: " + res.error);
             window.scrollTo({ top: 0, behavior: "smooth" });
@@ -77,7 +79,8 @@ const CursoCrear = () => {
                 horario.place, 
                 horario.start, 
                 horario.end, 
-                subject_id);
+                subject_id
+            );
             if (horarioResponse.error) {
                 setError("Hubo un error en el registro: " + res.error);
                 window.scrollTo({ top: 0, behavior: "smooth" });
@@ -85,6 +88,7 @@ const CursoCrear = () => {
             }
             console.log("Respuesta del servidor: ", horarioResponse);
         });
+        localStorage.removeItem("color");
 
         navigate(constants.root + 'CursoMenu');
     }
@@ -93,11 +97,21 @@ const CursoCrear = () => {
         navigate(`${location.pathname}/Calendario/`, { state: { calendario: calendario } });
     }
 
+    useEffect(() => {
+        if (!localStorage.getItem("color")) {
+            const randColor = randomColor();
+            localStorage.setItem("color", randColor);
+            setColor(randColor);
+        } else {
+            setColor(localStorage.getItem("color"));
+        }
+    }, [])
+
     return (
         <>
             <FlechaVolver />
             <Logout />
-            <h1 className="cur-crear-tit"> Crear {type} </h1>
+            <h1 className="cur-crear-tit font-bold"> Crear {type} </h1>
             <div className="cur-crear-container">
                 <div className="cur-crear-uno">
                     <h2 className="cur-crear-tit"> Crea una {typeSingular}</h2>

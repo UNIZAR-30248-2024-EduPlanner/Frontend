@@ -150,6 +150,7 @@ describe('Teacher API Tests', () => {
 
   // Prueba para que un profesor asocie a un estudiante a una asignatura
   it('should let a teacher assign a student to a subject', async () => {
+    await f.letTeacherUnAssociateStudentFromSubject(testArrayTeachers[1].nip, 111111, 99995);
     const result = await f.letTeacherAssociateStudentToSubject(testArrayTeachers[1].nip, 111111, 99995);
     expect(result.error).toBeNull(); // Verifica que no haya error
   });

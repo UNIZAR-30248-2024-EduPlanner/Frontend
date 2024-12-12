@@ -1,4 +1,4 @@
-import { Modal, ModalContent, ModalBody } from "@nextui-org/react";
+import { Modal, ModalContent, ModalBody, ModalHeader } from "@nextui-org/react";
 import { useAuth } from "../context/AuthContext";
 import { useState } from "react";
 import ModalComponent from "./ModalComponent";
@@ -33,9 +33,15 @@ const ModalTareas = ({ isOpen, onOpenChange, listaTareas }) => {
 
     return (
         <>
-            <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+            <Modal isOpen={isOpen} onOpenChange={onOpenChange} size="xl">
                 <ModalContent style={{ transform: "scale(0.95)", overflow: "visible" }}>
                     {(onClose) => (
+                        <>
+                        <ModalHeader className="text-center justify-center text-primary text-3xl">
+                            {"Tareas"}
+                        </ModalHeader>
+                        <hr className="separator" style={{ width: "100%", margin: "0px 0", border: "1px solid #ccc" }} />
+                    
                         <ModalBody
                             style={{
                                 transform: "scale(0.9)",
@@ -44,7 +50,7 @@ const ModalTareas = ({ isOpen, onOpenChange, listaTareas }) => {
                                 overflowY: "auto",
                             }}
                         >
-                            <div className="tabs-org">
+                            <div className="tabs-org mt-0">
                                 {listaOrdenada.map((tarea) => (
                                     <div
                                         key={tarea.id}
@@ -65,7 +71,7 @@ const ModalTareas = ({ isOpen, onOpenChange, listaTareas }) => {
                                             <strong>Fecha de entrega:</strong> {tarea.end_date || "No definida"}
                                         </p>
                                         <p>
-                                            <strong>Hora límite:</strong> {tarea.end_time || "No definida"}
+                                            <strong>Hora límite:</strong> {tarea.end_time.substring(0, 5) || "No definida"}
                                         </p>
                                         {user.role === "teacher" && (
                                             <>
@@ -112,6 +118,7 @@ const ModalTareas = ({ isOpen, onOpenChange, listaTareas }) => {
                                 ))}
                             </div>
                         </ModalBody>
+                        </>
                     )}
                 </ModalContent>
             </Modal>

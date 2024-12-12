@@ -11,6 +11,7 @@ import { letTeacherAssociateArrayStudentsToSubject, registerArrayTeachers } from
 import { registerArrayCourses, registerArraySubject } from "../supabase/course/course";
 import { useAuth } from "../context/AuthContext";
 import ModalComponent from "./ModalComponent";
+import { randomColor } from "./CalendarioFunctions";
 
 
 // Referencia: https://github.com/NelsonCode/drag-and-drop-files-react/blob/master/src/components/DragArea/index.js
@@ -134,7 +135,7 @@ const SubidaFichero = ({ type, lista, setLista, teacherNip, subjectCode, organiz
                         }
 
                         // Si todas las validaciones pasan, agregamos el objeto a los datos procesados
-                        parsedData.push({ name, subject_code: subject_codeParsed });
+                        parsedData.push({ name, subject_code: subject_codeParsed, color: randomColor() });
                     } else {
                         erroresEncontrados.push(`Línea ${index + 1}: Número incorrecto de campos.`);
                     }
@@ -231,11 +232,13 @@ const SubidaFichero = ({ type, lista, setLista, teacherNip, subjectCode, organiz
             }
         } else if (type == "asignaturas") {
             // Llamada a la API para crear un curso
-            const res = await registerArraySubject(lista, user.id)
+            const res = await registerArraySubject(lista, user.id);
             if (res.error) {
                 setError("Hubo un error en el registro: " + res.error.message);
                 window.scrollTo({ top: 0, behavior: "smooth" });
                 return;
+            } else {
+                localStorage.removeItem("color");
             }
         } else if (type == "matriculas") {
             // Recorrer la lista para ver si es profesor o alumno o no existe

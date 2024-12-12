@@ -37,13 +37,13 @@ const Home = () => {
             </div>*/}
 
             <div className="button-container">
-                <Button size="md" color="primary"
+                <Button size="lg" color="primary"
                     icon={<FaSignInAlt />}
                     onClick={() => navigate(constants.root + "IniciarSesion")}
                 >
                     Iniciar sesión
                 </Button>
-                <Button size="md" color="primary"
+                <Button size="lg" color="primary"
                     icon={<FaUserPlus />}
                     onClick={() => navigate(constants.root + "CrearOrganizacion")}
                 >

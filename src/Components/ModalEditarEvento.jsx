@@ -158,15 +158,15 @@ const ModalEditarEvento = ({ isOpen, onOpenChange, title, date_start, date_finis
 
     return (
         <>
-            <Modal isOpen={isOpen} onOpenChange={onOpenChange} style={{ transform: "scale(0.95)", overflow: "auto", width: "90%", maxWidth: "600px", margin: "auto" }}>
-                <ModalContent style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", textAlign: "center" }}>
+            <Modal isOpen={isOpen} onOpenChange={onOpenChange} size="xl" style={{ transform: "scale(0.95)", overflow: "auto", width: "90%", maxWidth: "600px", margin: "auto" }}>
+                <ModalContent style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", textAlign: "start" }}>
                     {(onClose) => (
                         <>
-                            <ModalHeader className="text-center text-xl">
+                            <ModalHeader className="text-center text-primary text-3xl">
                                 {"Modificar evento"}
                             </ModalHeader>
-                            <hr className="separator" style={{ width: "100%", margin: "10px 0", border: "1px solid #ccc" }} />
-                            <ModalBody style={{ transform: "scale(0.9)", maxHeight: "80vh", overflow: "auto", padding: "20px" }}>
+                            <hr className="separator" style={{ width: "100%", margin: "0px 0", border: "1px solid #ccc" }} />
+                            <ModalBody className="w-full" style={{ transform: "scale(0.9)", maxHeight: "80vh", overflow: "auto",  }}>
                                 {type !== "tarea" && (
                                     <>
                                         {/* Mensaje de error en color secundario */}
@@ -179,7 +179,7 @@ const ModalEditarEvento = ({ isOpen, onOpenChange, title, date_start, date_finis
                                         {/* Campos dependientes del tipo */}
                                         {type !== "Creado por profesores" && type !== "Examen" && (
                                             <div className="mb-4">
-                                                <h2 className="text-2xl font-bold">Nombre de la actividad:</h2>
+                                                <h2 className="text-2xl font-bold mb-[20px]">Nombre de la actividad:</h2>
                                                 <input
                                                     type="text"
                                                     className="border p-2 w-full"
@@ -191,8 +191,8 @@ const ModalEditarEvento = ({ isOpen, onOpenChange, title, date_start, date_finis
                                         )}
 
                                         {(type === "Creado por profesores" || type === "Examen") && (
-                                            <div className="mb-4">
-                                                <h2 className="text-2xl font-bold">Nombre de la actividad</h2>
+                                            <div className="mb-4 w-[100%]">
+                                                <h2 className="text-2xl font-bold mb-[20px]">Nombre de la actividad</h2>
                                                 <textarea
                                                     className="border p-2 w-full"
                                                     placeholder="Ingrese el nombre de la actividad"
@@ -203,9 +203,9 @@ const ModalEditarEvento = ({ isOpen, onOpenChange, title, date_start, date_finis
                                         )}
 
                                         <div className="mb-4">
-                                            <h2 className="text-2xl font-bold">Fecha y Hora</h2>
+                                            <h2 className="text-2xl font-bold mb-[20px]">Fecha y Hora</h2>
                                             <div>
-                                                <label className="block text-lg font-semibold">Fecha</label>
+                                                <label className="block text-lg font-semibold mb-[20px]">Fecha</label>
                                                 <input
                                                     type="date"
                                                     className="border p-2 mb-4"
@@ -213,7 +213,7 @@ const ModalEditarEvento = ({ isOpen, onOpenChange, title, date_start, date_finis
                                                     onChange={(e) => setFecha(e.target.value)}
                                                 />
                                             </div>
-                                            <div className="flex space-x-4">
+                                            <div className="flex items-center justify-start mt-[10px] mb-[20px]">
                                                 <div>
                                                     <label className="block text-lg font-semibold">Hora de inicio</label>
                                                     <input
@@ -223,7 +223,7 @@ const ModalEditarEvento = ({ isOpen, onOpenChange, title, date_start, date_finis
                                                         onChange={(e) => setHoraInicio(e.target.value)}
                                                     />
                                                 </div>
-                                                <div>
+                                                <div className="ml-[50px]">
                                                     <label className="block text-lg font-semibold">Hora de finalización</label>
                                                     <input
                                                         type="time"
@@ -236,7 +236,7 @@ const ModalEditarEvento = ({ isOpen, onOpenChange, title, date_start, date_finis
                                         </div>
 
                                         <div className="mb-4">
-                                            <h2 className="text-2xl font-bold">Lugar</h2>
+                                            <h2 className="text-2xl font-bold mb-[20px]">Lugar</h2>
                                             <input
                                                 type="text"
                                                 className="border p-2 w-full"
@@ -294,7 +294,7 @@ const ModalEditarEvento = ({ isOpen, onOpenChange, title, date_start, date_finis
                                     </>
                                 )}
                             </ModalBody>
-                            <ModalFooter>
+                            <ModalFooter >
                                 {type === "Creado por profesores" || type === "Examen" ? (
                                     <Button
                                         color="primary"
