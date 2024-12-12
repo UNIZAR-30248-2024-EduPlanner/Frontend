@@ -121,6 +121,13 @@ export const editSubject = async (subjectId, updates) => {
         .update(updates)
         .eq('id', subjectId);
 
+    //Actualizar todos los eventos academicos antiguos con el nuevo nombre
+    console.log("Modificando el nombre de los eventos academicos")
+     await supabase
+        .from('academic_event')
+        .update({name: updates.name })
+        .eq('subject_id', subjectId);
+
     return { data, error }; // Devolver tanto 'data' como 'error' para una respuesta consistente
 };
 
@@ -346,9 +353,6 @@ export const assignSubjectToStudents = async (nips, subjectCode, organization_id
         return { data: null, error: err };
     }
 };
-
-
-
 
 // Funcion para asignar a un array de profesores a una asignatura
 export const assignSubjectToTeachers = async (teachers, subjectCode, organization_id) => {
