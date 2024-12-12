@@ -15,6 +15,7 @@ const CalendarioAsignatura = () => {
     const { user } = useAuth();
     const location = useLocation();
     const {nombre, subject_id, codigo } = location.state || {};
+    const [subject, setSubject] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [modalData, setModalData] = useState(null);
     const [horarios, setHorarios] = useState([]);
@@ -238,16 +239,17 @@ const CalendarioAsignatura = () => {
         setDiasSemana(days);
     }
 
-    const getSubjectColor = async () => {
+    const getSubject = async () => {
         const res = await getSubjectById(subject_id);
         if (res.error) return console.error("Error al obtener la asignatura");
 
+        setSubject(res.data);
         setColor(res.data.color);
     }
 
     useEffect(() => {
         if (user && user.id) {
-            getSubjectColor();
+            getSubject();
             getDiasSemana();
             getHorarios();
         }
@@ -291,7 +293,7 @@ const CalendarioAsignatura = () => {
         if (horario.id) {
             // Editar horario
             const updates = {
-                name: horario.name, 
+                name: subject.name, 
                 starting_date: horario.starting_date, 
                 end_date: horario.end_date,
                 group_name: horario.group_name, 
@@ -308,7 +310,7 @@ const CalendarioAsignatura = () => {
         } else {
             // Crear horario
             response = await createAcademicEventAndPublish(
-                horario.name, 
+                subject.name, 
                 horario.starting_date, 
                 horario.end_date, 
                 horario.group_name, 

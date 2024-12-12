@@ -7,7 +7,7 @@ import FlechaVolver from "../../Components/FlechaVolver";
 import constants from "../../constants/constants";
 import { FaRegTrashAlt } from "react-icons/fa";
 import ModalComponent from "../../Components/ModalComponent";
-import { getStudentsBySubject } from "../../supabase/student/student";
+import { getStudentsBySubject, unenrollStudent } from "../../supabase/student/student";
 import { letTeacherUnAssociateStudentFromSubject } from "../../supabase/teacher/teacher";
 import { useAuth } from "../../context/AuthContext";
 
@@ -42,7 +42,7 @@ const GestionarMatriculas = () => {
             setFilteredList((prevList) => prevList.filter((item) => item.nip !== nip));
 
             // Llamada a la API para desmatricular al alumno
-            const res = await letTeacherUnAssociateStudentFromSubject(user.nip, nip, subject.subject_code);
+            const res = await unenrollStudent(nip, subject.subject_code);
             if (res.error) return console.error(res.error);
         } else {
             console.error("Noooooooooooooooo")
