@@ -1,7 +1,7 @@
 import { supabase } from '../supabaseClient.js';
 import { getAcademicEventsBySubject } from '../academicEvent/academicEvent';
 import { createCustomAcademicEvent, deleteCustomAcademicEvent } from '../customAcademicEvent/customAcademicEvent';
-import { getStudentIdByNip, matriculateStudent } from '../student/student';
+import { getStudentIdByNip, matriculateStudent, unenrollStudent } from '../student/student';
 
 export const registerArrayTeachers = async (teachers, organization_id) => {
   try {
@@ -444,12 +444,7 @@ export const letTeacherUnAssociateStudentFromSubject = async (teacherNip, studen
     return { data: null, error: teaching.error };
   } else {
     // Asignar la asignatura al estudiante
-    const { data, error } = await supabase
-      .from('enrollments')
-      .delete()
-      .eq('student_id', studentId.data)
-      .eq('subject_id', subject.data.id)
-      .select();
+    const { data, error } = unenrollStudent(studentNip, subjectCode);
 
     if (error) {
       console.error('Error al eliminar la asignatura al estudiante:', error);
