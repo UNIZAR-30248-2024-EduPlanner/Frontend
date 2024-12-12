@@ -443,7 +443,7 @@ const CalendarioAsignaturaCrear = () => {
             <ModalHorarioCrearEditar
                 isOpen={isModalOpen}
                 onOpenChange={closeModal}
-                title={"Editar horario"}
+                title={"Gestionar horario"}
                 initialData={modalData}
                 gruposExistentes={gruposExistentes}
                 tiposExistentes={["Clase Magistral", "Examen", "Practicas", "Entrega", "Problemas"]}
