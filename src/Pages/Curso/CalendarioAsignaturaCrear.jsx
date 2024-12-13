@@ -25,6 +25,8 @@ const CalendarioAsignaturaCrear = () => {
     const color = localStorage.getItem("color");  // En caso de fallo en el set, el color por defecto será el principal 
     const [idCounter, setIdCounter] = useState(location.state?.calendario?.length+1 || 1);    // Contador para los ids virtuales
 
+    const nombreProvisional = "Nueva asignatura";
+
     const wFirstCol = 5;
     const wCol = 13.57;
 
@@ -313,6 +315,7 @@ const CalendarioAsignaturaCrear = () => {
         );
 
         if (!updatedHorarios.some((h) => h.id === horario.id)) {
+            horario.name = nombreProvisional;
             updatedHorarios.push(horario);
         }
 
@@ -436,7 +439,7 @@ const CalendarioAsignaturaCrear = () => {
                                 </div>
                             )}
                         </div>
-                        <p className="ml-[5px]"> {h.description} </p>
+                        <p className="ml-[5px]"> {h.name} </p>
                     </div>
                 ))}
             </div>
