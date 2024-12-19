@@ -104,11 +104,17 @@ const Calendario = () => {
             const [numSolapes, position] = calcularSolapes(aux, idx);
 
             // Color de la asignatura
-            const color = await getColor(e.name, e.subject_id);
+            var color;
+            if (e.starting_date && e.end_date) {
+                color = await getColor(e.name, e.subject_id);
+            } else {
+                color = "#000000";
+            }
 
             const minutosS = convertirAHorasEnMinutos(e.start)
             const minutosE = convertirAHorasEnMinutos(e.end)
             
+            console.log(e.name)
             res.push({
                 name: e.name,
                 start: e.start,
@@ -355,7 +361,7 @@ const Calendario = () => {
 
     return (
         <div className="calendario">
-            <div className="personalizar flex">
+            <div className="absolute flex top-[1vh] left-[1vh]">
                 <Button color="primary" onClick={openModalTareas}>
                     Ver tareas
                 </Button>

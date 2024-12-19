@@ -1,7 +1,7 @@
 import { supabase } from '../supabaseClient.js';
 import { getAcademicEventsBySubject } from '../academicEvent/academicEvent';
 import { createCustomAcademicEvent, deleteCustomAcademicEvent } from '../customAcademicEvent/customAcademicEvent';
-import { getStudentIdByNip } from '../student/student';
+import { getStudentIdByNip, matriculateStudent, unenrollStudent } from '../student/student';
 
 export const registerArrayTeachers = async (teachers, organization_id) => {
   try {
@@ -373,15 +373,9 @@ export const letTeacherAssociateStudentToSubject = async (teacherNip, studentNip
     console.error('Error al obtener la asignatura del profesor:', teaching.error);
     return { data: null, error: teaching.error };
   } else {
+    
     // Asignar la asignatura al estudiante
-    const { data, error } = await supabase
-      .from('enrollments')
-      .insert([{ student_id: studentId.data, subject_id: subject.data.id }]).select();
-
-    if (error) {
-      console.error('Error al insertar la asignatura al estudiante:', error);
-      return { data: null, error };
-    }
+    const data = matriculateStudent(studentNip, subjectCode);
 
     console.log('Asignatura insertada al estudiante correctamente:', data);
     return { data, error: null };
@@ -407,7 +401,6 @@ export const letTeacherAssociateArrayStudentsToSubject = async (teacherNip, stud
     return { data: null, error: err };
   }
 }
-
 
 export const letTeacherUnAssociateStudentFromSubject = async (teacherNip, studentNip, subjectCode) => {
   // Obtener el ID del profesor
@@ -451,12 +444,7 @@ export const letTeacherUnAssociateStudentFromSubject = async (teacherNip, studen
     return { data: null, error: teaching.error };
   } else {
     // Asignar la asignatura al estudiante
-    const { data, error } = await supabase
-      .from('enrollments')
-      .delete()
-      .eq('student_id', studentId.data)
-      .eq('subject_id', subject.data.id)
-      .select();
+    const { data, error } = unenrollStudent(studentNip, subjectCode);
 
     if (error) {
       console.error('Error al eliminar la asignatura al estudiante:', error);

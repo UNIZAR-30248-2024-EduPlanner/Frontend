@@ -113,8 +113,9 @@ const CursoMatriculados = () => {
                                             <button 
                                                 className='delete' 
                                                 onClick={() => {
-                                                    setUserToUnenroll(profesor);
-                                                    onOpen();
+                                                    deleteMatriculado(profesor);
+                                                    //setUserToUnenroll(profesor);
+                                                    //onOpen();
                                                 }}>X</button>
                                         </td>
                                     </tr>
