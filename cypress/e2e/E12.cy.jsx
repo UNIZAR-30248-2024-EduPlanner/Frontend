@@ -25,7 +25,7 @@ describe('E2E Flow: E-12 Entry', () => {
         cy.createSubjectAsCourse(mockSubject);
     });
 
-    it('should login as a course and enroll/assing a student/teacher in a course ', () => {
+    it('should login as a course and enroll/assing a student/teacher in a subject ', () => {
         cy.loginAsUser('cursos', mockOrganization, mockCourse);
         cy.get("button.edit").click();
         cy.url().should("include", `/CursoModificar/asignaturas`);
@@ -36,7 +36,7 @@ describe('E2E Flow: E-12 Entry', () => {
         cy.wait(3000);
     });
 
-    it('should login as Course and unenroll a student/teacher in a course', () => {
+    it('should login as Course and unenroll a student/teacher in a subject', () => {
         cy.loginAsUser('cursos', mockOrganization, mockCourse);
         cy.get("button.edit").click();
         cy.url().should("include", `/CursoModificar/asignaturas`);
