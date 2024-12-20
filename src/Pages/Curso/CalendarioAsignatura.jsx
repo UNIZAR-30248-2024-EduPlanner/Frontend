@@ -14,7 +14,7 @@ import { GrNotes } from 'react-icons/gr';
 const CalendarioAsignatura = () => {
     const { user } = useAuth();
     const location = useLocation();
-    const {nombre, subject_id, codigo } = location.state || {};
+    const {nombre, codigo, subject_id } = location.state || {};
     const [subject, setSubject] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [modalData, setModalData] = useState(null);
@@ -293,7 +293,7 @@ const CalendarioAsignatura = () => {
         if (horario.id) {
             // Editar horario
             const updates = {
-                name: subject.name, 
+                name: nombre, 
                 starting_date: horario.starting_date, 
                 end_date: horario.end_date,
                 group_name: horario.group_name, 
@@ -331,6 +331,7 @@ const CalendarioAsignatura = () => {
         );
 
         if (!updatedHorarios.some((h) => h.id === horario.id)) {
+            horario.name = nombre;
             updatedHorarios.push(horario);
         }
 
@@ -447,14 +448,14 @@ const CalendarioAsignatura = () => {
                                 </div>
                             )}
                         </div>
-                        <p className="ml-[5px]"> {h.description} </p>
+                        <p className="ml-[5px]"> {h.name} </p>
                     </div>
                 ))}
             </div>
             <ModalHorarioCrearEditar
                 isOpen={isModalOpen}
                 onOpenChange={closeModal}
-                title={"Editar horario"}
+                title={"Gestionar horario"}
                 initialData={modalData}
                 gruposExistentes={gruposExistentes}
                 tiposExistentes={["Clase Magistral", "Examen", "Practicas", "Entrega", "Problemas"]}
