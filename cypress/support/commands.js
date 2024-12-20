@@ -55,7 +55,7 @@ Cypress.Commands.add("loginAsUser", (type, mockOrganization, mockUser) => {
   cy.get("input[name='nia/nip']").type(mockUser.nip);
   cy.get("input[name='password']").type(mockUser.password);
   cy.get("button").contains("Enviar").click();
-  type === 'Curso' ? cy.url().should("include", "/CursoMenu") : cy.url().should("include", "/Calendario");
+  type === 'cursos' ? cy.url().should("include", "/CursoMenu") : cy.url().should("include", "/Calendario");
 });
 
 // Logout
@@ -142,17 +142,13 @@ Cypress.Commands.add("deleteSubjectAsCourse", () => {
   cy.url().should("include", `/CursoMenu`);
 });
 
-Cypress.Commands.add("enrollAssingStudentTeacherSubject", (nip) => {
-  cy.get("div.lista-item")
-  .first() // Selecciona el primer elemento de la lista
-  .find("button.edit") // Encuentra el botón dentro de ese elemento
-  .click();
-  cy.url().should("include", `/CursoModificar/asignaturas`);
-  cy.get("button").contains("Gestionar matrículas").click();
-  cy.get("div.create-button").click();
+// Enrolls a Student or a Teacher into a Subject 
+Cypress.Commands.add("enrollUserIntoSubject", (nip) => {
+  cy.get('[data-testid="create"]').click();
+  cy.url().should("include", `/Matriculas/Add`);
   cy.get("input[name='nip']").type(nip);
   cy.get("button").contains("Buscar").click();
+  cy.get('.found').should('be.visible');
   cy.get("button").contains("Añadir").click();
-  cy.get("div.").click();
-  cy.get("button").contains("div.flecha").click();
+  cy.url().should("include", `/Matriculas`);
 });

@@ -69,7 +69,7 @@ const CursoMatriculados = () => {
 
     const navigateToAddMatriculados = () => {
         navigate(
-            `${location.pathname}/Añadir`, 
+            `${location.pathname}/Add`, 
             { state: { 
                 nombre: nombre,
                 codigo: codigo,
@@ -111,6 +111,7 @@ const CursoMatriculados = () => {
                                         <td>{profesor.name}</td>
                                         <td>
                                             <button 
+                                                data-testid="unenroll-teacher"
                                                 className='delete' 
                                                 onClick={() => {
                                                     deleteMatriculado(profesor);
@@ -150,6 +151,7 @@ const CursoMatriculados = () => {
                                         <td>{alumno.name}</td>
                                         <td>
                                             <button 
+                                                data-testid="unenroll-student"
                                                 className='delete' 
                                                 onClick={() => {
                                                     setUserToUnenroll(alumno);
@@ -171,7 +173,7 @@ const CursoMatriculados = () => {
                         </table>
                     </div>
                 </div>
-                <div className="create-button" onClick={navigateToAddMatriculados}>
+                <div data-testid="create" className="create-button" onClick={navigateToAddMatriculados}>
                         <FaCirclePlus />
                     </div>
             </div>
