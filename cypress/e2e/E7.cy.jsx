@@ -12,7 +12,7 @@ describe('E2E Flow: E-7 Entry', () => {
         cy.visit(`http://localhost:5173${constants.root}`);
     });
 
-    it('should login as Organization and create new Course', () => {
+    it('should login as Organization and create new users', () => {
         cy.loginAsOrganization(mockOrganization);
         cy.createUserAsOrganization('alumnos', mockStudent);
         cy.createUserAsOrganization('profesores', mockTeacher);
