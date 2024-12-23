@@ -64,7 +64,7 @@ const MatricularAlumnos = () => {
         <>
             <FlechaVolver />
             <Logout/>
-            <h1 className="org-crear-tit">
+            <h1 className="org-crear-tit font-bold">
                 Matricular alumno en {subject && subject.name && subject.name}
             </h1>
             <div className="org-crear-container">
