@@ -267,6 +267,7 @@ const ModalEditarHorarios = ({ isOpen, onOpenChange, listaCompletaEventos, lista
                                                 <div className="mb-[20px]">
                                                     <h2 className="text-2xl font-bold mb-[5px]">Tipo</h2>
                                                     <select
+                                                        data-testid="tipo"
                                                         value={tipo}
                                                         onChange={(e) => setTipo(e.target.value)}
                                                         className="w-full p-2 border rounded-md"
@@ -282,6 +283,7 @@ const ModalEditarHorarios = ({ isOpen, onOpenChange, listaCompletaEventos, lista
                                                         <div className="mb-[20px]">
                                                             <h2 className="text-2xl font-bold mb-[5px]">Categoria</h2>
                                                             <select
+                                                                data-testid="categoria"
                                                                 value={categoria}
                                                                 onChange={(e) => setCategoria(e.target.value)}
                                                                 className="w-full p-2 border rounded-md"
@@ -293,6 +295,7 @@ const ModalEditarHorarios = ({ isOpen, onOpenChange, listaCompletaEventos, lista
                                                         <div className="mb-[20px]">
                                                             <h2 className="text-2xl font-bold mb-[5px]">Asignatura</h2>
                                                             <select
+                                                                data-testid="asignatura"
                                                                 value={selectedAsignaturaId}
                                                                 onChange={(e) => {
                                                                     const selectedId = e.target.value;
@@ -316,6 +319,7 @@ const ModalEditarHorarios = ({ isOpen, onOpenChange, listaCompletaEventos, lista
                                                         <div className="mb-[20px]">
                                                             <h2 className="text-2xl font-bold mb-[5px]">Grupo</h2>
                                                             <select
+                                                                data-testid="grupo"
                                                                 value={selectedGrupo || filteredGruposFull[0]}
                                                                 onChange={(e) => {
                                                                     const grupoSeleccionado = e.target.value;
