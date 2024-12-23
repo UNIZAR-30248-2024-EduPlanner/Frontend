@@ -3,11 +3,10 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { BrowserRouter as Router } from "react-router-dom";
 import GestionarMatriculas from "../Profesor/GestionarMatriculas.jsx";
 import { getSubjectById } from "../../supabase/course/course";
-import { getStudentsBySubject } from "../../supabase/student/student";
+import { getStudentsBySubject, unenrollStudent } from "../../supabase/student/student";
 import { useNavigate } from "react-router-dom";
 import constants from "../../constants/constants";
 import { AuthProvider } from "../../context/AuthContext"; // Import AuthProvider
-import { letTeacherUnAssociateStudentFromSubject } from "../../supabase/teacher/teacher.js";
 
 // Mock dependencies
 vi.mock("../../supabase/course/course", () => ({
@@ -16,10 +15,7 @@ vi.mock("../../supabase/course/course", () => ({
 
 vi.mock("../../supabase/student/student", () => ({
   getStudentsBySubject: vi.fn(),
-}));
-
-vi.mock("../../supabase/teacher/teacher", () => ({
-  letTeacherUnAssociateStudentFromSubject: vi.fn(), // Añadir el mock correctamente
+  unenrollStudent: vi.fn()
 }));
 
 const mockUser = { id: 1, nip: 123, name: "Profesor Ejemplo" }; // Mock user
@@ -122,7 +118,7 @@ describe("GestionarMatriculas Component", () => {
 
   it("opens modal and deletes student when confirmed", async () => {
     // Simular éxito al llamar a la función
-    letTeacherUnAssociateStudentFromSubject.mockResolvedValue({ error: null });
+    unenrollStudent.mockResolvedValue({ error: null });
   
     renderWithAuthProvider(
       <Router>
@@ -143,9 +139,8 @@ describe("GestionarMatriculas Component", () => {
   
     // Verificar la llamada a la función con los argumentos esperados
     await waitFor(() =>
-      expect(letTeacherUnAssociateStudentFromSubject).toHaveBeenCalledWith(
-        mockUser.nip,
-        12345, // NIP del estudiante
+      expect(unenrollStudent).toHaveBeenCalledWith(
+        mockStudents[0].nip,
         mockSubject.subject_code // Código de la asignatura
       )
     );

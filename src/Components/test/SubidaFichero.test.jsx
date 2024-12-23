@@ -41,7 +41,8 @@ describe("SubidaFichero Component Tests", () => {
         fireEvent.change(input, { target: { files: [file] } });
 
         await waitFor(() => {
-            expect(setListaMock).toHaveBeenCalledWith([{ subject_code: 123, name: "Matematicas" }]);
+            expect(setListaMock).toHaveBeenCalledWith([
+                { subject_code: 123, name: "Matematicas", color: expect.any(String) }]);
         });
     });
 

@@ -40,6 +40,8 @@ describe('Custom Event API Tests', () => {
     });
 
     it('should retrieve all custom events for a user', async () => {
+        let eventsResult = await f.getCustomEventsByUser(userId);
+        const eventsNumber = eventsResult.data.length
         // Crear dos eventos para el usuario
         const result1 = await f.createCustomEvent('Evento 1', 'Descripción 1', 'Grupo A', '2021-12-06', '10:00:00', '12:00:00', userId);
         const result2 = await f.createCustomEvent('Evento 2', 'Descripción 2', 'Grupo B', '2021-12-06', '10:00:00', '12:00:00', userId);
@@ -49,9 +51,9 @@ describe('Custom Event API Tests', () => {
         expect(result2.error).toBeNull();
 
         // Obtener los eventos del usuario
-        const eventsResult = await f.getCustomEventsByUser(userId);
+        eventsResult = await f.getCustomEventsByUser(userId);
         expect(eventsResult.error).toBeNull(); // Verificar que no haya error
-        expect(eventsResult.data).toHaveLength(2);  // Debe haber 2 eventos creados
+        expect(eventsResult.data).toHaveLength(eventsNumber + 2);  // Debe haber 2 eventos creados
         expect(eventsResult.data[0].name).toBe('Evento 1');  // Verificar que el primer evento sea correcto
         expect(eventsResult.data[1].name).toBe('Evento 2');  // Verificar que el segundo evento sea correcto
     });
