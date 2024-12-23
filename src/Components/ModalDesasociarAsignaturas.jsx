@@ -115,6 +115,7 @@ const ModalDesasociarAsignaturas = ({ isOpen, onOpenChange, asignaturas, empty }
                       type="checkbox"
                       checked={selectedAsignaturas.includes(asignatura.id)}
                       onChange={() => handleCheckboxChange(asignatura.id)}
+                      data-testid={`checkbox-${asignatura.subject_code}`}
                       className="mr-2"
                       style={{
                         width: '24px',

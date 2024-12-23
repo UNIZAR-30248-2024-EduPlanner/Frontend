@@ -10,6 +10,8 @@ import { useEffect, useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import constants from "../../constants/constants";
 import { useNavigate } from "react-router-dom";
+import {useDisclosure} from "@nextui-org/react";
+import ModalComponent from "../../Components/ModalComponent";
 import Logout from "../../Components/Logout";
 import { randomColor } from "../../Components/CalendarioFunctions";
 
@@ -25,6 +27,8 @@ const CursoCrear = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const calendario = location.state?.calendario || [];
+
+    const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
     const create = async () => {
         setError(""); // Limpiar cualquier mensaje de error anterior
@@ -153,9 +157,18 @@ const CursoCrear = () => {
                             <Button size="lg" color="primary" onClick={calendar}>
                                 Establecer calendario
                             </Button>
-                            <Button size="lg" color="primary" onClick={create}>
+                            <Button size="lg" color="primary" onClick={onOpen}>
                                 Crear
                             </Button>
+                            <ModalComponent
+                                isOpen={isOpen}
+                                onOpenChange={onOpenChange}
+                                title="Confirmar creación"
+                                texto="¿Estás seguro de que quieres crear este elemento?"
+                                onAccept={() => {
+                                    create(); // Ejecutar crear
+                                }}
+                            />
                         </div>
                     </div>
                 </div>

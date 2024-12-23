@@ -340,6 +340,7 @@ const CalendarioAsignaturaCrear = () => {
                 <div className="flecha">
                 <Tooltip content="Atrás">
                     <Button
+                    data-testid="save"
                     className="flecha-volver-container"
                     onClick={handleSave}
                     size="lg"

@@ -455,6 +455,7 @@ const Calendario = () => {
                         overflow: "hidden"
                     }}
                         key={idx}
+                        data-testid={`event-${h.id}`}
                         //onClick={() => console.log(`Start: ${h.start}, End: ${h.end}, Name: ${h.name}`)}
                         onClick={() => handleOpenModal(h)}
                     >

@@ -66,7 +66,7 @@ const AppRoutes = () => {
                     <Route path={constants.root + "CursoCrear/:type"} element={<CursoCrear />} />
                     <Route path={constants.root + "CursoCrear/:type/Calendario"} element={<CalendarioAsignaturaCrear />} />
                     <Route path={constants.root + "CursoModificar/:type/:id/:nombreViejo/:nipViejo/Matriculas"} element={<CursoMatriculados />} />
-                    <Route path={constants.root + "CursoModificar/:type/:id/:nombreViejo/:nipViejo/Matriculas/Añadir"} element={<CursoMatriculadosAñadir />} />
+                    <Route path={constants.root + "CursoModificar/:type/:id/:nombreViejo/:nipViejo/Matriculas/Add"} element={<CursoMatriculadosAñadir />} />
                     <Route path={constants.root + "CursoModificar/:type/:id/:nombreViejo/:nipViejo"} element={<CursoModificar />} />
                     <Route path={constants.root + "CursoModificar/:type/:id/:nombreViejo/:nipViejo/Calendario"} element={<CalendarioAsignatura />} />
                 </Route>
